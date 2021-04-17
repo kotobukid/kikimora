@@ -89,7 +89,7 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed, recruit_channel, channel_name_1;
+    var message_text, parsed, recruit_channel, info_text, channel_name_1;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
         parsed = functions_1.get_payload(message_text);
@@ -131,6 +131,15 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                     }).catch(console.error);
                 });
             });
+        }
+        else if (parsed.order === '!説明') {
+            info_text = '★あなたに代わってチャンネルを作成します。\n● 募集を立てたいとき ● サーバー内のいずれかのテキストチャンネル内で「!募集 チャンネル名」と発言してください。「学園掲示板A」カテゴリ内に」新規テキストチャンネルが作成されます。\n' +
+                '　例）!募集　1224 伝説の入り口(ARA2E)\n\n' +
+                '● 教室を立てたいとき ● 「!教室　教室名」と発言してください。\n「教室棟」「教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
+                '　例）!教室 伝説の入り口（ARA2E)\n\n' +
+                '● チャンネルの削除を行いたいとき ● 上記手順で作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが「!削除」と発言してください。\n\n' +
+                '※チャンネルの名前については、学園のルールに準拠するようにしてください。';
+            msg.channel.send(info_text);
         }
         else if (parsed.order === '!教室') { // チャンネルを作成する
             channel_name_1 = parsed.payload;
