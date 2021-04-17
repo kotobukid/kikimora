@@ -34,11 +34,11 @@ const ModelSource = {
     },
     text_channel: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     voice_channel: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     is_deleted: {
         type: DataTypes.BOOLEAN,

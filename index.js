@@ -43,6 +43,8 @@ var discord_js_1 = __importDefault(require("discord.js"));
 var process_1 = __importDefault(require("process"));
 var fs_1 = __importDefault(require("fs"));
 var lodash_1 = __importDefault(require("lodash"));
+var functions_1 = require("./functions");
+var models_1 = require("./models");
 // @ts-ignore
 var client = new discord_js_1.default.Client();
 var UNDELETABLE_CHANNELS = ['一般', 'another'];
@@ -60,7 +62,8 @@ else {
 }
 var category = {
     text: '',
-    voice: ''
+    voice: '',
+    recruit: ''
 };
 if (fs_1.default.existsSync('./config/category.js')) {
     category = require('./config/category');
@@ -75,6 +78,7 @@ else {
 }
 var notice_channel = '';
 client.on('ready', function () {
+    // @ts-ignore
     for (var _i = 0, _a = client.channels.cache; _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         if (value.name === '一般' && value.type === 'text') {
@@ -86,15 +90,14 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var texts, _channel_name, channel_name_1, name_1, _i, _a, _b, key, value;
+    var message_text, parsed, recruit_channel, texts, _channel_name, channel_name_1, name_1, _i, _a, _b, key, value;
     return __generator(this, function (_c) {
+        message_text = msg.content.trim();
+        parsed = functions_1.get_payload(message_text);
         if (msg.author.bot) {
             return [2 /*return*/];
         }
-        else if (msg.content === '!ping') {
-            msg.channel.send('Pong!').then();
-        }
-        else if (msg.content === '!logout') {
+        else if (message_text === '!logout') {
             msg.channel.send("I'll be back").then();
             console.log("I'll be back");
             setTimeout(function () {
@@ -102,7 +105,32 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                 process_1.default.exit();
             }, 2500);
         }
-        else if (msg.content.startsWith('mkch')) { // チャンネルを作成する
+        else if (parsed.order === '!募集') {
+            recruit_channel = client.channels.cache.get(category.recruit);
+            if (!recruit_channel) {
+                msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
+            }
+            else {
+                msg.guild.channels.create(parsed.payload, {
+                    type: 'text',
+                    parent: category.recruit
+                }).then(function (ch) {
+                    ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
+                    ch.createInvite().then(function (invite) {
+                        models_1.create_channel({
+                            owner: msg.author.id,
+                            owner_name: msg.author.username,
+                            channel_name: parsed.payload,
+                            text_channel: "" + ch.id,
+                            voice_channel: ''
+                        }).then(function (ch_data) {
+                            msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
+                        }).catch(console.error);
+                    });
+                });
+            }
+        }
+        else if (message_text.startsWith('mkch')) { // チャンネルを作成する
             texts = msg.content.replace(/　/ig, ' ');
             _channel_name = texts.split(' ');
             if (_channel_name.length > 1) {
@@ -121,7 +149,7 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                 });
             }
         }
-        else if (msg.content === 'delch') {
+        else if (message_text === 'delch') {
             name_1 = msg.channel.name;
             // @ts-ignore
             for (_i = 0, _a = client.channels.cache; _i < _a.length; _i++) {
