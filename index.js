@@ -62,7 +62,9 @@ else {
 var category = {
     text: '',
     voice: '',
-    recruit: ''
+    recruit: '',
+    text_cp: '',
+    voice_cp: ''
 };
 if (fs_1.default.existsSync('./config/category.js')) {
     category = require('./config/category');
@@ -89,7 +91,7 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed, recruit_channel, info_text, channel_name_1;
+    var message_text, parsed, recruit_channel, info_text, text_category, voice_category_1, channel_name_1;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
         parsed = functions_1.get_payload(message_text);
@@ -116,7 +118,13 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             }
             msg.guild.channels.create(parsed.payload, {
                 type: 'text',
-                parent: category.recruit
+                parent: category.recruit,
+                permissionOverwrites: [
+                    {
+                        id: msg.author.id,
+                        allow: ['MANAGE_CHANNELS'],
+                    },
+                ]
             }).then(function (ch) {
                 ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
                 ch.createInvite().then(function (invite) {
@@ -133,24 +141,48 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             });
         }
         else if (parsed.order === '!説明') {
-            info_text = '★あなたに代わってチャンネルを作成します。\n● 募集を立てたいとき ● サーバー内のいずれかのテキストチャンネル内で「!募集 チャンネル名」と発言してください。「学園掲示板A」カテゴリ内に」新規テキストチャンネルが作成されます。\n' +
+            info_text = '★あなたに代わってチャンネルを作成します。\n\n● 募集を立てたいとき ● サーバー内のいずれかのテキストチャンネル内で「!募集 チャンネル名」と発言してください。「学園掲示板A」カテゴリ内に」新規テキストチャンネルが作成されます。\n' +
                 '　例）!募集　1224 伝説の入り口(ARA2E)\n\n' +
                 '● 教室を立てたいとき ● 「!教室　教室名」と発言してください。\n「教室棟」「教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
                 '　例）!教室 伝説の入り口（ARA2E)\n\n' +
+                '● キャンペーン用の教室を立てたいとき ● 「!キャンペーン　教室名」と発言してください。\n「CP用教室棟」「CP用教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
+                '　例）!キャンペーン ファーストクエスト（ARA2E)\n\n' +
                 '● チャンネルの削除を行いたいとき ● 上記手順で作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが「!削除」と発言してください。\n\n' +
                 '※チャンネルの名前については、学園のルールに準拠するようにしてください。';
             msg.channel.send(info_text);
         }
-        else if (parsed.order === '!教室') { // チャンネルを作成する
+        else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
+            text_category = '';
+            voice_category_1 = '';
+            if (parsed.order === '!教室') {
+                text_category = category.text;
+                voice_category_1 = category.voice;
+            }
+            else {
+                text_category = category.text_cp;
+                voice_category_1 = category.voice_cp;
+            }
             channel_name_1 = parsed.payload;
             msg.guild.channels.create(channel_name_1, {
                 type: 'text',
-                parent: category.text
+                parent: text_category,
+                permissionOverwrites: [
+                    {
+                        id: msg.author.id,
+                        allow: ['MANAGE_CHANNELS'],
+                    },
+                ]
             }).then(function (text_channel_created) {
                 text_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
                 msg.guild.channels.create(channel_name_1, {
                     type: 'voice',
-                    parent: category.voice
+                    parent: voice_category_1,
+                    permissionOverwrites: [
+                        {
+                            id: msg.author.id,
+                            allow: ['MANAGE_CHANNELS'],
+                        },
+                    ]
                 }).then(function (voice_channel_created) {
                     voice_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
                     text_channel_created.createInvite().then(function (invite) {
@@ -184,7 +216,6 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                             var vc = client.channels.cache.get(channels[i].voice_channel);
                             if (vc) {
                                 vc.delete().then(function (vc_deleted) {
-                                    console.log(channels[i]);
                                     // @ts-ignore
                                     channels[i].update({ is_deleted: true }).then();
                                 });

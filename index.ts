@@ -5,6 +5,7 @@ import _ from 'lodash';
 import {get_payload} from './functions'
 import {create_channel, find_channel} from "./models"
 import {ChannelSource} from "./models/channel";
+import {text} from "express";
 
 // @ts-ignore
 const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client();
@@ -26,8 +27,11 @@ if (fs.existsSync('./config/secret.js')) {
 let category = {
     text: '',
     voice: '',
-    recruit: ''
+    recruit: '',
+    text_cp: '',
+    voice_cp: ''
 };
+
 if (fs.existsSync('./config/category.js')) {
     category = require('./config/category');
     if (!token) {
@@ -85,7 +89,13 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
 
         msg.guild!.channels.create(parsed.payload, {
             type: 'text',
-            parent: category.recruit
+            parent: category.recruit,
+            permissionOverwrites: [
+                {
+                    id: msg.author.id,
+                    allow: ['MANAGE_CHANNELS'],
+                },
+            ]
         }).then((ch: TextChannel) => {
             ch.setTopic(`作成者: ${msg.author.username}`)
             ch.createInvite().then((invite: Discord.Invite) => {
@@ -101,26 +111,49 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             });
         });
     } else if (parsed.order === '!説明') {
-        const info_text = '★あなたに代わってチャンネルを作成します。\n● 募集を立てたいとき ● サーバー内のいずれかのテキストチャンネル内で「!募集 チャンネル名」と発言してください。「学園掲示板A」カテゴリ内に」新規テキストチャンネルが作成されます。\n' +
+        const info_text = '★あなたに代わってチャンネルを作成します。\n\n● 募集を立てたいとき ● サーバー内のいずれかのテキストチャンネル内で「!募集 チャンネル名」と発言してください。「学園掲示板A」カテゴリ内に」新規テキストチャンネルが作成されます。\n' +
             '　例）!募集　1224 伝説の入り口(ARA2E)\n\n' +
             '● 教室を立てたいとき ● 「!教室　教室名」と発言してください。\n「教室棟」「教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
             '　例）!教室 伝説の入り口（ARA2E)\n\n' +
+            '● キャンペーン用の教室を立てたいとき ● 「!キャンペーン　教室名」と発言してください。\n「CP用教室棟」「CP用教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
+            '　例）!キャンペーン ファーストクエスト（ARA2E)\n\n' +
             '● チャンネルの削除を行いたいとき ● 上記手順で作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが「!削除」と発言してください。\n\n' +
             '※チャンネルの名前については、学園のルールに準拠するようにしてください。';
         msg.channel.send(info_text)
-    } else if (parsed.order === '!教室') {    // チャンネルを作成する
+    } else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') {    // チャンネルを作成する
+        let text_category = '';
+        let voice_category = ''
+        if (parsed.order === '!教室') {
+            text_category = category.text;
+            voice_category = category.voice;
+        } else {
+            text_category = category.text_cp
+            voice_category = category.voice_cp;
+        }
 
         const channel_name = parsed.payload;
 
         msg.guild!.channels.create(channel_name, {
             type: 'text',
-            parent: category.text
+            parent: text_category,
+            permissionOverwrites: [
+                {
+                    id: msg.author.id,
+                    allow: ['MANAGE_CHANNELS'],
+                },
+            ]
         }).then((text_channel_created: TextChannel) => {
             text_channel_created.setTopic(`作成者: ${msg.author.username}`)
 
             msg.guild!.channels.create(channel_name, {
                 type: 'voice',
-                parent: category.voice
+                parent: voice_category,
+                permissionOverwrites: [
+                    {
+                        id: msg.author.id,
+                        allow: ['MANAGE_CHANNELS'],
+                    },
+                ]
             }).then((voice_channel_created: VoiceChannel) => {
                 voice_channel_created.setTopic(`作成者: ${msg.author.username}`)
                 text_channel_created.createInvite().then((invite: Discord.Invite) => {
@@ -155,7 +188,6 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
                         const vc = client.channels.cache.get(channels[i].voice_channel);
                         if (vc) {
                             vc.delete().then((vc_deleted: Channel) => {
-                                console.log(channels[i])
                                 // @ts-ignore
                                 channels[i].update({is_deleted: true}).then();
                             });
