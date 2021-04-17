@@ -10,7 +10,7 @@
     "sequelize": "sequelize",
     "generate": "node bin/create_random_data.js",
     "sync": "node bin/sync.js",
-    "runserver": "sudo forever start -l ./gorilla-man-log.txt -a index.js",
+    "runserver": "sudo forever start -l ./kikimira-log.txt -a index.js",
     "stopserver": "sudo forever stop index.js"
   },
   "author": "",
