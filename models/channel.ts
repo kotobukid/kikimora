@@ -1,4 +1,18 @@
 import {Sequelize, Model, DataTypes} from 'sequelize';
+import db from "./index";
+
+declare type ChannelSource = {
+    owner: string,
+    owner_name: string,
+    channel_name: string,
+    text_channel: string,
+    voice_channel: string
+}
+
+declare type Channel = {
+    id: number,
+    is_deleted: boolean
+} & ChannelSource
 
 const ModelSource = {
     id: {
@@ -30,12 +44,9 @@ const ModelSource = {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         default: false
-    },
-    created_at: {
-        type: new DataTypes.DATE
     }
 };
 
 const table_name: string = 'channel'
 
-export {ModelSource, table_name}
+export {ModelSource, table_name, ChannelSource, Channel}

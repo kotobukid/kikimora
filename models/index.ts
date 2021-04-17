@@ -3,10 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 import Sequelize from "sequelize";
+
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db: Record<string, any> = {};
+import {ChannelSource} from "./channel"
 
 let sequelize: Sequelize.Sequelize;
 if (config.use_env_variable) {
@@ -31,8 +33,21 @@ Object.keys(db).forEach(modelName => {
     }
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
-// module.exports = db;
+const create_channel = (source: ChannelSource): Promise<any> => {
+    return new Promise((resolve, reject) => {
+
+        const c = new db.channel!()
+        c.owner = source.owner
+        c.owner_name = source.owner_name
+        c.channel_name = source.channel_name
+        c.text_channel = source.text_channel
+        c.voice_channel = source.voice_channel
+        c.is_deleted = false
+        resolve(c.save())
+    })
+}
+
+db.Sequelize = Sequelize;
 export default db;
+export {create_channel}
