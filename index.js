@@ -42,7 +42,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = __importDefault(require("discord.js"));
 var process_1 = __importDefault(require("process"));
 var fs_1 = __importDefault(require("fs"));
-var lodash_1 = __importDefault(require("lodash"));
 var functions_1 = require("./functions");
 var models_1 = require("./models");
 // @ts-ignore
@@ -90,8 +89,8 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed, recruit_channel, channel_name_1, name_1, _i, _a, _b, key, value;
-    return __generator(this, function (_c) {
+    var message_text, parsed, recruit_channel, channel_name_1;
+    return __generator(this, function (_a) {
         message_text = msg.content.trim();
         parsed = functions_1.get_payload(message_text);
         if (msg.author.bot) {
@@ -159,23 +158,37 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                 });
             })
                 .catch(function (err) {
-                console.log(err);
+                console.error(err);
             });
         }
-        else if (message_text === 'delch') {
-            name_1 = msg.channel.name;
-            // @ts-ignore
-            for (_i = 0, _a = client.channels.cache; _i < _a.length; _i++) {
-                _b = _a[_i], key = _b[0], value = _b[1];
-                if (value.name === name_1) {
-                    if (lodash_1.default.includes(UNDELETABLE_CHANNELS, name_1)) {
-                        break;
+        else if (parsed.order === '!削除') {
+            // const name: string = msg.channel.name;
+            models_1.find_channel({
+                owner: msg.author.id,
+                text_channel: msg.channel.id,
+                is_deleted: false
+            }).then(function (channels) {
+                var _loop_1 = function (i) {
+                    var tc = client.channels.cache.get(channels[i].text_channel);
+                    if (tc) {
+                        tc.delete().then(function (tc_deleted) {
+                            var vc = client.channels.cache.get(channels[i].voice_channel);
+                            if (vc) {
+                                vc.delete().then(function (vc_deleted) {
+                                    console.log(channels[i]);
+                                    // @ts-ignore
+                                    channels[i].update({ is_deleted: true }).then();
+                                });
+                            }
+                        });
                     }
-                    if ((value.type === 'text') || (value.type === 'voice')) {
-                        value.delete().then();
-                    }
+                };
+                for (var i = 0; i < channels.length; i++) {
+                    _loop_1(i);
                 }
-            }
+            }).catch(function (err) {
+                console.error(err);
+            });
         }
         return [2 /*return*/];
     });

@@ -3,7 +3,8 @@ import process from 'process';
 import fs from 'fs';
 import _ from 'lodash';
 import {get_payload} from './functions'
-import {create_channel} from "./models"
+import {create_channel, find_channel} from "./models"
+import {ChannelSource} from "./models/channel";
 
 // @ts-ignore
 const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client();
@@ -128,23 +129,35 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             })
         })
             .catch((err: Error) => {
-                console.log(err);
+                console.error(err);
             });
 
-    } else if (message_text === 'delch') {
-        const name: string = msg.channel.name;
+    } else if (parsed.order === '!削除') {
+        // const name: string = msg.channel.name;
 
-        // @ts-ignore
-        for (const [key, value] of client.channels.cache) {
-            if ((value as TextChannel).name === name) {
-                if (_.includes(UNDELETABLE_CHANNELS, name)) {
-                    break;
-                }
-                if ((value.type === 'text') || (value.type === 'voice')) {
-                    value.delete().then()
+        find_channel({
+            owner: msg.author.id,
+            text_channel: msg.channel.id,
+            is_deleted: false
+        }).then((channels: ChannelSource []) => {
+            for (let i: number = 0; i < channels.length; i++) {
+                const tc = client.channels.cache.get(channels[i].text_channel);
+                if (tc) {
+                    tc.delete().then((tc_deleted: Channel) => {
+                        const vc = client.channels.cache.get(channels[i].voice_channel);
+                        if (vc) {
+                            vc.delete().then((vc_deleted: Channel) => {
+                                console.log(channels[i])
+                                // @ts-ignore
+                                channels[i].update({is_deleted: true}).then();
+                            });
+                        }
+                    });
                 }
             }
-        }
+        }).catch((err: Error) => {
+            console.error(err)
+        });
     }
 });
 
