@@ -90,7 +90,7 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed, recruit_channel, texts, _channel_name, channel_name_1, name_1, _i, _a, _b, key, value;
+    var message_text, parsed, recruit_channel, channel_name_1, name_1, _i, _a, _b, key, value;
     return __generator(this, function (_c) {
         message_text = msg.content.trim();
         parsed = functions_1.get_payload(message_text);
@@ -111,7 +111,6 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                 msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
                 return [2 /*return*/];
             }
-            console.log(parsed.payload);
             if (parsed.payload.trim() === '') {
                 msg.channel.send("募集チャンネルの名前を指定してください。").then();
                 return [2 /*return*/];
@@ -135,23 +134,33 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             });
         }
         else if (parsed.order === '!教室') { // チャンネルを作成する
-            texts = msg.content.replace(/　/ig, ' ');
-            _channel_name = texts.split(' ');
-            if (_channel_name.length > 1) {
-                channel_name_1 = _channel_name[1];
+            channel_name_1 = parsed.payload;
+            msg.guild.channels.create(channel_name_1, {
+                type: 'text',
+                parent: category.text
+            }).then(function (text_channel_created) {
+                text_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
                 msg.guild.channels.create(channel_name_1, {
-                    type: 'text',
-                    parent: category.text
-                }).then(function () {
-                    msg.guild.channels.create(channel_name_1, {
-                        type: 'voice',
-                        parent: category.voice
+                    type: 'voice',
+                    parent: category.voice
+                }).then(function (voice_channel_created) {
+                    voice_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
+                    text_channel_created.createInvite().then(function (invite) {
+                        models_1.create_channel({
+                            owner: msg.author.id,
+                            owner_name: msg.author.username,
+                            channel_name: parsed.payload,
+                            text_channel: "" + text_channel_created.id,
+                            voice_channel: "" + voice_channel_created.id
+                        }).then(function (ch_data) {
+                            msg.channel.send("\u6559\u5BA4\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
+                        }).catch(console.error);
                     });
-                })
-                    .catch(function (err) {
-                    console.log(err);
                 });
-            }
+            })
+                .catch(function (err) {
+                console.log(err);
+            });
         }
         else if (message_text === 'delch') {
             name_1 = msg.channel.name;

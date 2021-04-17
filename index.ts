@@ -1,4 +1,4 @@
-import Discord, {Channel, Message, TextChannel} from 'discord.js';
+import Discord, {Channel, Message, TextChannel, VoiceChannel} from 'discord.js';
 import process from 'process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -76,7 +76,7 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
         }
-        console.log(parsed.payload)
+
         if (parsed.payload.trim() === '') {
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
@@ -87,7 +87,7 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             parent: category.recruit
         }).then((ch: TextChannel) => {
             ch.setTopic(`作成者: ${msg.author.username}`)
-            ch.createInvite().then(invite => {
+            ch.createInvite().then((invite: Discord.Invite) => {
                 create_channel({
                     owner: msg.author.id,
                     owner_name: msg.author.username,
@@ -101,24 +101,36 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
         });
     } else if (parsed.order === '!教室') {    // チャンネルを作成する
 
-        const texts = msg.content.replace(/　/ig, ' ');
-        const _channel_name = texts.split(' ')
-        if (_channel_name.length > 1) {
-            const channel_name = _channel_name[1]
+        const channel_name = parsed.payload;
+
+        msg.guild!.channels.create(channel_name, {
+            type: 'text',
+            parent: category.text
+        }).then((text_channel_created: TextChannel) => {
+            text_channel_created.setTopic(`作成者: ${msg.author.username}`)
 
             msg.guild!.channels.create(channel_name, {
-                type: 'text',
-                parent: category.text
-            }).then(() => {
-                msg.guild!.channels.create(channel_name, {
-                    type: 'voice',
-                    parent: category.voice
+                type: 'voice',
+                parent: category.voice
+            }).then((voice_channel_created: VoiceChannel) => {
+                voice_channel_created.setTopic(`作成者: ${msg.author.username}`)
+                text_channel_created.createInvite().then((invite: Discord.Invite) => {
+                    create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: parsed.payload,
+                        text_channel: `${text_channel_created.id}`,
+                        voice_channel: `${voice_channel_created.id}`
+                    }).then((ch_data) => {
+                        msg.channel.send(`教室「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
+                    }).catch(console.error);
                 })
             })
-                .catch((err: Error) => {
-                    console.log(err);
-                });
-        }
+        })
+            .catch((err: Error) => {
+                console.log(err);
+            });
+
     } else if (message_text === 'delch') {
         const name: string = msg.channel.name;
 
