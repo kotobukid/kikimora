@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var lodash_1 = __importDefault(require("lodash"));
 var models_1 = require("../models");
-lodash_1.default.range(100000).forEach(function (i) {
+lodash_1.default.range(10).forEach(function (i) {
     models_1.create_channel({
         owner: '123435123' + i,
         owner_name: 'hagege',

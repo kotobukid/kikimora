@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc --watch",
     "sequelize": "sequelize",
-    "generate": "node bin/create_random_data.js"
+    "generate": "node bin/create_random_data.js",
+    "sync": "node bin/sync.js"
   },
   "author": "",
   "license": "ISC",

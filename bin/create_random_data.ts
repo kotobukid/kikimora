@@ -3,7 +3,7 @@ import {create_channel} from "../models"
 import {Channel} from "../models/channel"
 import {Model} from "sequelize";
 
-_.range(100000).forEach(i => {
+_.range(10).forEach(i => {
     create_channel({
         owner: '123435123' + i,
         owner_name: 'hagege',

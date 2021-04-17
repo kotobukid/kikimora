@@ -48,6 +48,19 @@ const create_channel = (source: ChannelSource): Promise<any> => {
     })
 }
 
+const find_channel_by_txt_ch_id = (text_channel_id: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        db.channel.findAll({
+            where: {
+                text_channel: text_channel_id
+            }
+        }).then((data: any[]) => {
+            console.log(data)
+            resolve(true)
+        })
+    })
+}
+
 db.Sequelize = Sequelize;
 export default db;
-export {create_channel}
+export {create_channel, find_channel_by_txt_ch_id}
