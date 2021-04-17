@@ -10,6 +10,10 @@ var get_payload = function (s) {
         order = (tokens.shift() || '');
         payload = (tokens.join(' '));
     }
+    else {
+        order = (tokens.shift() || '');
+        payload = '';
+    }
     return { order: order, payload: payload };
 };
 exports.get_payload = get_payload;

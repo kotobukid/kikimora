@@ -71,28 +71,35 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
     } else if (parsed.order === '!募集') {
 
         const recruit_channel = client.channels.cache.get(category.recruit);
+
         if (!recruit_channel) {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
-        } else {
-            msg.guild!.channels.create(parsed.payload, {
-                type: 'text',
-                parent: category.recruit
-            }).then((ch: TextChannel) => {
-                ch.setTopic(`作成者: ${msg.author.username}`)
-                ch.createInvite().then(invite => {
-                    create_channel({
-                        owner: msg.author.id,
-                        owner_name: msg.author.username,
-                        channel_name: parsed.payload,
-                        text_channel: `${ch.id}`,
-                        voice_channel: ''
-                    }).then((ch_data) => {
-                        msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
-                    }).catch(console.error);
-                })
-            })
+            return;
         }
-    } else if (message_text.startsWith('mkch')) {    // チャンネルを作成する
+        console.log(parsed.payload)
+        if (parsed.payload.trim() === '') {
+            msg.channel.send("募集チャンネルの名前を指定してください。").then();
+            return;
+        }
+
+        msg.guild!.channels.create(parsed.payload, {
+            type: 'text',
+            parent: category.recruit
+        }).then((ch: TextChannel) => {
+            ch.setTopic(`作成者: ${msg.author.username}`)
+            ch.createInvite().then(invite => {
+                create_channel({
+                    owner: msg.author.id,
+                    owner_name: msg.author.username,
+                    channel_name: parsed.payload,
+                    text_channel: `${ch.id}`,
+                    voice_channel: ''
+                }).then((ch_data) => {
+                    msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
+                }).catch(console.error);
+            });
+        });
+    } else if (parsed.order === '!教室') {    // チャンネルを作成する
 
         const texts = msg.content.replace(/　/ig, ' ');
         const _channel_name = texts.split(' ')

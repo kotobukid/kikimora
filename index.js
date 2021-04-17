@@ -109,28 +109,32 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             recruit_channel = client.channels.cache.get(category.recruit);
             if (!recruit_channel) {
                 msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
+                return [2 /*return*/];
             }
-            else {
-                msg.guild.channels.create(parsed.payload, {
-                    type: 'text',
-                    parent: category.recruit
-                }).then(function (ch) {
-                    ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
-                    ch.createInvite().then(function (invite) {
-                        models_1.create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: parsed.payload,
-                            text_channel: "" + ch.id,
-                            voice_channel: ''
-                        }).then(function (ch_data) {
-                            msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
-                        }).catch(console.error);
-                    });
+            console.log(parsed.payload);
+            if (parsed.payload.trim() === '') {
+                msg.channel.send("募集チャンネルの名前を指定してください。").then();
+                return [2 /*return*/];
+            }
+            msg.guild.channels.create(parsed.payload, {
+                type: 'text',
+                parent: category.recruit
+            }).then(function (ch) {
+                ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
+                ch.createInvite().then(function (invite) {
+                    models_1.create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: parsed.payload,
+                        text_channel: "" + ch.id,
+                        voice_channel: ''
+                    }).then(function (ch_data) {
+                        msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
+                    }).catch(console.error);
                 });
-            }
+            });
         }
-        else if (message_text.startsWith('mkch')) { // チャンネルを作成する
+        else if (parsed.order === '!教室') { // チャンネルを作成する
             texts = msg.content.replace(/　/ig, ' ');
             _channel_name = texts.split(' ');
             if (_channel_name.length > 1) {
