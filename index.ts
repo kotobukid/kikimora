@@ -74,40 +74,40 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             process.exit();
         }, 2500);
     } else if (parsed.order === '!募集') {
+        client.channels.fetch(category.recruit, false, true).then(recruit_channel => {
 
-        const recruit_channel = client.channels.cache.get(category.recruit);
+            if (!recruit_channel) {
+                msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
+                return;
+            }
 
-        if (!recruit_channel) {
-            msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
-            return;
-        }
+            if (parsed.payload.trim() === '') {
+                msg.channel.send("募集チャンネルの名前を指定してください。").then();
+                return;
+            }
 
-        if (parsed.payload.trim() === '') {
-            msg.channel.send("募集チャンネルの名前を指定してください。").then();
-            return;
-        }
-
-        msg.guild!.channels.create(parsed.payload, {
-            type: 'text',
-            parent: category.recruit,
-            permissionOverwrites: [
-                {
-                    id: msg.author.id,
-                    allow: ['MANAGE_CHANNELS'],
-                },
-            ]
-        }).then((ch: TextChannel) => {
-            ch.setTopic(`作成者: ${msg.author.username}`)
-            ch.createInvite().then((invite: Discord.Invite) => {
-                create_channel({
-                    owner: msg.author.id,
-                    owner_name: msg.author.username,
-                    channel_name: parsed.payload,
-                    text_channel: `${ch.id}`,
-                    voice_channel: ''
-                }).then((ch_data) => {
-                    msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
-                }).catch(console.error);
+            msg.guild!.channels.create(parsed.payload, {
+                type: 'text',
+                parent: category.recruit,
+                permissionOverwrites: [
+                    {
+                        id: msg.author.id,
+                        allow: ['MANAGE_CHANNELS'],
+                    },
+                ]
+            }).then((ch: TextChannel) => {
+                ch.setTopic(`作成者: ${msg.author.username}`)
+                ch.createInvite().then((invite: Discord.Invite) => {
+                    create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: parsed.payload,
+                        text_channel: `${ch.id}`,
+                        voice_channel: ''
+                    }).then((ch_data) => {
+                        msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
+                    }).catch(console.error);
+                });
             });
         });
     } else if (parsed.order === '!説明') {
@@ -173,8 +173,8 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
                 console.error(err);
             });
 
-    } else if (parsed.order === '!削除') {
-        // const name: string = msg.channel.name;
+    } else if (parsed.order === '!変更') {
+        const new_title: string = parsed.payload;
 
         find_channel({
             owner: msg.author.id,
@@ -182,18 +182,49 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
             is_deleted: false
         }).then((channels: ChannelSource []) => {
             for (let i: number = 0; i < channels.length; i++) {
-                const tc = client.channels.cache.get(channels[i].text_channel);
-                if (tc) {
-                    tc.delete().then((tc_deleted: Channel) => {
-                        const vc = client.channels.cache.get(channels[i].voice_channel);
-                        if (vc) {
-                            vc.delete().then((vc_deleted: Channel) => {
-                                // @ts-ignore
-                                channels[i].update({is_deleted: true}).then();
+                client.channels.fetch(channels[i].text_channel, false, true).then((tc) => {
+                    if (tc) {
+                        // @ts-ignore
+                        tc.setName(new_title, 'reason: test').then((_tc) => {
+                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                                if (vc) {
+                                    // @ts-ignore
+                                    vc.setName(new_title).then(() => {
+                                        // @ts-ignore
+                                        channels[i].update({channel_name: new_title}).then();
+                                    });
+                                } else {
+                                    msg.channel.send(`チャンネル名を「${new_title}」に変更しました。`);
+                                }
                             });
-                        }
-                    });
-                }
+                        }).catch(console.error);
+                    }
+                });
+            }
+        }).catch((err: Error) => {
+            console.error(err)
+        });
+    } else if (parsed.order === '!削除') {
+        find_channel({
+            owner: msg.author.id,
+            text_channel: msg.channel.id,
+            is_deleted: false
+        }).then((channels: ChannelSource []) => {
+            for (let i: number = 0; i < channels.length; i++) {
+                client.channels.fetch(channels[i].text_channel, false, true).then(tc => {
+                    if (tc) {
+                        tc.delete().then((tc_deleted: Channel) => {
+                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                                if (vc) {
+                                    vc.delete().then((vc_deleted: Channel) => {
+                                        // @ts-ignore
+                                        channels[i].update({is_deleted: true}).then();
+                                    });
+                                }
+                            }).catch(console.error);
+                        });
+                    }
+                }).catch(console.error);
             }
         }).catch((err: Error) => {
             console.error(err)
