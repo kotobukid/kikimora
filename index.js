@@ -142,13 +142,24 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             });
         }
         else if (parsed.order === '!説明') {
-            info_text = '★忙しすぎるあなたに代わってチャンネルを作成します。\n\n** ● 募集を立てたいとき ● **\n サーバー内のいずれかのテキストチャンネル内で`!募集 チャンネル名`と発言してください。「学園掲示板A」カテゴリ内に新規テキストチャンネルが作成されます。\n' +
-                '　例）`!募集　1224 伝説の入り口(ARA2E)`\n\n' +
-                '** ● 教室を立てたいとき ● **\n `!教室　教室名`と発言してください。\n「教室棟」「教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
-                '　例）`!教室 伝説の入り口（ARA2E)`\n\n' +
-                '** ● キャンペーン用の教室を立てたいとき ● **\n `!キャンペーン　教室名`と発言してください。\n「CP用教室棟」「CP用教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
-                '　例）`!キャンペーン ファーストクエスト（ARA2E)`\n\n' +
-                '** ● チャンネルの削除を行いたいとき ● **\n 上記手順で作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが`!削除`と発言してください。\n\n' +
+            info_text = '★忙しすぎるあなたに代わってチャンネルを作成します。\n\n' +
+                '** ● 募集を立てたいとき ● **\n' +
+                '> サーバー内のいずれかのテキストチャンネル内で`!募集 チャンネル名`と発言してください。\n' +
+                '> 「学園掲示板A」カテゴリ内に新規テキストチャンネルが作成されます。\n' +
+                '> 例）`!募集　1224 伝説の入り口(ARA2E)`\n\n' +
+                '** ● 教室を立てたいとき ● **\n `!教室　教室名`と発言してください。\n' +
+                '> 「教室棟」「教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
+                '> 例）`!教室 伝説の入り口（ARA2E)`\n\n' +
+                '** ● キャンペーン用の教室を立てたいとき ● **\n' +
+                '> `!キャンペーン　教室名`と発言してください。\n' +
+                '> 「CP用教室棟」「CP用教室棟VC」カテゴリにそれぞれチャンネルが作成されます。\n' +
+                '> 例）`!キャンペーン ファーストクエスト（ARA2E)`\n\n' +
+                '** ● チャンネルの名前変更を行いたいとき ● **\n' +
+                '> 作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが`!変更 新しい教室名`と発言してください。\n' +
+                '> 例）`!変更 〆1224伝説の入り口`\n\n' +
+                '** ● チャンネルの削除を行いたいとき ● **\n' +
+                '> 作成されたテキストチャンネル内で、チャンネル作成を行ったユーザーが`!削除`と発言してください。\n\n' +
+                '※一つのチャンネルに対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後に反映されたりすることがありますのでご了承ください。\n' +
                 '※チャンネルの名前については、学園のルールに準拠するようにしてください。';
             msg.channel.send(info_text);
         }
@@ -215,18 +226,20 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                         if (tc) {
                             // @ts-ignore
                             tc.setName(new_title_1, 'reason: test').then(function (_tc) {
-                                client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
-                                    if (vc) {
-                                        // @ts-ignore
-                                        vc.setName(new_title_1).then(function () {
+                                if (channels[i].voice_channel) {
+                                    client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
+                                        if (vc) {
                                             // @ts-ignore
-                                            channels[i].update({ channel_name: new_title_1 }).then();
-                                        });
-                                    }
-                                    else {
-                                        msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u300C" + new_title_1 + "\u300D\u306B\u5909\u66F4\u3057\u307E\u3057\u305F\u3002");
-                                    }
-                                });
+                                            vc.setName(new_title_1).then(function () {
+                                                // @ts-ignore
+                                                channels[i].update({ channel_name: new_title_1 }).then();
+                                            });
+                                        }
+                                        else {
+                                            msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u300C" + new_title_1 + "\u300D\u306B\u5909\u66F4\u3057\u307E\u3057\u305F\u3002");
+                                        }
+                                    });
+                                }
                             }).catch(console.error);
                         }
                     });
@@ -248,14 +261,16 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
                     client.channels.fetch(channels[i].text_channel, false, true).then(function (tc) {
                         if (tc) {
                             tc.delete().then(function (tc_deleted) {
-                                client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
-                                    if (vc) {
-                                        vc.delete().then(function (vc_deleted) {
-                                            // @ts-ignore
-                                            channels[i].update({ is_deleted: true }).then();
-                                        });
-                                    }
-                                }).catch(console.error);
+                                if (channels[i].voice_channel) {
+                                    client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
+                                        if (vc) {
+                                            vc.delete().then(function (vc_deleted) {
+                                                // @ts-ignore
+                                                channels[i].update({ is_deleted: true }).then();
+                                            });
+                                        }
+                                    }).catch(console.error);
+                                }
                             });
                         }
                     }).catch(console.error);
