@@ -13,16 +13,16 @@ import _ from 'lodash';
 // @ts-ignore
 const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client();
 
-let notice_channel: string = '';
+// let notice_channel: string = '';
 
 client.on('ready', () => {
     // @ts-ignore
-    for (const [key, value] of client.channels.cache) {
-        if ((value as TextChannel).name === '一般' && value.type === 'text') {
-            notice_channel = key;
-            break;
-        }
-    }
+    // for (const [key, value] of client.channels.cache) {
+    //     if ((value as TextChannel).name === '一般' && value.type === 'text') {
+    //         notice_channel = key;
+    //         break;
+    //     }
+    // }
 
     console.log(`${client.user!.tag} でログイン`);
 });

@@ -49,16 +49,15 @@ var change_1 = __importDefault(require("./orders/change"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
-var notice_channel = '';
+// let notice_channel: string = '';
 client.on('ready', function () {
     // @ts-ignore
-    for (var _i = 0, _a = client.channels.cache; _i < _a.length; _i++) {
-        var _b = _a[_i], key = _b[0], value = _b[1];
-        if (value.name === '一般' && value.type === 'text') {
-            notice_channel = key;
-            break;
-        }
-    }
+    // for (const [key, value] of client.channels.cache) {
+    //     if ((value as TextChannel).name === '一般' && value.type === 'text') {
+    //         notice_channel = key;
+    //         break;
+    //     }
+    // }
     console.log(client.user.tag + " \u3067\u30ED\u30B0\u30A4\u30F3");
 });
 // @ts-ignore
