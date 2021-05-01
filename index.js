@@ -47,7 +47,6 @@ var explain_1 = __importDefault(require("./orders/explain"));
 var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
-var logout_1 = __importDefault(require("./orders/logout"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
 var notice_channel = '';
@@ -70,24 +69,25 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
         parsed = functions_1.get_payload(message_text);
         if (msg.author.bot) {
             return [2 /*return*/];
-        }
-        else if (message_text === '!logout') {
-            logout_1.default(client, msg);
+            // } else if (message_text === '!logout') {
+            //     logout(client, msg);
         }
         else if (parsed.order === '!募集') {
-            recruit_1.default(client, msg);
+            functions_1.check_user_has_some_role(client, msg, recruit_1.default);
         }
         else if (parsed.order === '!説明') {
-            explain_1.default(client, msg);
+            functions_1.check_user_has_some_role(client, msg, explain_1.default);
         }
         else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
-            room_1.default(client, msg);
+            functions_1.check_user_has_some_role(client, msg, room_1.default);
         }
         else if (parsed.order === '!変更') {
             change_1.default(client, msg);
         }
         else if (parsed.order === '!削除') {
             wipe_1.default(client, msg);
+            // } else if (parsed.order === '!情報') { // デバッグ用
+            //     information(client, msg);
         }
         return [2 /*return*/];
     });

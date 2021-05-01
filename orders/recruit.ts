@@ -21,11 +21,19 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         }
 
         // @ts-ignore
+        const everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
+
+        // @ts-ignore
         const permissionOverwrites: Map<string, PermissionOverwrites> = recruit_category.permissionOverwrites;
         permissionOverwrites.set(`${msg.author.id}`, {
             id: msg.author.id,
             // @ts-ignore
             allow: ['MANAGE_CHANNELS'],
+        });
+        permissionOverwrites.set(everyoneRole!.id, {
+            id: everyoneRole!.id,
+            // @ts-ignore
+            deny: ['VIEW_CHANNEL'],
         });
 
         msg.guild!.channels.create(parsed.payload, {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_payload = void 0;
+exports.check_user_has_some_role = exports.get_payload = void 0;
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -17,3 +17,21 @@ var get_payload = function (s) {
     return { order: order, payload: payload };
 };
 exports.get_payload = get_payload;
+var check_user_has_some_role = function (client, msg, next) {
+    var not_everyone_role_found = false;
+    // @ts-ignore
+    msg.member.roles.cache.each(function (value) {
+        if (value.name !== '@everyone') {
+            not_everyone_role_found = true;
+        }
+    });
+    if (not_everyone_role_found) {
+        next(client, msg);
+    }
+    else {
+        // do nothing
+        console.error('user has no role(@everyone only)');
+        msg.channel.send("エラー: この機能を使用するにはいずれかの役職に就いている必要があります。").then();
+    }
+};
+exports.check_user_has_some_role = check_user_has_some_role;

@@ -1,4 +1,4 @@
-import Discord, {Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
+import Discord, {Channel, Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
 import {get_payload} from "../functions";
@@ -15,6 +15,9 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         return;
     }
 
+    // @ts-ignore
+    const everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
+
     let text_category_id = '';
     let voice_category_id = '';
     if (parsed.order === '!教室') {
@@ -25,7 +28,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         voice_category_id = category.voice_cp;
     }
 
-    client.channels.fetch(text_category_id, false, true).then(text_category => {
+    client.channels.fetch(text_category_id, false, true).then((text_category: Channel) => {
         if (!text_category) {
             msg.channel.send("テキストチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
@@ -37,6 +40,11 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             id: msg.author.id,
             // @ts-ignore
             allow: ['MANAGE_CHANNELS'],
+        });
+        permissionOverwrites.set(everyoneRole!.id, {
+            id: everyoneRole!.id,
+            // @ts-ignore
+            deny: ['VIEW_CHANNEL'],
         });
 
         msg.guild!.channels.create(channel_name, {
@@ -59,6 +67,11 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     id: msg.author.id,
                     // @ts-ignore
                     allow: ['MANAGE_CHANNELS'],
+                });
+                permissionOverwrites_v.set(everyoneRole!.id, {
+                    id: everyoneRole!.id,
+                    // @ts-ignore
+                    deny: ['VIEW_CHANNEL'],
                 });
 
                 msg.guild!.channels.create(channel_name, {

@@ -16,11 +16,18 @@ var func = function (client, msg) {
             return;
         }
         // @ts-ignore
+        var everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
+        // @ts-ignore
         var permissionOverwrites = recruit_category.permissionOverwrites;
         permissionOverwrites.set("" + msg.author.id, {
             id: msg.author.id,
             // @ts-ignore
             allow: ['MANAGE_CHANNELS'],
+        });
+        permissionOverwrites.set(everyoneRole.id, {
+            id: everyoneRole.id,
+            // @ts-ignore
+            deny: ['VIEW_CHANNEL'],
         });
         msg.guild.channels.create(parsed.payload, {
             type: 'text',

@@ -11,6 +11,8 @@ var func = function (client, msg) {
         msg.channel.send("教室名を指定してください。").then();
         return;
     }
+    // @ts-ignore
+    var everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
     var text_category_id = '';
     var voice_category_id = '';
     if (parsed.order === '!教室') {
@@ -33,6 +35,11 @@ var func = function (client, msg) {
             // @ts-ignore
             allow: ['MANAGE_CHANNELS'],
         });
+        permissionOverwrites.set(everyoneRole.id, {
+            id: everyoneRole.id,
+            // @ts-ignore
+            deny: ['VIEW_CHANNEL'],
+        });
         msg.guild.channels.create(channel_name, {
             type: 'text',
             parent: text_category_id,
@@ -51,6 +58,11 @@ var func = function (client, msg) {
                     id: msg.author.id,
                     // @ts-ignore
                     allow: ['MANAGE_CHANNELS'],
+                });
+                permissionOverwrites_v.set(everyoneRole.id, {
+                    id: everyoneRole.id,
+                    // @ts-ignore
+                    deny: ['VIEW_CHANNEL'],
                 });
                 msg.guild.channels.create(channel_name, {
                     type: 'voice',
