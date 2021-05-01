@@ -1,4 +1,4 @@
 "use strict";
-var token = 'hogehogefugafuga';
+const token = 'hogehogefugafuga';
 module.exports = token;
 
