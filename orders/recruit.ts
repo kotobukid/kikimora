@@ -1,16 +1,16 @@
-import Discord, {TextChannel} from 'discord.js';
+import Discord, {Message, PermissionOverwrites, TextChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
 import {get_payload} from "../functions";
 import {create_channel} from "../models";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 
-    client.channels.fetch(category.recruit, false, true).then(recruit_channel => {
+    client.channels.fetch(category.recruit, false, true).then(recruit_category => {
 
-        if (!recruit_channel) {
+        if (!recruit_category) {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
         }
@@ -20,17 +20,22 @@ const func = (client: KikimoraClient, msg: any) => {
             return;
         }
 
+        // @ts-ignore
+        const permissionOverwrites: Map<string, PermissionOverwrites> = recruit_category.permissionOverwrites;
+        permissionOverwrites.set(`${msg.author.id}`, {
+            id: msg.author.id,
+            // @ts-ignore
+            allow: ['MANAGE_CHANNELS'],
+        });
+
         msg.guild!.channels.create(parsed.payload, {
             type: 'text',
             parent: category.recruit,
-            permissionOverwrites: [
-                {
-                    id: msg.author.id,
-                    allow: ['MANAGE_CHANNELS'],
-                },
-            ]
+            // @ts-ignore
+            permissionOverwrites: permissionOverwrites,
+            topic: `作成者: ${msg.author.username}`
         }).then((ch: TextChannel) => {
-            ch.setTopic(`作成者: ${msg.author.username}`)
+
             ch.createInvite().then((invite: Discord.Invite) => {
                 create_channel({
                     owner: msg.author.id,
@@ -42,7 +47,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
                 }).catch(console.error);
             });
-        });
+        }).catch(console.error);
     });
 }
 

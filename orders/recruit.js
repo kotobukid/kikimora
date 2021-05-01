@@ -6,8 +6,8 @@ var models_1 = require("../models");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = functions_1.get_payload(message_text);
-    client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_channel) {
-        if (!recruit_channel) {
+    client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_category) {
+        if (!recruit_category) {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
         }
@@ -15,17 +15,20 @@ var func = function (client, msg) {
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
         }
+        // @ts-ignore
+        var permissionOverwrites = recruit_category.permissionOverwrites;
+        permissionOverwrites.set("" + msg.author.id, {
+            id: msg.author.id,
+            // @ts-ignore
+            allow: ['MANAGE_CHANNELS'],
+        });
         msg.guild.channels.create(parsed.payload, {
             type: 'text',
             parent: config_1.category.recruit,
-            permissionOverwrites: [
-                {
-                    id: msg.author.id,
-                    allow: ['MANAGE_CHANNELS'],
-                },
-            ]
+            // @ts-ignore
+            permissionOverwrites: permissionOverwrites,
+            topic: "\u4F5C\u6210\u8005: " + msg.author.username
         }).then(function (ch) {
-            ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
             ch.createInvite().then(function (invite) {
                 models_1.create_channel({
                     owner: msg.author.id,
@@ -37,7 +40,7 @@ var func = function (client, msg) {
                     msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
                 }).catch(console.error);
             });
-        });
+        }).catch(console.error);
     });
 };
 exports.default = func;
