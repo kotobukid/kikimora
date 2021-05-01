@@ -1,6 +1,6 @@
-import Discord, {Channel, Message, TextChannel, VoiceChannel} from 'discord.js';
+import Discord, {TextChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
-import {token, category} from "../config";
+import {category} from "../config";
 import {get_payload} from "../functions";
 import {create_channel} from "../models";
 

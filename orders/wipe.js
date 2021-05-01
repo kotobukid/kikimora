@@ -1,10 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var functions_1 = require("../functions");
 var models_1 = require("../models");
 var func = function (client, msg) {
-    var message_text = msg.content.trim();
-    var parsed = functions_1.get_payload(message_text);
     models_1.find_channel({
         owner: msg.author.id,
         text_channel: msg.channel.id,
