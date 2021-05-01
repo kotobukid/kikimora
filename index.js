@@ -40,42 +40,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = __importDefault(require("discord.js"));
-var process_1 = __importDefault(require("process"));
-var fs_1 = __importDefault(require("fs"));
+var config_1 = require("./config");
 var functions_1 = require("./functions");
-var models_1 = require("./models");
+var recruit_1 = __importDefault(require("./orders/recruit"));
+var explain_1 = __importDefault(require("./orders/explain"));
+var room_1 = __importDefault(require("./orders/room"));
+var change_1 = __importDefault(require("./orders/change"));
+var wipe_1 = __importDefault(require("./orders/wipe"));
+var logout_1 = __importDefault(require("./orders/logout"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
-var token = '';
-if (fs_1.default.existsSync('./config/secret.js')) {
-    token = require('./config/secret');
-    if (!token) {
-        console.error('secret.js empty.');
-        process_1.default.exit(1);
-    }
-}
-else {
-    console.error('./config/secret.js not found.');
-    process_1.default.exit(1);
-}
-var category = {
-    text: '',
-    voice: '',
-    recruit: '',
-    text_cp: '',
-    voice_cp: ''
-};
-if (fs_1.default.existsSync('./config/category.js')) {
-    category = require('./config/category');
-    if (!token) {
-        console.error('category.js empty.');
-        process_1.default.exit(1);
-    }
-}
-else {
-    console.error('./config/category.js not found.');
-    process_1.default.exit(1);
-}
 var notice_channel = '';
 client.on('ready', function () {
     // @ts-ignore
@@ -90,7 +64,7 @@ client.on('ready', function () {
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed, info_text, text_category, voice_category_1, channel_name_1, new_title_1;
+    var message_text, parsed;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
         parsed = functions_1.get_payload(message_text);
@@ -98,192 +72,25 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             return [2 /*return*/];
         }
         else if (message_text === '!logout') {
-            msg.channel.send("I'll be back").then();
-            console.log("I'll be back");
-            setTimeout(function () {
-                client.destroy();
-                process_1.default.exit();
-            }, 2500);
+            logout_1.default(client, msg);
         }
         else if (parsed.order === '!募集') {
-            client.channels.fetch(category.recruit, false, true).then(function (recruit_channel) {
-                if (!recruit_channel) {
-                    msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
-                    return;
-                }
-                if (parsed.payload.trim() === '') {
-                    msg.channel.send("募集チャンネルの名前を指定してください。").then();
-                    return;
-                }
-                msg.guild.channels.create(parsed.payload, {
-                    type: 'text',
-                    parent: category.recruit,
-                    permissionOverwrites: [
-                        {
-                            id: msg.author.id,
-                            allow: ['MANAGE_CHANNELS'],
-                        },
-                    ]
-                }).then(function (ch) {
-                    ch.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
-                    ch.createInvite().then(function (invite) {
-                        models_1.create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: parsed.payload,
-                            text_channel: "" + ch.id,
-                            voice_channel: ''
-                        }).then(function (ch_data) {
-                            msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
-                        }).catch(console.error);
-                    });
-                });
-            });
+            recruit_1.default(client, msg);
         }
         else if (parsed.order === '!説明') {
-            info_text = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
-                '** ● 募集を立てたいとき ● **\n' +
-                '> サーバー内のいずれかのテキストチャンネル内で`!募集 教室名`と発言してください。\n' +
-                '> 「学園掲示板A」カテゴリ内に新規の教室が作成されます。\n' +
-                '> 例）`!募集　1224 伝説の入り口（ARA2E）`\n\n' +
-                '** ● 教室を立てたいとき ● **\n' +
-                '> `!教室　教室名`と発言してください。\n' +
-                '> 「教室棟」「教室棟VC」カテゴリにそれぞれ教室が作成されます。\n' +
-                '> 例）`!教室 蛮族を駆逐せよ（SW2.5）`\n\n' +
-                '** ● キャンペーン用の教室を立てたいとき ● **\n' +
-                '> `!キャンペーン　教室名`と発言してください。\n' +
-                '> 「CP用教室棟」「CP用教室棟VC」カテゴリにそれぞれ新規の教室が作成されます。\n' +
-                '> 例）`!キャンペーン カムイ伝（シノビガミ）`\n\n' +
-                '** ● 教室名を変更したいとき ● **\n' +
-                '> 作成された教室(テキスト)内で、教室作成を行ったユーザーが`!変更 新しい教室名`と発言してください。\n' +
-                '> 例）`!変更 〆1224伝説の入り口`\n\n' +
-                '** ● 教室の削除を行いたいとき ● **\n' +
-                '> 作成された教室(テキスト)内で、教室作成を行ったユーザーが`!削除`と発言してください。\n\n' +
-                '※一つの教室に対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後に反映されたりすることがありますのでご注意ください。\n' +
-                '※教室の名前については、学園のルールに準拠するようにしてください。';
-            msg.channel.send(info_text);
+            explain_1.default(client, msg);
         }
         else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
-            text_category = '';
-            voice_category_1 = '';
-            if (parsed.order === '!教室') {
-                text_category = category.text;
-                voice_category_1 = category.voice;
-            }
-            else {
-                text_category = category.text_cp;
-                voice_category_1 = category.voice_cp;
-            }
-            channel_name_1 = parsed.payload;
-            msg.guild.channels.create(channel_name_1, {
-                type: 'text',
-                parent: text_category,
-                permissionOverwrites: [
-                    {
-                        id: msg.author.id,
-                        allow: ['MANAGE_CHANNELS'],
-                    },
-                ]
-            }).then(function (text_channel_created) {
-                text_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
-                msg.guild.channels.create(channel_name_1, {
-                    type: 'voice',
-                    parent: voice_category_1,
-                    permissionOverwrites: [
-                        {
-                            id: msg.author.id,
-                            allow: ['MANAGE_CHANNELS'],
-                        },
-                    ]
-                }).then(function (voice_channel_created) {
-                    voice_channel_created.setTopic("\u4F5C\u6210\u8005: " + msg.author.username);
-                    text_channel_created.createInvite().then(function (invite) {
-                        models_1.create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: parsed.payload,
-                            text_channel: "" + text_channel_created.id,
-                            voice_channel: "" + voice_channel_created.id
-                        }).then(function (ch_data) {
-                            msg.channel.send("\u6559\u5BA4\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
-                        }).catch(console.error);
-                    });
-                });
-            })
-                .catch(function (err) {
-                console.error(err);
-            });
+            room_1.default(client, msg);
         }
         else if (parsed.order === '!変更') {
-            new_title_1 = parsed.payload;
-            models_1.find_channel({
-                owner: msg.author.id,
-                text_channel: msg.channel.id,
-                is_deleted: false
-            }).then(function (channels) {
-                var _loop_1 = function (i) {
-                    client.channels.fetch(channels[i].text_channel, false, true).then(function (tc) {
-                        if (tc) {
-                            // @ts-ignore
-                            tc.setName(new_title_1, 'reason: test').then(function (_tc) {
-                                if (channels[i].voice_channel) {
-                                    client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
-                                        if (vc) {
-                                            // @ts-ignore
-                                            vc.setName(new_title_1).then(function () {
-                                                // @ts-ignore
-                                                channels[i].update({ channel_name: new_title_1 }).then();
-                                            });
-                                        }
-                                        else {
-                                            msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u300C" + new_title_1 + "\u300D\u306B\u5909\u66F4\u3057\u307E\u3057\u305F\u3002");
-                                        }
-                                    });
-                                }
-                            }).catch(console.error);
-                        }
-                    });
-                };
-                for (var i = 0; i < channels.length; i++) {
-                    _loop_1(i);
-                }
-            }).catch(function (err) {
-                console.error(err);
-            });
+            change_1.default(client, msg);
         }
         else if (parsed.order === '!削除') {
-            models_1.find_channel({
-                owner: msg.author.id,
-                text_channel: msg.channel.id,
-                is_deleted: false
-            }).then(function (channels) {
-                var _loop_2 = function (i) {
-                    client.channels.fetch(channels[i].text_channel, false, true).then(function (tc) {
-                        if (tc) {
-                            tc.delete().then(function (tc_deleted) {
-                                if (channels[i].voice_channel) {
-                                    client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
-                                        if (vc) {
-                                            vc.delete().then(function (vc_deleted) {
-                                                // @ts-ignore
-                                                channels[i].update({ is_deleted: true }).then();
-                                            });
-                                        }
-                                    }).catch(console.error);
-                                }
-                            });
-                        }
-                    }).catch(console.error);
-                };
-                for (var i = 0; i < channels.length; i++) {
-                    _loop_2(i);
-                }
-            }).catch(function (err) {
-                console.error(err);
-            });
+            wipe_1.default(client, msg);
         }
         return [2 /*return*/];
     });
 }); });
-client.login(token).then(function () {
+client.login(config_1.token).then(function () {
 });
