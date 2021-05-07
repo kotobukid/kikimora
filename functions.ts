@@ -35,7 +35,14 @@ const check_user_has_some_role = (client: Discord.Client & { channels: { cache: 
     }
 };
 
+function clone_flat_map<T>(source: T[]): T[] {
+    // permissionOverwritesは結局配列的な存在っぽい
+    // @ts-ignore
+    return source.concat([])
+}
+
 export {
+    clone_flat_map,
     get_payload,
     check_user_has_some_role
 }

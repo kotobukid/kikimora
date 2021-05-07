@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.check_user_has_some_role = exports.get_payload = void 0;
+exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -35,3 +35,9 @@ var check_user_has_some_role = function (client, msg, next) {
     }
 };
 exports.check_user_has_some_role = check_user_has_some_role;
+function clone_flat_map(source) {
+    // permissionOverwritesは結局配列的な存在っぽい
+    // @ts-ignore
+    return source.concat([]);
+}
+exports.clone_flat_map = clone_flat_map;

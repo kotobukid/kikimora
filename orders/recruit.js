@@ -6,6 +6,7 @@ var models_1 = require("../models");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = functions_1.get_payload(message_text);
+    // @ts-ignore
     client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_category) {
         if (!recruit_category) {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
@@ -18,7 +19,7 @@ var func = function (client, msg) {
         // @ts-ignore
         var everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
         // @ts-ignore
-        var permissionOverwrites = recruit_category.permissionOverwrites;
+        var permissionOverwrites = functions_1.clone_flat_map(recruit_category.permissionOverwrites);
         permissionOverwrites.set("" + msg.author.id, {
             id: msg.author.id,
             // @ts-ignore

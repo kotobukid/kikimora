@@ -29,7 +29,7 @@ var func = function (client, msg) {
             return;
         }
         // @ts-ignore
-        var permissionOverwrites = text_category.permissionOverwrites;
+        var permissionOverwrites = functions_1.clone_flat_map(text_category.permissionOverwrites);
         permissionOverwrites.set("" + msg.author.id, {
             id: msg.author.id,
             // @ts-ignore
@@ -53,7 +53,7 @@ var func = function (client, msg) {
                     return;
                 }
                 // @ts-ignore
-                var permissionOverwrites_v = voice_category.permissionOverwrites;
+                var permissionOverwrites_v = functions_1.clone_flat_map(voice_category.permissionOverwrites);
                 permissionOverwrites_v.set("" + msg.author.id, {
                     id: msg.author.id,
                     // @ts-ignore

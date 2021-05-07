@@ -1,7 +1,7 @@
 import Discord, {Channel, Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {get_payload} from "../functions";
+import {clone_flat_map, get_payload} from "../functions";
 import {create_channel} from "../models";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
@@ -35,7 +35,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         }
 
         // @ts-ignore
-        const permissionOverwrites: Map<string, PermissionOverwrites> = text_category.permissionOverwrites;
+        const permissionOverwrites: Map<string, PermissionOverwrites> = clone_flat_map(text_category.permissionOverwrites);
+
         permissionOverwrites.set(`${msg.author.id}`, {
             id: msg.author.id,
             // @ts-ignore
@@ -62,7 +63,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                 }
 
                 // @ts-ignore
-                const permissionOverwrites_v: Map<string, PermissionOverwrites> = voice_category.permissionOverwrites;
+                const permissionOverwrites_v: Map<string, PermissionOverwrites> = clone_flat_map(voice_category.permissionOverwrites);
+
                 permissionOverwrites_v.set(`${msg.author.id}`, {
                     id: msg.author.id,
                     // @ts-ignore
