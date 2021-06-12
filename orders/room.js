@@ -71,7 +71,7 @@ var func = function (client, msg) {
                     permissionOverwrites: permissionOverwrites_v,
                     topic: "\u4F5C\u6210\u8005: " + msg.author.username
                 }).then(function (voice_channel_created) {
-                    text_channel_created.createInvite().then(function (invite) {
+                    text_channel_created.createInvite({ maxAge: 86400 * 7 }).then(function (invite) {
                         models_1.create_channel({
                             owner: msg.author.id,
                             owner_name: msg.author.username,

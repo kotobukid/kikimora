@@ -84,7 +84,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     topic: `作成者: ${msg.author.username}`
                 }).then((voice_channel_created: VoiceChannel) => {
 
-                    text_channel_created.createInvite().then((invite: Discord.Invite) => {
+                    text_channel_created.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
                         create_channel({
                             owner: msg.author.id,
                             owner_name: msg.author.username,
