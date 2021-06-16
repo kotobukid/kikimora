@@ -40,7 +40,9 @@ const func = (client: KikimoraClient, msg: any) => {
                 '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
             ]
 
-            msg.channel.send(`招待状を作成したいチャンネルの番号にリアクションしてください。\n(60秒間有効)\n${cs.map(((c, index: number) => {
+            const over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました': '';
+
+            msg.channel.send(`招待状を作成したいチャンネルの番号にリアクションしてください。${over_limit_message}\n(60秒間有効)\n${cs.map(((c, index: number) => {
                 return `${emojis[index]} <#${c.id}>`;
             })).join('\n')}`).then((sent_message: Discord.Message) => {
 

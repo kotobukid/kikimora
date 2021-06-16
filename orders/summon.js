@@ -27,7 +27,8 @@ var func = function (client, msg) {
             var emojis_1 = [
                 '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
             ];
-            msg.channel.send("\u62DB\u5F85\u72B6\u3092\u4F5C\u6210\u3057\u305F\u3044\u30C1\u30E3\u30F3\u30CD\u30EB\u306E\u756A\u53F7\u306B\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002\n(60\u79D2\u9593\u6709\u52B9)\n" + cs_1.map((function (c, index) {
+            var over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
+            msg.channel.send("\u62DB\u5F85\u72B6\u3092\u4F5C\u6210\u3057\u305F\u3044\u30C1\u30E3\u30F3\u30CD\u30EB\u306E\u756A\u53F7\u306B\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002" + over_limit_message + "\n(60\u79D2\u9593\u6709\u52B9)\n" + cs_1.map((function (c, index) {
                 return emojis_1[index] + " <#" + c.id + ">";
             })).join('\n')).then(function (sent_message) {
                 reaction_check_information[sent_message.id] = {
