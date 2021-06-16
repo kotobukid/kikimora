@@ -20,6 +20,7 @@ var func = function (client, msg) {
         voice_category_id = config_1.category.voice;
     }
     else {
+        // キャンペーン
         text_category_id = config_1.category.text_cp;
         voice_category_id = config_1.category.voice_cp;
     }
@@ -80,6 +81,7 @@ var func = function (client, msg) {
                             voice_channel: "" + voice_channel_created.id
                         }).then(function (ch_data) {
                             msg.channel.send("\u6559\u5BA4\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
+                            // msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
                         }).catch(console.error);
                     });
                 });

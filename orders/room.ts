@@ -24,6 +24,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         text_category_id = category.text;
         voice_category_id = category.voice;
     } else {
+        // キャンペーン
         text_category_id = category.text_cp
         voice_category_id = category.voice_cp;
     }
@@ -93,6 +94,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                             voice_channel: `${voice_channel_created.id}`
                         }).then((ch_data) => {
                             msg.channel.send(`教室「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
+                            // msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
                         }).catch(console.error);
                     })
                 })

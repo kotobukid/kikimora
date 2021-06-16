@@ -7,7 +7,7 @@ var func = function (client, msg) {
     var parsed = functions_1.get_payload(message_text);
     client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_category) {
         // @ts-ignore
-        console.log(msg.guild);
+        console.log(msg);
         // @ts-ignore
         var everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
         console.log(everyoneRole);

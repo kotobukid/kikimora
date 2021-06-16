@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -47,6 +66,7 @@ var explain_1 = __importDefault(require("./orders/explain"));
 var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
+var summon_1 = __importStar(require("./orders/summon"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
 // let notice_channel: string = '';
@@ -83,6 +103,9 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
         else if (parsed.order === '!変更') {
             change_1.default(client, msg);
         }
+        else if (parsed.order === '!案内') {
+            summon_1.default(client, msg);
+        }
         else if (parsed.order === '!削除') {
             wipe_1.default(client, msg);
             // } else if (parsed.order === '!情報') { // デバッグ用
@@ -91,5 +114,8 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
         return [2 /*return*/];
     });
 }); });
+client.on('messageReactionAdd', function (reaction, user) {
+    summon_1.invite_reaction(reaction, user);
+});
 client.login(config_1.token).then(function () {
 });

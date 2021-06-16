@@ -11,7 +11,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
 
     client.channels.fetch(category.recruit, false, true).then(recruit_category => {
         // @ts-ignore
-        console.log(msg.guild)
+        console.log(msg)
         // @ts-ignore
         const everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
         console.log(everyoneRole);

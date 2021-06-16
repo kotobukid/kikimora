@@ -48,10 +48,15 @@ const create_channel = (source: ChannelSource): Promise<any> => {
     })
 }
 
-const find_channel = (condition: Record<string, any>): Promise<any> => {
+const find_channel = (condition: Record<string, any>, limit?: number | null): Promise<any> => {
+    if (!limit) {
+        limit = null;
+    }
+
     return new Promise((resolve, reject) => {
         db.channel.findAll({
-            where: condition
+            where: condition,
+            limit
         }).then((data: any[]) => {
             resolve(data)
         })
