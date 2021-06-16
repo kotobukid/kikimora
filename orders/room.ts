@@ -85,18 +85,15 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     topic: `作成者: ${msg.author.username}`
                 }).then((voice_channel_created: VoiceChannel) => {
 
-                    text_channel_created.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
-                        create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: parsed.payload,
-                            text_channel: `${text_channel_created.id}`,
-                            voice_channel: `${voice_channel_created.id}`
-                        }).then((ch_data) => {
-                            msg.channel.send(`教室「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
-                            // msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
-                        }).catch(console.error);
-                    })
+                    create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: parsed.payload,
+                        text_channel: `${text_channel_created.id}`,
+                        voice_channel: `${voice_channel_created.id}`
+                    }).then((ch_data) => {
+                        msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
+                    }).catch(console.error);
                 })
             });
         }).catch((err: Error) => {

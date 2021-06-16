@@ -54,7 +54,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     text_channel: `${ch.id}`,
                     voice_channel: ''
                 }).then((ch_data) => {
-                    msg.channel.send(`募集チャンネル「${parsed.payload}」を作成しました: https://discord.gg/${invite.code}`);
+                    msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`);
                 }).catch(console.error);
             });
         }).catch(console.error);

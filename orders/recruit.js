@@ -45,7 +45,7 @@ var func = function (client, msg) {
                     text_channel: "" + ch.id,
                     voice_channel: ''
                 }).then(function (ch_data) {
-                    msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
+                    msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C<#" + ch.id + ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002");
                 }).catch(console.error);
             });
         }).catch(console.error);

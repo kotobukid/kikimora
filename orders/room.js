@@ -72,18 +72,15 @@ var func = function (client, msg) {
                     permissionOverwrites: permissionOverwrites_v,
                     topic: "\u4F5C\u6210\u8005: " + msg.author.username
                 }).then(function (voice_channel_created) {
-                    text_channel_created.createInvite({ maxAge: 86400 * 7 }).then(function (invite) {
-                        models_1.create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: parsed.payload,
-                            text_channel: "" + text_channel_created.id,
-                            voice_channel: "" + voice_channel_created.id
-                        }).then(function (ch_data) {
-                            msg.channel.send("\u6559\u5BA4\u300C" + parsed.payload + "\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: https://discord.gg/" + invite.code);
-                            // msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
-                        }).catch(console.error);
-                    });
+                    models_1.create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: parsed.payload,
+                        text_channel: "" + text_channel_created.id,
+                        voice_channel: "" + voice_channel_created.id
+                    }).then(function (ch_data) {
+                        msg.channel.send("\u6559\u5BA4\u300C<#" + text_channel_created.id + ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002");
+                    }).catch(console.error);
                 });
             });
         }).catch(function (err) {
