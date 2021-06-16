@@ -34,7 +34,7 @@ var func = function (client, msg) {
         permissionOverwrites.set("" + msg.author.id, {
             id: msg.author.id,
             // @ts-ignore
-            allow: ['MANAGE_CHANNELS'],
+            allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
         });
         permissionOverwrites.set(everyoneRole.id, {
             id: everyoneRole.id,
@@ -58,7 +58,7 @@ var func = function (client, msg) {
                 permissionOverwrites_v.set("" + msg.author.id, {
                     id: msg.author.id,
                     // @ts-ignore
-                    allow: ['MANAGE_CHANNELS'],
+                    allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
                 });
                 permissionOverwrites_v.set(everyoneRole.id, {
                     id: everyoneRole.id,

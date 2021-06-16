@@ -41,7 +41,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         permissionOverwrites.set(`${msg.author.id}`, {
             id: msg.author.id,
             // @ts-ignore
-            allow: ['MANAGE_CHANNELS'],
+            allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
         });
         permissionOverwrites.set(everyoneRole!.id, {
             id: everyoneRole!.id,
@@ -69,7 +69,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                 permissionOverwrites_v.set(`${msg.author.id}`, {
                     id: msg.author.id,
                     // @ts-ignore
-                    allow: ['MANAGE_CHANNELS'],
+                    allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
                 });
                 permissionOverwrites_v.set(everyoneRole!.id, {
                     id: everyoneRole!.id,
