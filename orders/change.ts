@@ -25,14 +25,23 @@ const func = (client: KikimoraClient, msg: any) => {
                                     // @ts-ignore
                                     vc.setName(new_title).then(() => {
                                         // @ts-ignore
-                                        channels[i].update({channel_name: new_title}).then();
+                                        channels[i].update({channel_name: new_title}).then().catch((e: error) => {
+                                            console.error(e);
+                                        });
+                                        msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                     });
                                 } else {
-                                    msg.channel.send(`チャンネル名を「${new_title}」に変更しました。`);
+                                    msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                 }
+                            }).catch((e: Error) => {
+                                console.error(e);
+                                msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`);
                             });
                         }
-                    }).catch(console.error);
+                    }).catch((e: Error) => {
+                        console.error(e);
+                        msg.channel.send(`チャンネル名の変更に失敗しました。`);
+                    });
                 }
             });
         }
