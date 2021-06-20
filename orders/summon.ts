@@ -21,7 +21,7 @@ const invite_information: Record<message_id, RoomInfo> = {}
 const func = (client: KikimoraClient, msg: any) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
-    find_channel({owner: msg.author.id, is_deleted: 0}, 10).then((channels: ChannelSource[]) => {
+    find_channel({owner: msg.author.id, is_deleted: 0}, 10, true).then((channels: ChannelSource[]) => {
         if (channels.length === 0) {
             msg.channel.send('あなたの作成したチャンネルを見つけられませんでした。');
         } else if (channels.length === 1) {

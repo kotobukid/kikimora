@@ -8,7 +8,7 @@ var invite_information = {};
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = functions_1.get_payload(message_text);
-    models_1.find_channel({ owner: msg.author.id, is_deleted: 0 }, 10).then(function (channels) {
+    models_1.find_channel({ owner: msg.author.id, is_deleted: 0 }, 10, true).then(function (channels) {
         if (channels.length === 0) {
             msg.channel.send('あなたの作成したチャンネルを見つけられませんでした。');
         }

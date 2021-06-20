@@ -48,15 +48,21 @@ const create_channel = (source: ChannelSource): Promise<any> => {
     })
 }
 
-const find_channel = (condition: Record<string, any>, limit?: number | null): Promise<any> => {
+const find_channel = (condition: Record<string, any>, limit?: number | null, reverse?: boolean | null): Promise<any> => {
     if (!limit) {
         limit = null;
+    }
+
+    let order: [string, string][] | [][] = [];
+    if (reverse) {
+        order = [['id', 'DESC']]
     }
 
     return new Promise((resolve, reject) => {
         db.channel.findAll({
             where: condition,
-            limit
+            limit,
+            order
         }).then((data: any[]) => {
             resolve(data)
         })
