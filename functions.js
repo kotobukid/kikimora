@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
+exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -41,3 +41,7 @@ function clone_flat_map(source) {
     return source.concat([]);
 }
 exports.clone_flat_map = clone_flat_map;
+var date_to_string = function (d) {
+    return "" + d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+};
+exports.date_to_string = date_to_string;

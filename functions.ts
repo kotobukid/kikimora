@@ -41,8 +41,13 @@ function clone_flat_map<T>(source: T[]): T[] {
     return source.concat([])
 }
 
+const date_to_string = (d: Date) => {
+    return `${d.getFullYear()}${('0' + (d.getMonth() + 1)).slice(-2)}${('0' + d.getDate()).slice(-2)}`
+}
+
 export {
     clone_flat_map,
     get_payload,
-    check_user_has_some_role
+    check_user_has_some_role,
+    date_to_string
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+import {date_to_string} from "../functions";
+
 const fs = require('fs');
 const path = require('path');
 import Sequelize from "sequelize";
@@ -9,6 +11,8 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db: Record<string, any> = {};
 import {ChannelSource} from "./channel"
+import {SummonCache} from "./summon_cache"
+import {MessageRoom} from "./message_room";
 
 let sequelize: Sequelize.Sequelize;
 if (config.use_env_variable) {
@@ -69,6 +73,85 @@ const find_channel = (condition: Record<string, any>, limit?: number | null, rev
     })
 }
 
+declare type CreateSummonCacheOption = {
+    message: string,
+    owner: string,
+    reactions: Record<string, { text: string, voice: string }>,
+}
+
+const create_summon_cache = (info: CreateSummonCacheOption, next: Function): void => {
+    const today: Date = new Date()
+    today.setDate(today.getDate() + 30)
+    const expires: string = date_to_string(today)
+    for (const r in info.reactions) {
+        const cache = new db.summon_cache!()
+        cache.message = info.message
+        cache.owner = info.owner
+        cache.react_id = r
+        cache.text = info.reactions[r].text
+        cache.voice = info.reactions[r].voice
+        cache.expires_at = expires
+        cache.save();
+    }
+
+    next();
+}
+
+declare type FetchSummonTargetOption = {
+    message: string,
+    react: string,
+    owner: string
+}
+
+const fetch_summon_target = (info: FetchSummonTargetOption): Promise<SummonCache> => {
+    return new Promise((resolve, reject) => {
+        db.summon_cache.findOne({
+            where: {
+                message: info.message,
+                react_id: info.react,
+                owner: info.owner
+            },
+        }).then((data: SummonCache) => {
+            if (data) {
+                resolve(data)
+            } else {
+                reject()
+            }
+        })
+    })
+}
+
+declare type CreateMessageRoomOption = {
+    message: string,
+    text_channel: string,
+    voice_channel: string
+}
+
+const create_message_room = (source: CreateMessageRoomOption, next: Function) => {
+    const today: Date = new Date()
+    today.setDate(today.getDate() + 30)
+    const expires: string = date_to_string(today)
+
+    const mr = new db.message_room!()
+    mr.message = source.message
+    mr.text_channel = source.text_channel
+    mr.voice_channel = source.voice_channel
+    mr.expires = expires
+    mr.save()
+
+    next();
+}
+
+const fetch_message_room = (message: string, next: (mr: MessageRoom) => void) => {
+    db.message_room.findOne({
+        where: {
+            message: message
+        },
+    }).then((data: MessageRoom) => {
+        next(data);
+    })
+}
+
 db.Sequelize = Sequelize;
 export default db;
-export {create_channel, find_channel}
+export {create_channel, find_channel, create_summon_cache, fetch_summon_target, create_message_room, fetch_message_room}
