@@ -105,11 +105,18 @@ declare type FetchSummonTargetOption = {
 
 const fetch_summon_target = (info: FetchSummonTargetOption): Promise<SummonCache> => {
     return new Promise((resolve, reject) => {
+
+        const _expires: Date = new Date()
+        const expires: string = date_to_string(_expires)
+
         db.summon_cache.findOne({
             where: {
                 message: info.message,
                 react_id: info.react,
-                owner: info.owner
+                owner: info.owner,
+                expires_at: {
+                    [Sequelize.Op.gte]: expires
+                }
             },
         }).then((data: SummonCache) => {
             if (data) {
@@ -143,9 +150,15 @@ const create_message_room = (source: CreateMessageRoomOption, next: Function) =>
 }
 
 const fetch_message_room = (message: string, next: (mr: MessageRoom) => void) => {
+    const _expires: Date = new Date()
+    const expires: string = date_to_string(_expires)
+
     db.message_room.findOne({
         where: {
-            message: message
+            message: message,
+            expires: {
+                [Sequelize.Op.gte]: expires
+            }
         },
     }).then((data: MessageRoom) => {
         next(data);
