@@ -65,7 +65,7 @@ var recruit_1 = __importDefault(require("./orders/recruit"));
 var explain_1 = __importDefault(require("./orders/explain"));
 var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
-var wipe_1 = __importDefault(require("./orders/wipe"));
+var delete_1 = __importDefault(require("./orders/delete"));
 var summon_1 = __importStar(require("./orders/summon"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
@@ -107,7 +107,7 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
             summon_1.default(client, msg);
         }
         else if (parsed.order === '!削除') {
-            wipe_1.default(client, msg);
+            delete_1.default(client, msg);
             // } else if (parsed.order === '!情報') { // デバッグ用
             //     information(client, msg);
         }
