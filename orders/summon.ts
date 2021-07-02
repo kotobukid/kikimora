@@ -38,7 +38,7 @@ const func = (client: KikimoraClient, msg: any) => {
                 create_message_room({
                     message: sent_message.id,
                     text_channel: channels[0].text_channel,
-                    voice_channel: channels[0].voice_channel,
+                    voice_channel: channels[0].voice_channel || '',
                 }, () => {
                     try {
                         sent_message.react('✅');
@@ -46,7 +46,7 @@ const func = (client: KikimoraClient, msg: any) => {
                         console.error(e);
                     }
                 })
-            });
+            }).catch(console.error);
         } else {
             // 当該ユーザーが作成したチャンネルが複数ある
             const cs: { text: string, name: string, voice: string }[] = channels.map((ch: ChannelSource) => {

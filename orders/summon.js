@@ -17,7 +17,7 @@ var func = function (client, msg) {
                 models_1.create_message_room({
                     message: sent_message.id,
                     text_channel: channels[0].text_channel,
-                    voice_channel: channels[0].voice_channel,
+                    voice_channel: channels[0].voice_channel || '',
                 }, function () {
                     try {
                         sent_message.react('✅');
@@ -26,7 +26,7 @@ var func = function (client, msg) {
                         console.error(e);
                     }
                 });
-            });
+            }).catch(console.error);
         }
         else {
             // 当該ユーザーが作成したチャンネルが複数ある
