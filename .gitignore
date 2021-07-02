@@ -1,7 +1,6 @@
 /node_modules/
 /.idea/
 app.js
-/models/*.js
 *.sqlite
 /config/category.js
 /config/secret.js
