@@ -1,7 +1,7 @@
-import Discord, {Message, PermissionOverwrites, TextChannel} from 'discord.js';
+import Discord, {GuildCreateChannelOptions, Message, PermissionOverwrites, TextChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {clone_flat_map, get_payload} from "../functions";
+import {clone_flat_map, get_payload, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
@@ -38,7 +38,9 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             deny: ['VIEW_CHANNEL'],
         });
 
-        msg.guild!.channels.create(parsed.payload, {
+        const channel_name = sanitize_channel_name(parsed.payload);
+
+        msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'text'}>{
             type: 'text',
             parent: category.recruit,
             // @ts-ignore
@@ -50,7 +52,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                 create_channel({
                     owner: msg.author.id,
                     owner_name: msg.author.username,
-                    channel_name: parsed.payload,
+                    channel_name: channel_name,
                     text_channel: `${ch.id}`,
                     voice_channel: ''
                 }).then((ch_data) => {

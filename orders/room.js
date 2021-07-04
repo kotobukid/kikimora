@@ -6,7 +6,7 @@ var models_1 = require("../models");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = functions_1.get_payload(message_text);
-    var channel_name = parsed.payload;
+    var channel_name = functions_1.sanitize_channel_name(parsed.payload);
     if (channel_name.trim() === '') {
         msg.channel.send("教室名を指定してください。").then();
         return;

@@ -30,7 +30,8 @@ var func = function (client, msg) {
             // @ts-ignore
             deny: ['VIEW_CHANNEL'],
         });
-        msg.guild.channels.create(parsed.payload, {
+        var channel_name = functions_1.sanitize_channel_name(parsed.payload);
+        msg.guild.channels.create(channel_name, {
             type: 'text',
             parent: config_1.category.recruit,
             // @ts-ignore
@@ -41,7 +42,7 @@ var func = function (client, msg) {
                 models_1.create_channel({
                     owner: msg.author.id,
                     owner_name: msg.author.username,
-                    channel_name: parsed.payload,
+                    channel_name: channel_name,
                     text_channel: "" + ch.id,
                     voice_channel: ''
                 }).then(function (ch_data) {

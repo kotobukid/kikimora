@@ -1,14 +1,21 @@
-import Discord, {Channel, Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
+import Discord, {
+    Channel,
+    GuildCreateChannelOptions,
+    Message,
+    PermissionOverwrites,
+    TextChannel,
+    VoiceChannel
+} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {clone_flat_map, get_payload} from "../functions";
+import {clone_flat_map, get_payload, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 
-    const channel_name = parsed.payload;
+    const channel_name = sanitize_channel_name(parsed.payload);
 
     if (channel_name.trim() === '') {
         msg.channel.send("教室名を指定してください。").then();
@@ -49,7 +56,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             deny: ['VIEW_CHANNEL'],
         });
 
-        msg.guild!.channels.create(channel_name, {
+        msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'text'}>{
             type: 'text',
             parent: text_category_id,
             // @ts-ignore
@@ -77,7 +84,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     deny: ['VIEW_CHANNEL'],
                 });
 
-                msg.guild!.channels.create(channel_name, {
+                msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'voice'}>{
                     type: 'voice',
                     parent: voice_category_id,
                     // @ts-ignore

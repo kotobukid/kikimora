@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
+exports.sanitize_channel_name = exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -45,3 +45,10 @@ var date_to_string = function (d) {
     return "" + d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
 };
 exports.date_to_string = date_to_string;
+var sanitize_channel_name = function (name) {
+    return name.replace(/\[/g, '［')
+        .replace(/\]/g, '］')
+        .replace(/\(/g, '（')
+        .replace(/\)/g, '）');
+};
+exports.sanitize_channel_name = sanitize_channel_name;
