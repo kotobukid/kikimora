@@ -5,6 +5,7 @@ import _ from 'lodash';
 import async, {AsyncFunction} from 'async';
 
 const func = (client: KikimoraClient, msg: any) => {
+    msg.channel.send(`<@!${msg.author.id}>メンテナンスモードを開始します。`);
     find_channel({
         is_deleted: false
     }).then((channels: Channel []) => {
@@ -33,9 +34,9 @@ const func = (client: KikimoraClient, msg: any) => {
         async.series(funcs, (e: any, results: any[]): void => {
             const deleted: string[] = _.filter(results, r => r) as string[]
             if (deleted.length > 0) {
-                msg.channel.send(`<@!${msg.author.id}>削除済みチャンネルの状態をデータベースに反映させました。\n${deleted.join('\n')}`)
+                msg.channel.send(`<@!${msg.author.id}>削除済みチャンネルの状態をデータベースに反映させました。\n${deleted.join('\n')}\nメンテナンスモードを終了します。`)
             } else {
-                msg.channel.send(`<@!${msg.author.id}>処置の必要はありませんでした。`);
+                msg.channel.send(`<@!${msg.author.id}>処置の必要はありませんでした。メンテナンスモードを終了します。`);
             }
         });
     }).catch((err: Error) => {
