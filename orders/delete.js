@@ -21,6 +21,10 @@ var func = function (client, msg) {
                                 }
                             }).catch(console.error);
                         }
+                        else {
+                            // @ts-ignore
+                            channels[i].update({ is_deleted: true }).then();
+                        }
                     });
                 }
             }).catch(console.error);
