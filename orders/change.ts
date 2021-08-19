@@ -37,6 +37,8 @@ const func = (client: KikimoraClient, msg: any) => {
                                 console.error(e);
                                 msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`);
                             });
+                        } else {
+                            msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                         }
                     }).catch((e: Error) => {
                         console.error(e);

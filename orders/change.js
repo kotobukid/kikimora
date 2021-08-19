@@ -36,6 +36,9 @@ var func = function (client, msg) {
                                 msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#" + channels[i].text_channel + ">\n\u30DC\u30A4\u30B9\u30C1\u30E3\u30F3\u30CD\u30EB\u3092\u307F\u3064\u3051\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002");
                             });
                         }
+                        else {
+                            msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#" + channels[i].text_channel + ">");
+                        }
                     }).catch(function (e) {
                         console.error(e);
                         msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u306E\u5909\u66F4\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002");
