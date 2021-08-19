@@ -155,7 +155,7 @@ var invite_reaction = function (reaction, user) {
                     voice_channel: mr.voice_channel
                 }, user.id, function (result) {
                     if (result) {
-                        reaction.message.channel.send("<@!" + user.id + ">\u306B\u300C<#" + mr.text_channel + ">\u300D\u3078\u306E\u5165\u5BA4\u6A29\u9650\u3092\u4ED8\u4E0E\u3057\u307E\u3057\u305F\u3002");
+                        reaction.message.channel.send("<@!" + user.id + "> \u306B\u300C<#" + mr.text_channel + ">\u300D\u3078\u306E\u5165\u5BA4\u6A29\u9650\u3092\u4ED8\u4E0E\u3057\u307E\u3057\u305F\u3002");
                     }
                 });
             }

@@ -184,7 +184,7 @@ const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User |
                     voice_channel: mr.voice_channel
                 }, user.id, (result: boolean) => {
                     if (result) {
-                        reaction.message.channel.send(`<@!${user.id}>に「<#${mr.text_channel}>」への入室権限を付与しました。`);
+                        reaction.message.channel.send(`<@!${user.id}> に「<#${mr.text_channel}>」への入室権限を付与しました。`);
                     }
                 });
             }
