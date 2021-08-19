@@ -15,7 +15,7 @@ var func = function (client, msg) {
             client.channels.fetch(channels[i].text_channel, false, true).then(function (tc) {
                 if (tc) {
                     // @ts-ignore
-                    tc.setName(new_title, 'reason: test').then(function (_tc) {
+                    tc.setName(new_title, "reason: kikimora order from " + msg.author.username).then(function (_tc) {
                         if (channels[i].voice_channel) {
                             client.channels.fetch(channels[i].voice_channel, false, true).then(function (vc) {
                                 if (vc) {
