@@ -28,21 +28,21 @@ const func = (client: KikimoraClient, msg: any) => {
                                         channels[i].update({channel_name: new_title}).then().catch((e: error) => {
                                             console.error(e);
                                         });
-                                        msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
+                                        msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                     });
                                 } else {
-                                    msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
+                                    msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                 }
                             }).catch((e: Error) => {
                                 console.error(e);
-                                msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`);
+                                msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`);
                             });
                         } else {
-                            msg.channel.send(`チャンネル名を変更しました。<#${channels[i].text_channel}>`);
+                            msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                         }
                     }).catch((e: Error) => {
                         console.error(e);
-                        msg.channel.send(`チャンネル名の変更に失敗しました。`);
+                        msg.channel.send(`<@!${msg.author.id}> チャンネル名の変更に失敗しました。`);
                     });
                 }
             });
