@@ -21,8 +21,14 @@ const func = (client: KikimoraClient, msg: any) => {
                                         // @ts-ignore
                                         channels[i].update({is_deleted: true}).then();
                                     });
+                                } else {
+                                    // @ts-ignore
+                                    channels[i].update({is_deleted: true}).then();
                                 }
-                            }).catch(console.error);
+                            }).catch(() => {
+                                // @ts-ignore
+                                channels[i].update({is_deleted: true}).then();
+                            });
                         } else {
                             // @ts-ignore
                             channels[i].update({is_deleted: true}).then();
