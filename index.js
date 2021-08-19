@@ -107,7 +107,7 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
         else if (parsed.order === '!案内') {
             summon_1.default(client, msg);
         }
-        else if (parsed.order === '!!掃除') {
+        else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
             wipe_1.default(client, msg);
         }
         else if (parsed.order === '!削除') {

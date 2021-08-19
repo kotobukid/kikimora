@@ -52,7 +52,7 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
         change(client, msg);
     } else if (parsed.order === '!案内') {
         summon(client, msg);
-    } else if (parsed.order === '!!掃除') {
+    } else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
         wipe(client, msg);
     } else if (parsed.order === '!削除') {
         _delete(client, msg);
