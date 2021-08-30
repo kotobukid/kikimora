@@ -67,6 +67,7 @@ var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
 var delete_1 = __importDefault(require("./orders/delete"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
+var close_1 = __importDefault(require("./orders/close"));
 var summon_1 = __importStar(require("./orders/summon"));
 // @ts-ignore
 var client = new discord_js_1.default.Client();
@@ -106,6 +107,9 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
         }
         else if (parsed.order === '!案内') {
             summon_1.default(client, msg);
+        }
+        else if (parsed.order === '!〆' || parsed.order === '!しめ') {
+            close_1.default(client, msg);
         }
         else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
             wipe_1.default(client, msg);

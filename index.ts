@@ -7,6 +7,7 @@ import room from './orders/room';
 import change from './orders/change';
 import _delete from './orders/delete';
 import wipe from './orders/wipe';
+import close from './orders/close';
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
 import information from './orders/information';
@@ -52,6 +53,8 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
         change(client, msg);
     } else if (parsed.order === '!案内') {
         summon(client, msg);
+    } else if (parsed.order === '!〆' || parsed.order === '!しめ') {
+        close(client, msg);
     } else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
         wipe(client, msg);
     } else if (parsed.order === '!削除') {
