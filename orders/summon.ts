@@ -8,7 +8,7 @@ import {
     find_channel
 } from "../models";
 import {ChannelSource} from "../models/channel";
-import Discord, {PermissionOverwrites} from "discord.js";
+import Discord, {Message, PermissionOverwrites} from "discord.js";
 import {SummonCache} from "../models/summon_cache";
 import {MessageRoom} from "../models/message_room";
 
@@ -138,18 +138,20 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
 };
 
 const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: ChannelSource) => {
-    message.channel.send(`「<#${sc.text}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
-        create_message_room({
-            message: sent_message.id,
-            text_channel: sc.text,
-            voice_channel: sc.voice
-        }, () => {
-            try {
-                sent_message.react('✅');
-            } catch (e) {
-                console.error(e);
-            }
-        })
+    message.delete().then((message_deleted: Message) => {
+        message.channel.send(`「<#${sc.text}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
+            create_message_room({
+                message: sent_message.id,
+                text_channel: sc.text,
+                voice_channel: sc.voice
+            }, () => {
+                try {
+                    sent_message.react('✅');
+                } catch (e) {
+                    console.error(e);
+                }
+            })
+        });
     });
 }
 

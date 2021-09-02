@@ -111,18 +111,20 @@ var add_user_as_channel_controller = function (channels, room_info, user_id, nex
     }
 };
 var suggest_invite = function (message, sc, channel) {
-    message.channel.send("\u300C<#" + sc.text + ">\u300D\u306B\u53C2\u52A0\u3057\u305F\u3044\u4EBA\u306F\u2705\u3067\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002\n(30\u65E5\u9593\u6709\u52B9)").then(function (sent_message) {
-        models_1.create_message_room({
-            message: sent_message.id,
-            text_channel: sc.text,
-            voice_channel: sc.voice
-        }, function () {
-            try {
-                sent_message.react('✅');
-            }
-            catch (e) {
-                console.error(e);
-            }
+    message.delete().then(function (message_deleted) {
+        message.channel.send("\u300C<#" + sc.text + ">\u300D\u306B\u53C2\u52A0\u3057\u305F\u3044\u4EBA\u306F\u2705\u3067\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002\n(30\u65E5\u9593\u6709\u52B9)").then(function (sent_message) {
+            models_1.create_message_room({
+                message: sent_message.id,
+                text_channel: sc.text,
+                voice_channel: sc.voice
+            }, function () {
+                try {
+                    sent_message.react('✅');
+                }
+                catch (e) {
+                    console.error(e);
+                }
+            });
         });
     });
 };
