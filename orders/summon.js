@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.invite_reaction = void 0;
 var functions_1 = require("../functions");
 var models_1 = require("../models");
+var async_1 = __importDefault(require("async"));
+var lodash_1 = __importDefault(require("lodash"));
 var reaction_check_information = {};
 var func = function (client, msg) {
     var message_text = msg.content.trim();
@@ -30,48 +35,89 @@ var func = function (client, msg) {
         }
         else {
             // 当該ユーザーが作成したチャンネルが複数ある
-            var cs_1 = channels.map(function (ch) {
-                return {
-                    text: ch.text_channel,
-                    voice: ch.voice_channel || '',
-                    name: ch.channel_name
-                };
-            });
-            var emojis_1 = [
-                '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
-            ];
-            var over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
-            var reactions_1 = {};
-            var mapping = cs_1.map((function (c, index) {
-                reactions_1[emojis_1[index]] = { text: c.text, voice: c.voice };
-                return emojis_1[index] + " <#" + c.text + ">";
-            })).join('\n');
-            msg.channel.send("<@!" + msg.author.id + "> \u62DB\u5F85\u72B6\u3092\u4F5C\u6210\u3057\u305F\u3044\u30C1\u30E3\u30F3\u30CD\u30EB\u306E\u756A\u53F7\u306B\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002" + over_limit_message + "\n(30\u65E5\u9593\u6709\u52B9)\n" + mapping).then(function (sent_message) {
-                models_1.create_summon_cache({
-                    owner: msg.author.id,
-                    reactions: reactions_1,
-                    message: sent_message.id
-                }, function () {
-                    var _loop_1 = function (i) {
-                        if (i < emojis_1.length) {
-                            setTimeout(function () {
-                                try {
-                                    sent_message.react(emojis_1[i]);
-                                }
-                                catch (e) {
-                                    console.error(e);
-                                }
-                            }, (1 + i) * 16);
+            var async_funcs = channels.map(function (ch) {
+                return function (done) {
+                    // @ts-ignore
+                    client.channels.fetch(ch.text_channel, false, true).then(function (text_channel) {
+                        if (text_channel) {
+                            if (text_channel.parentID) {
+                                // @ts-ignore
+                                client.channels.fetch(text_channel.parentID).then(function (category) {
+                                    done(null, {
+                                        text_name: text_channel.name,
+                                        text_id: ch.text_channel,
+                                        voice_id: ch.voice_channel || '',
+                                        category_name: category.name,
+                                    });
+                                });
+                            }
+                            else {
+                                // カテゴリーに所属していないチャンネル
+                                done(null, {
+                                    text_name: text_channel.name,
+                                    text_id: ch.text_channel,
+                                    voice_id: ch.voice_channel || '',
+                                    category_name: '',
+                                });
+                            }
                         }
                         else {
-                            return "break";
+                            done(null, null);
                         }
-                    };
-                    for (var i = 0; i < cs_1.length; i++) {
-                        var state_1 = _loop_1(i);
-                        if (state_1 === "break")
-                            break;
+                    }).catch(function (e) {
+                        done(null, null); // エラーはここでは無視
+                    });
+                };
+            });
+            // @ts-ignore
+            async_1.default.series(async_funcs, function (err, _cs) {
+                if (err) {
+                    throw err;
+                }
+                var emojis = [
+                    '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
+                ];
+                var over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
+                var reactions = {};
+                var cs = lodash_1.default.filter(_cs, function (__cs) {
+                    return !!__cs;
+                });
+                var mapping = lodash_1.default.filter(_cs.map((function (c, index) {
+                    if (!!c) {
+                        reactions[emojis[index]] = { text: c.text_id, voice: c.voice_id, category_name: c.category_name };
+                        return emojis[index] + " " + c.category_name + " <#" + c.text_id + ">";
                     }
+                    else {
+                        return '';
+                    }
+                }))).join('\n');
+                msg.channel.send("<@!" + msg.author.id + "> \u62DB\u5F85\u72B6\u3092\u4F5C\u6210\u3057\u305F\u3044\u30C1\u30E3\u30F3\u30CD\u30EB\u306E\u756A\u53F7\u306B\u30EA\u30A2\u30AF\u30B7\u30E7\u30F3\u3057\u3066\u304F\u3060\u3055\u3044\u3002" + over_limit_message + "\n(30\u65E5\u9593\u6709\u52B9)\n" + mapping).then(function (sent_message) {
+                    models_1.create_summon_cache({
+                        owner: msg.author.id,
+                        reactions: reactions,
+                        message: sent_message.id
+                    }, function () {
+                        var _loop_1 = function (i) {
+                            if (i < emojis.length) {
+                                setTimeout(function () {
+                                    try {
+                                        sent_message.react(emojis[i]);
+                                    }
+                                    catch (e) {
+                                        console.error(e);
+                                    }
+                                }, (1 + i) * 16);
+                            }
+                            else {
+                                return "break";
+                            }
+                        };
+                        for (var i = 0; i < cs.length; i++) {
+                            var state_1 = _loop_1(i);
+                            if (state_1 === "break")
+                                break;
+                        }
+                    });
                 });
             });
         }

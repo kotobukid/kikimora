@@ -8,9 +8,17 @@ import {
     find_channel
 } from "../models";
 import {ChannelSource} from "../models/channel";
-import Discord, {Message, PermissionOverwrites} from "discord.js";
+import Discord, {
+    Message,
+    PermissionOverwrites,
+    CategoryChannel,
+    TextChannel,
+    DiscordAPIError
+} from "discord.js";
 import {SummonCache} from "../models/summon_cache";
 import {MessageRoom} from "../models/message_room";
+import async, {AsyncFunction} from 'async';
+import _ from 'lodash';
 
 declare type RoomInfo = {
     text_channel: string,
@@ -49,47 +57,92 @@ const func = (client: KikimoraClient, msg: any) => {
             }).catch(console.error);
         } else {
             // 当該ユーザーが作成したチャンネルが複数ある
-            const cs: { text: string, name: string, voice: string }[] = channels.map((ch: ChannelSource) => {
-                return {
-                    text: ch.text_channel,
-                    voice: ch.voice_channel || '',
-                    name: ch.channel_name
-                }
-            })
-
-            const emojis: string[] = [
-                '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
-            ]
-
-            const over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
-
-            const reactions: Record<string, { text: string, voice: string }> = {};
-
-            const mapping: string = cs.map(((c, index: number) => {
-                reactions[emojis[index]] = {text: c.text, voice: c.voice};
-                return `${emojis[index]} <#${c.text}>`;
-            })).join('\n')
-
-            msg.channel.send(`<@!${msg.author.id}> 招待状を作成したいチャンネルの番号にリアクションしてください。${over_limit_message}\n(30日間有効)\n${mapping}`).then((sent_message: Discord.Message) => {
-                create_summon_cache({
-                    owner: msg.author.id,
-                    reactions: reactions,
-                    message: sent_message.id
-                }, () => {
-
-                    for (let i: number = 0; i < cs.length; i++) {
-                        if (i < emojis.length) {
-                            setTimeout(() => {
-                                try {
-                                    sent_message.react(emojis[i])
-                                } catch (e) {
-                                    console.error(e);
-                                }
-                            }, (1 + i) * 16)
+            const async_funcs: Array<AsyncFunction<unknown, Error>> = channels.map((ch: ChannelSource) => {
+                return (done: Function) => {
+                    // @ts-ignore
+                    client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel) => {
+                        if (text_channel) {
+                            if (text_channel.parentID) {
+                                // @ts-ignore
+                                client.channels.fetch(text_channel.parentID).then((category: CategoryChannel) => {
+                                    done(null, {
+                                        text_name: text_channel.name,
+                                        text_id: ch.text_channel,
+                                        voice_id: ch.voice_channel || '',
+                                        category_name: category.name,
+                                    });
+                                });
+                            } else {
+                                // カテゴリーに所属していないチャンネル
+                                done(null, {
+                                    text_name: text_channel.name,
+                                    text_id: ch.text_channel,
+                                    voice_id: ch.voice_channel || '',
+                                    category_name: '',
+                                });
+                            }
                         } else {
-                            break;
+                            done(null, null);
                         }
+                    }).catch((e: DiscordAPIError) => {
+                        done(null, null);   // エラーはここでは無視
+                    });
+                }
+            });
+
+            // @ts-ignore
+            async.series(async_funcs, (err: Error | undefined, _cs: ({
+                text_name: string,
+                text_id: string,
+                voice_id: string,
+                category_name: string,
+            } | null)[]) => {
+                if (err) {
+                    throw err;
+                }
+
+                const emojis: string[] = [
+                    '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
+                ]
+
+                const over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
+
+                const reactions: Record<string, { text: string, voice: string, category_name: string }> = {};
+
+                const cs = _.filter(_cs, (__cs) => {
+                    return !!__cs;
+                });
+
+                const mapping: string = _.filter(_cs.map(((c, index: number) => {
+                    if (!!c) {
+                        reactions[emojis[index]] = {text: c.text_id, voice: c.voice_id, category_name: c.category_name};
+                        return `${emojis[index]} ${c.category_name} <#${c.text_id}>`;
+                    } else {
+                        return '';
                     }
+                }))).join('\n');
+
+                msg.channel.send(`<@!${msg.author.id}> 招待状を作成したいチャンネルの番号にリアクションしてください。${over_limit_message}\n(30日間有効)\n${mapping}`).then((sent_message: Discord.Message) => {
+                    create_summon_cache({
+                        owner: msg.author.id,
+                        reactions: reactions,
+                        message: sent_message.id
+                    }, () => {
+
+                        for (let i: number = 0; i < cs.length; i++) {
+                            if (i < emojis.length) {
+                                setTimeout(() => {
+                                    try {
+                                        sent_message.react(emojis[i])
+                                    } catch (e) {
+                                        console.error(e);
+                                    }
+                                }, (1 + i) * 16)
+                            } else {
+                                break;
+                            }
+                        }
+                    });
                 });
             });
         }
