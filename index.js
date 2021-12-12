@@ -83,7 +83,7 @@ client.on('ready', function () {
     console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
 });
 // @ts-ignore
-client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
+client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
     var message_text, parsed;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();

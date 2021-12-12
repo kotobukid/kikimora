@@ -34,7 +34,7 @@ client.on('ready', () => {
 
 
 // @ts-ignore
-client.on('message', async (msg: Message & { channel: { name: string } }) => {
+client.on('messageCreate', async (msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
 
     const parsed = get_payload(message_text);

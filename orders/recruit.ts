@@ -1,4 +1,4 @@
-import Discord, {GuildChannelCreateOptions, Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
+import Discord, {GuildChannelCreateOptions, Message, PermissionOverwriteManager, TextChannel, VoiceChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
 import {clone_flat_map, get_payload, sanitize_channel_name} from "../functions";
@@ -9,7 +9,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
     const parsed = get_payload(message_text);
 
     // @ts-ignore
-    client.channels.fetch(category.recruit, false, true).then((recruit_category: Discord.Channel & { permissionOverwrites: Map<string, PermissionOverwrites> }) => {
+    client.channels.fetch(category.recruit, false, true).then((recruit_category: Discord.Channel & { permissionOverwrites: Map<string, PermissionOverwriteManager> }) => {
 
         if (!recruit_category) {
             msg.channel.send("募集用カテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
