@@ -15,12 +15,12 @@ const func = (client: KikimoraClient, msg: any) => {
         is_deleted: false
     }).then((channels: ChannelSource []) => {
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel, false, true).then((tc) => {
+            client.channels.fetch(channels[i].text_channel, {allowUnknownGuild: true}).then((tc) => {
                 if (tc) {
                     // @ts-ignore
                     tc.setName(new_title, `reason: kikimora order from ${msg.author.username}`).then((_tc) => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel, {allowUnknownGuild: true}).then(vc => {
                                 if (vc) {
                                     // @ts-ignore
                                     vc.setName(new_title).then(() => {

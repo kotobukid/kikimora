@@ -13,7 +13,7 @@ import Discord, {
     PermissionOverwrites,
     CategoryChannel,
     TextChannel,
-    DiscordAPIError
+    DiscordAPIError, PartialMessage
 } from "discord.js";
 import {SummonCache} from "../models/summon_cache";
 import {MessageRoom} from "../models/message_room";
@@ -62,7 +62,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     // @ts-ignore
                     client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel) => {
                         if (text_channel) {
-                            if (text_channel.parentID) {
+                            if (text_channel.parentId) {
                                 // @ts-ignore
                                 client.channels.fetch(text_channel.parentID).then((category: CategoryChannel) => {
                                     done(null, {
@@ -150,7 +150,7 @@ const func = (client: KikimoraClient, msg: any) => {
 }
 
 const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, room_info: RoomInfo, user_id: string, next: (result: boolean) => void) => {
-    const t_c: Discord.GuildChannel | null = channels.resolve(room_info.text_channel);
+    const t_c: Discord.GuildChannel | Discord.ThreadChannel | null = channels.resolve(room_info.text_channel);
     if (t_c == null) {
         next(false);
     } else {
@@ -167,7 +167,7 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
         // @ts-ignore
         t_c.overwritePermissions(permissionOverwrites_v);
 
-        const v_c: Discord.GuildChannel | null = channels.resolve(room_info.voice_channel);
+        const v_c: Discord.GuildChannel | Discord.ThreadChannel | null = channels.resolve(room_info.voice_channel);
 
         if (v_c == null) {
             next(true);
@@ -190,7 +190,7 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
 
 };
 
-const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: ChannelSource) => {
+const suggest_invite = (message: Message | PartialMessage | Message<boolean>, sc: SummonCache, channel?: ChannelSource) => {
     message.delete().then((message_deleted: Message) => {
         message.channel.send(`「<#${sc.text}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
             create_message_room({
@@ -208,7 +208,7 @@ const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: Cha
     });
 }
 
-const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {
+const invite_reaction = (reaction: Discord.MessageReaction | Discord.PartialMessageReaction, user: Discord.User | Discord.PartialUser) => {
     if (user.bot) {
         return;
     }
@@ -224,7 +224,7 @@ const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User |
         react: reaction.emoji.name,
         owner: user.id
     }).then((sc: SummonCache) => {
-        const c: Discord.GuildChannel | null = reaction.message.guild!.channels.resolve(sc.text);
+        const c: Discord.GuildChannel | Discord.ThreadChannel | null = reaction.message.guild!.channels.resolve(sc.text);
         if (!c) {
             console.log('channel not found 1')
             return;

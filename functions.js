@@ -36,13 +36,14 @@ var check_user_has_some_role = function (client, msg, next) {
 };
 exports.check_user_has_some_role = check_user_has_some_role;
 function clone_flat_map(source) {
+    // console.log(source)
     // permissionOverwritesは結局配列的な存在っぽい
     // @ts-ignore
     return source.concat([]);
 }
 exports.clone_flat_map = clone_flat_map;
 var date_to_string = function (d) {
-    return "" + d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+    return "".concat(d.getFullYear()).concat(('0' + (d.getMonth() + 1)).slice(-2)).concat(('0' + d.getDate()).slice(-2));
 };
 exports.date_to_string = date_to_string;
 var sanitize_channel_name = function (name) {

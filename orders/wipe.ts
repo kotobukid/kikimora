@@ -11,7 +11,7 @@ const func = (client: KikimoraClient, msg: any) => {
     }).then((channels: Channel []) => {
         const funcs: AsyncFunction<unknown, Error>[] = _.map(channels, (ch: Channel) => {
             return (done: Function) => {
-                client.channels.fetch(ch.text_channel, false, true).then(tc => {
+                client.channels.fetch(ch.text_channel, {allowUnknownGuild: true}).then(tc => {
                     done(null, null);
                 }).catch((e: Error) => {
                     find_channel({

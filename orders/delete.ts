@@ -11,11 +11,11 @@ const func = (client: KikimoraClient, msg: any) => {
         is_deleted: false
     }).then((channels: ChannelSource []) => {
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel, false, true).then(tc => {
+            client.channels.fetch(channels[i].text_channel, {allowUnknownGuild: true}).then(tc => {
                 if (tc) {
                     tc.delete().then((tc_deleted: Channel) => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel, {allowUnknownGuild: true}).then(vc => {
                                 if (vc) {
                                     vc.delete().then((vc_deleted: Channel) => {
                                         // @ts-ignore

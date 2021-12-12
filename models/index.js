@@ -68,7 +68,7 @@ exports.find_channel = find_channel;
 var create_summon_cache = function (info, next) {
     var today = new Date();
     today.setDate(today.getDate() + 30);
-    var expires = functions_1.date_to_string(today);
+    var expires = (0, functions_1.date_to_string)(today);
     for (var r in info.reactions) {
         var cache = new db.summon_cache();
         cache.message = info.message;
@@ -86,7 +86,7 @@ var fetch_summon_target = function (info) {
     return new Promise(function (resolve, reject) {
         var _a;
         var _expires = new Date();
-        var expires = functions_1.date_to_string(_expires);
+        var expires = (0, functions_1.date_to_string)(_expires);
         db.summon_cache.findOne({
             where: {
                 message: info.message,
@@ -110,7 +110,7 @@ exports.fetch_summon_target = fetch_summon_target;
 var create_message_room = function (source, next) {
     var today = new Date();
     today.setDate(today.getDate() + 30);
-    var expires = functions_1.date_to_string(today);
+    var expires = (0, functions_1.date_to_string)(today);
     var mr = new db.message_room();
     mr.message = source.message;
     mr.text_channel = source.text_channel;
@@ -123,7 +123,7 @@ exports.create_message_room = create_message_room;
 var fetch_message_room = function (message, next) {
     var _a;
     var _expires = new Date();
-    var expires = functions_1.date_to_string(_expires);
+    var expires = (0, functions_1.date_to_string)(_expires);
     db.message_room.findOne({
         where: {
             message: message,

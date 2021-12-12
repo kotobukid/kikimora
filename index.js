@@ -70,7 +70,7 @@ var wipe_1 = __importDefault(require("./orders/wipe"));
 var close_1 = __importDefault(require("./orders/close"));
 var summon_1 = __importStar(require("./orders/summon"));
 // @ts-ignore
-var client = new discord_js_1.default.Client();
+var client = new discord_js_1.default.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 // let notice_channel: string = '';
 client.on('ready', function () {
     // @ts-ignore
@@ -80,42 +80,42 @@ client.on('ready', function () {
     //         break;
     //     }
     // }
-    console.log(client.user.tag + " \u3067\u30ED\u30B0\u30A4\u30F3");
+    console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
 });
 // @ts-ignore
 client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
     var message_text, parsed;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
-        parsed = functions_1.get_payload(message_text);
+        parsed = (0, functions_1.get_payload)(message_text);
         if (msg.author.bot) {
             return [2 /*return*/];
             // } else if (message_text === '!logout') {
             //     logout(client, msg);
         }
         else if (parsed.order === '!募集') {
-            functions_1.check_user_has_some_role(client, msg, recruit_1.default);
+            (0, functions_1.check_user_has_some_role)(client, msg, recruit_1.default);
         }
         else if (parsed.order === '!説明') {
-            functions_1.check_user_has_some_role(client, msg, explain_1.default);
+            (0, functions_1.check_user_has_some_role)(client, msg, explain_1.default);
         }
         else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
-            functions_1.check_user_has_some_role(client, msg, room_1.default);
+            (0, functions_1.check_user_has_some_role)(client, msg, room_1.default);
         }
         else if (parsed.order === '!変更') {
-            change_1.default(client, msg);
+            (0, change_1.default)(client, msg);
         }
         else if (parsed.order === '!案内') {
-            summon_1.default(client, msg);
+            (0, summon_1.default)(client, msg);
         }
         else if (parsed.order === '!〆' || parsed.order === '!しめ') {
-            close_1.default(client, msg);
+            (0, close_1.default)(client, msg);
         }
         else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
-            wipe_1.default(client, msg);
+            (0, wipe_1.default)(client, msg);
         }
         else if (parsed.order === '!削除') {
-            delete_1.default(client, msg);
+            (0, delete_1.default)(client, msg);
             // } else if (parsed.order === '!情報') { // デバッグ用
             //     information(client, msg);
         }
@@ -123,7 +123,7 @@ client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, f
     });
 }); });
 client.on('messageReactionAdd', function (reaction, user) {
-    summon_1.invite_reaction(reaction, user);
+    (0, summon_1.invite_reaction)(reaction, user);
 });
 client.login(config_1.token).then(function () {
 });

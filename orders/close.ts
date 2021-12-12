@@ -2,7 +2,7 @@ import {KikimoraClient} from "../types";
 import {get_payload} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
-import {Channel} from "discord.js";
+import {Channel, TextChannel, VoiceChannel} from "discord.js";
 
 const func = (client: KikimoraClient, msg: any) => {
     const message_text = msg.content.trim();
@@ -16,7 +16,7 @@ const func = (client: KikimoraClient, msg: any) => {
         is_deleted: false
     }).then((channels: ChannelSource []) => {
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel, false, true).then((tc: Channel) => {
+            client.channels.fetch(channels[i].text_channel, {allowUnknownGuild: true}).then((tc: Channel | null) => {
                 if (tc) {
                     // @ts-ignore
                     const name: string = tc.name;
@@ -30,7 +30,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     // @ts-ignore
                     tc.setName(new_title).then(() => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel, {allowUnknownGuild: true}).then(vc => {
                                 if (vc) {
                                     // @ts-ignore
                                     vc.setName(new_title).then(() => {

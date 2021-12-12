@@ -103,7 +103,7 @@ declare type FetchSummonTargetOption = {
     owner: string
 }
 
-const fetch_summon_target = (info: FetchSummonTargetOption): Promise<SummonCache> => {
+const fetch_summon_target = (info: { owner: string; react: string | null; message: string }): Promise<SummonCache> => {
     return new Promise((resolve, reject) => {
 
         const _expires: Date = new Date()

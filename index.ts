@@ -16,7 +16,7 @@ import {find_channel} from "./models";
 import {ChannelSource} from "./models/channel";
 
 // @ts-ignore
-const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client();
+const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 // let notice_channel: string = '';
 
@@ -64,7 +64,7 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
     }
 });
 
-client.on('messageReactionAdd', (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {
+client.on('messageReactionAdd', (reaction: Discord.MessageReaction | Discord.PartialMessageReaction, user: Discord.User | Discord.PartialUser) => {
     invite_reaction(reaction, user);
 });
 

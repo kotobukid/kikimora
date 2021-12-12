@@ -1,4 +1,4 @@
-import Discord, {GuildCreateChannelOptions, Message, PermissionOverwrites, TextChannel} from 'discord.js';
+import Discord, {GuildChannelCreateOptions, Message, PermissionOverwrites, TextChannel, VoiceChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
 import {clone_flat_map, get_payload, sanitize_channel_name} from "../functions";
@@ -24,6 +24,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         // @ts-ignore
         const everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
 
+        console.log(recruit_category.permissionOverwrites);
         // @ts-ignore
         const permissionOverwrites: Map<string, PermissionOverwrites> = clone_flat_map(recruit_category.permissionOverwrites);
 
@@ -40,13 +41,13 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
 
         const channel_name = sanitize_channel_name(parsed.payload);
 
-        msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'text'}>{
+        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'text'}>{
             type: 'text',
             parent: category.recruit,
             // @ts-ignore
             permissionOverwrites: permissionOverwrites,
             topic: `作成者: ${msg.author.username}`
-        }).then((ch: TextChannel) => {
+        }).then((ch: TextChannel | VoiceChannel) => {
 
             ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
                 create_channel({
