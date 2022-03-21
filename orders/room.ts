@@ -1,6 +1,6 @@
 import Discord, {
     Channel,
-    GuildCreateChannelOptions,
+    GuildChannelCreateOptions,
     Message,
     PermissionOverwrites,
     TextChannel,
@@ -36,7 +36,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         voice_category_id = category.voice_cp;
     }
 
-    client.channels.fetch(text_category_id, false, true).then((text_category: Channel) => {
+    // @ts-ignore
+    client.channels.fetch(text_category_id).then((text_category: Channel) => {
         if (!text_category) {
             msg.channel.send("テキストチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
@@ -56,15 +57,16 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             deny: ['VIEW_CHANNEL'],
         });
 
-        msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'text'}>{
+        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'text'}>{
             type: 'text',
             parent: text_category_id,
             // @ts-ignore
             permissionOverwrites: permissionOverwrites,
             topic: `作成者: ${msg.author.username}`
+            // @ts-ignore
         }).then((text_channel_created: TextChannel) => {
 
-            client.channels.fetch(voice_category_id, false, true).then(voice_category => {
+            client.channels.fetch(voice_category_id).then(voice_category => {
                 if (!voice_category) {
                     msg.channel.send("ボイスチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
                     return;
@@ -84,12 +86,13 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     deny: ['VIEW_CHANNEL'],
                 });
 
-                msg.guild!.channels.create(channel_name, <GuildCreateChannelOptions & {type: 'voice'}>{
+                msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'voice'}>{
                     type: 'voice',
                     parent: voice_category_id,
                     // @ts-ignore
                     permissionOverwrites: permissionOverwrites_v,
                     topic: `作成者: ${msg.author.username}`
+                    // @ts-ignore
                 }).then((voice_channel_created: VoiceChannel) => {
 
                     create_channel({

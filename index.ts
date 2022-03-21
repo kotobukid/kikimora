@@ -1,4 +1,4 @@
-import Discord, {CollectorFilter, Message, TextChannel} from 'discord.js';
+import Discord, {CollectorFilter, Message, TextChannel, Intents} from 'discord.js';
 import {token} from "./config";
 import {check_user_has_some_role, get_payload} from './functions'
 import recruit from './orders/recruit';
@@ -16,7 +16,7 @@ import {find_channel} from "./models";
 import {ChannelSource} from "./models/channel";
 
 // @ts-ignore
-const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client();
+const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 
 // let notice_channel: string = '';
 
@@ -34,11 +34,11 @@ client.on('ready', () => {
 
 
 // @ts-ignore
-client.on('message', async (msg: Message & { channel: { name: string } }) => {
+client.on('messageCreate', async (msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
 
     const parsed = get_payload(message_text);
-
+    console.log(msg);
     if (msg.author.bot) {
         return;
         // } else if (message_text === '!logout') {
@@ -64,6 +64,8 @@ client.on('message', async (msg: Message & { channel: { name: string } }) => {
     }
 });
 
+
+// @ts-ignore
 client.on('messageReactionAdd', (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {
     invite_reaction(reaction, user);
 });

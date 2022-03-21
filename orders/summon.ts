@@ -62,7 +62,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     // @ts-ignore
                     client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel) => {
                         if (text_channel) {
-                            if (text_channel.parentID) {
+                            if (text_channel.parentId) {
                                 // @ts-ignore
                                 client.channels.fetch(text_channel.parentID).then((category: CategoryChannel) => {
                                     done(null, {
@@ -150,6 +150,7 @@ const func = (client: KikimoraClient, msg: any) => {
 }
 
 const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, room_info: RoomInfo, user_id: string, next: (result: boolean) => void) => {
+    // @ts-ignore
     const t_c: Discord.GuildChannel | null = channels.resolve(room_info.text_channel);
     if (t_c == null) {
         next(false);
@@ -167,6 +168,7 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
         // @ts-ignore
         t_c.overwritePermissions(permissionOverwrites_v);
 
+        // @ts-ignore
         const v_c: Discord.GuildChannel | null = channels.resolve(room_info.voice_channel);
 
         if (v_c == null) {
@@ -219,16 +221,19 @@ const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User |
         return;
     }
 
+    // @ts-ignore
     fetch_summon_target({
         message: reaction.message.id,
-        react: reaction.emoji.name,
+        react: reaction.emoji.name || '',
         owner: user.id
     }).then((sc: SummonCache) => {
+        // @ts-ignore
         const c: Discord.GuildChannel | null = reaction.message.guild!.channels.resolve(sc.text);
         if (!c) {
             console.log('channel not found 1')
             return;
         }
+        // @ts-ignore
         suggest_invite(reaction.message, sc);
     }).catch(() => {
         // ☑が押された時

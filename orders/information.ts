@@ -9,7 +9,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 
-    client.channels.fetch(category.recruit, false, true).then(recruit_category => {
+    client.channels.fetch(category.recruit).then(recruit_category => {
         // @ts-ignore
         console.log(msg)
         // @ts-ignore

@@ -35,7 +35,12 @@ const check_user_has_some_role = (client: Discord.Client & { channels: { cache: 
     }
 };
 
+function clone_dict<T>(source: T):T {
+    return {...source};
+}
+
 function clone_flat_map<T>(source: T[]): T[] {
+    console.log(source)
     // permissionOverwritesは結局配列的な存在っぽい
     // @ts-ignore
     return source.concat([])
@@ -54,6 +59,7 @@ const sanitize_channel_name = (name: string): string => {
 
 export {
     clone_flat_map,
+    clone_dict,
     get_payload,
     check_user_has_some_role,
     date_to_string,

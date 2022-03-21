@@ -16,7 +16,8 @@ const func = (client: KikimoraClient, msg: any) => {
         is_deleted: false
     }).then((channels: ChannelSource []) => {
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel, false, true).then((tc: Channel) => {
+            // @ts-ignore
+            client.channels.fetch(channels[i].text_channel).then((tc: Channel) => {
                 if (tc) {
                     // @ts-ignore
                     const name: string = tc.name;
@@ -30,7 +31,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     // @ts-ignore
                     tc.setName(new_title).then(() => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel, false, true).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel).then(vc => {
                                 if (vc) {
                                     // @ts-ignore
                                     vc.setName(new_title).then(() => {
