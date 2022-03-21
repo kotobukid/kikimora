@@ -20,7 +20,8 @@ const client: Discord.Client & { channels: { cache: Record<string, any> } } = ne
 
 // let notice_channel: string = '';
 
-client.on('ready', () => {
+
+client.once('ready', async () => {
     // @ts-ignore
     // for (const [key, value] of client.channels.cache) {
     //     if ((value as TextChannel).name === '一般' && value.type === 'text') {
@@ -29,9 +30,31 @@ client.on('ready', () => {
     //     }
     // }
 
+    // const data = [{
+    //     name: '募集',
+    //     description: '募集チャンネルを作成します'
+    // }];
+    // await client.application.commands.set(data, '823168292045717525');
     console.log(`${client.user!.tag} でログイン`);
 });
 
+// client.on("interactionCreate", async (interaction) => {
+//     if (!interaction.isCommand()) {
+//         return;
+//     }
+//
+//     console.log(interaction);
+//
+//     if (interaction.commandName === '募集') {
+//         // const message = await interaction.fetchReply();
+//         // console.log({message});
+//         check_user_has_some_role(client, message, (client, message) => {
+//             recruit(client, message);
+//             interaction.reply('応答');
+//             // await interaction.reply('応答');
+//         });
+//     }
+// });
 
 // @ts-ignore
 client.on('messageCreate', async (msg: Message & { channel: { name: string } }) => {
