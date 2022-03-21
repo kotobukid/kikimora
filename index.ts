@@ -34,7 +34,7 @@ client.once('ready', async () => {
     //     name: '募集',
     //     description: '募集チャンネルを作成します'
     // }];
-    // await client.application.commands.set(data, '823168292045717525');
+    // await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 });
 
