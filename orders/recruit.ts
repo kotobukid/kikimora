@@ -25,38 +25,38 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
 
         const everyoneRole = msg.guild!.roles.everyone;
 
-            const permissionSettings: any[] = [
-                {
-                    id: everyoneRole.id,
-                    allow: ['VIEW_CHANNEL'],
-                },
-                {
-                    id: msg.author.id,
-                    allow: ['MANAGE_CHANNELS']
-                }
-            ];
+        const permissionSettings: any[] = [
+            {
+                id: everyoneRole.id,
+                allow: ['VIEW_CHANNEL'],
+            },
+            {
+                id: msg.author.id,
+                allow: ['MANAGE_CHANNELS']
+            }
+        ];
 
+        // @ts-ignore
+        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
+            type: 'text',
+            parent: category.recruit,
+            permissionOverwrites: permissionSettings,
+            topic: `作成者: ${msg.author.username}`
             // @ts-ignore
-            msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
-                type: 'text',
-                parent: category.recruit,
-                permissionOverwrites: permissionSettings,
-                topic: `作成者: ${msg.author.username}`
-                // @ts-ignore
-            }).then((ch: TextChannel) => {
+        }).then((ch: TextChannel) => {
 
-                ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
-                    create_channel({
-                        owner: msg.author.id,
-                        owner_name: msg.author.username,
-                        channel_name: channel_name,
-                        text_channel: `${ch.id}`,
-                        voice_channel: ''
-                    }).then((ch_data) => {
-                        msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`);
-                    }).catch(console.error);
-                });
+            ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
+                create_channel({
+                    owner: msg.author.id,
+                    owner_name: msg.author.username,
+                    channel_name: channel_name,
+                    text_channel: `${ch.id}`,
+                    voice_channel: ''
+                }).then((ch_data) => {
+                    msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`);
+                }).catch(console.error);
             });
+        });
     });
 }
 

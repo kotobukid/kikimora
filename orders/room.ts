@@ -57,7 +57,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             deny: ['VIEW_CHANNEL'],
         });
 
-        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'text'}>{
+        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
             type: 'text',
             parent: text_category_id,
             // @ts-ignore
@@ -86,7 +86,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                     deny: ['VIEW_CHANNEL'],
                 });
 
-                msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'voice'}>{
+                msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'voice' }>{
                     type: 'voice',
                     parent: voice_category_id,
                     // @ts-ignore
