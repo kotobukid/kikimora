@@ -1,7 +1,7 @@
 import Discord, {GuildChannelCreateOptions, Message, PermissionOverwrites, TextChannel} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {clone_flat_map, clone_dict, get_payload, sanitize_channel_name} from "../functions";
+import {get_payload, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
@@ -21,46 +21,42 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             return;
         }
 
-        // @ts-ignore
-        const everyoneRole = msg.guild.roles.cache.get(msg.guild.id);
+        let channel_name = sanitize_channel_name(parsed.payload);
 
-        // @ts-ignore
-        const permissionOverwrites: Map<string, PermissionOverwrites> = clone_dict(recruit_category.permissionOverwrites);
+        const everyoneRole = msg.guild!.roles.everyone;
 
-        permissionOverwrites.set(`${msg.author.id}`, {
-            id: msg.author.id,
+            const permissionSettings: any[] = [
+                {
+                    id: everyoneRole.id,
+                    allow: ['VIEW_CHANNEL'],
+                },
+                {
+                    id: msg.author.id,
+                    allow: ['MANAGE_CHANNELS']
+                }
+            ];
+
             // @ts-ignore
-            allow: ['MANAGE_CHANNELS'],
-        });
-        permissionOverwrites.set(everyoneRole!.id, {
-            id: everyoneRole!.id,
-            // @ts-ignore
-            deny: ['VIEW_CHANNEL'],
-        });
+            msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
+                type: 'text',
+                parent: category.recruit,
+                permissionOverwrites: permissionSettings,
+                topic: `作成者: ${msg.author.username}`
+                // @ts-ignore
+            }).then((ch: TextChannel) => {
 
-        const channel_name = sanitize_channel_name(parsed.payload);
-
-        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & {type: 'text'}>{
-            type: 'text',
-            parent: category.recruit,
-            // @ts-ignore
-            permissionOverwrites: permissionOverwrites,
-            topic: `作成者: ${msg.author.username}`
-            // @ts-ignore
-        }).then((ch: TextChannel) => {
-
-            ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
-                create_channel({
-                    owner: msg.author.id,
-                    owner_name: msg.author.username,
-                    channel_name: channel_name,
-                    text_channel: `${ch.id}`,
-                    voice_channel: ''
-                }).then((ch_data) => {
-                    msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`);
-                }).catch(console.error);
+                ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
+                    create_channel({
+                        owner: msg.author.id,
+                        owner_name: msg.author.username,
+                        channel_name: channel_name,
+                        text_channel: `${ch.id}`,
+                        voice_channel: ''
+                    }).then((ch_data) => {
+                        msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`);
+                    }).catch(console.error);
+                });
             });
-        }).catch(console.error);
     });
 }
 

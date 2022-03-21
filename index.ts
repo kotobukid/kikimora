@@ -38,7 +38,7 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
     const message_text = msg.content.trim();
 
     const parsed = get_payload(message_text);
-    console.log(msg);
+    // console.log(msg);
     if (msg.author.bot) {
         return;
         // } else if (message_text === '!logout') {
