@@ -13,3 +13,19 @@ models_1.default.channel.sync({
     console.log(models_1.default);
     // return models.Sequelize.close()
 });
+models_1.default.message_room.sync({
+    force: true,
+    logging: console.log,
+})
+    .then(function () {
+    console.log(models_1.default);
+    // return models.Sequelize.close()
+});
+models_1.default.summon_cache.sync({
+    force: true,
+    logging: console.log,
+})
+    .then(function () {
+    console.log(models_1.default);
+    // return models.Sequelize.close()
+});

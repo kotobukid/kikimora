@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -58,72 +62,108 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var discord_js_1 = __importDefault(require("discord.js"));
+var discord_js_1 = __importStar(require("discord.js"));
 var config_1 = require("./config");
 var functions_1 = require("./functions");
 var recruit_1 = __importDefault(require("./orders/recruit"));
 var explain_1 = __importDefault(require("./orders/explain"));
-var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
 var delete_1 = __importDefault(require("./orders/delete"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
 var close_1 = __importDefault(require("./orders/close"));
 var summon_1 = __importStar(require("./orders/summon"));
+var logout_1 = __importDefault(require("./orders/logout"));
 // @ts-ignore
-var client = new discord_js_1.default.Client();
+var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES] });
 // let notice_channel: string = '';
-client.on('ready', function () {
-    // @ts-ignore
-    // for (const [key, value] of client.channels.cache) {
-    //     if ((value as TextChannel).name === '一般' && value.type === 'text') {
-    //         notice_channel = key;
-    //         break;
-    //     }
-    // }
-    console.log(client.user.tag + " \u3067\u30ED\u30B0\u30A4\u30F3");
-});
+client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
+    var data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                data = [{
+                        name: 'recruit',
+                        description: '募集チャンネルを作成します!',
+                        options: [{
+                                type: "STRING",
+                                name: "input",
+                                description: "The input to echo back",
+                                required: true
+                            }],
+                    }];
+                // @ts-ignore
+                return [4 /*yield*/, client.application.commands.set(data, '')];
+            case 1:
+                // @ts-ignore
+                _a.sent();
+                console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
+                return [2 /*return*/];
+        }
+    });
+}); });
+client.on("interactionCreate", function (interaction) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (!interaction.isCommand()) {
+            return [2 /*return*/];
+        }
+        console.log(interaction);
+        if (interaction.commandName === 'recruit') {
+            // const message = await interaction.fetchReply();
+            // console.log({message});
+            // check_user_has_some_role(client, interaction, (client, message) => {
+            //     recruit(client, message);
+            //     interaction.reply('応答');
+            //     // await interaction.reply('応答');
+            // });
+        }
+        return [2 /*return*/];
+    });
+}); });
 // @ts-ignore
-client.on('message', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
+client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
     var message_text, parsed;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
-        parsed = functions_1.get_payload(message_text);
+        parsed = (0, functions_1.get_payload)(message_text);
+        // console.log(msg);
         if (msg.author.bot) {
             return [2 /*return*/];
-            // } else if (message_text === '!logout') {
-            //     logout(client, msg);
+        }
+        else if (message_text === '!logout') {
+            (0, logout_1.default)(client, msg);
         }
         else if (parsed.order === '!募集') {
-            functions_1.check_user_has_some_role(client, msg, recruit_1.default);
+            (0, functions_1.check_user_has_some_role)(client, msg, recruit_1.default);
         }
         else if (parsed.order === '!説明') {
-            functions_1.check_user_has_some_role(client, msg, explain_1.default);
+            (0, functions_1.check_user_has_some_role)(client, msg, explain_1.default);
         }
         else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
-            functions_1.check_user_has_some_role(client, msg, room_1.default);
+            // check_user_has_some_role(client, msg, room);
         }
         else if (parsed.order === '!変更') {
-            change_1.default(client, msg);
+            (0, change_1.default)(client, msg);
         }
         else if (parsed.order === '!案内') {
-            summon_1.default(client, msg);
+            (0, summon_1.default)(client, msg);
         }
         else if (parsed.order === '!〆' || parsed.order === '!しめ') {
-            close_1.default(client, msg);
+            (0, close_1.default)(client, msg);
         }
         else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
-            wipe_1.default(client, msg);
+            (0, wipe_1.default)(client, msg);
         }
         else if (parsed.order === '!削除') {
-            delete_1.default(client, msg);
+            (0, delete_1.default)(client, msg);
             // } else if (parsed.order === '!情報') { // デバッグ用
             //     information(client, msg);
         }
         return [2 /*return*/];
     });
 }); });
+// @ts-ignore
 client.on('messageReactionAdd', function (reaction, user) {
-    summon_1.invite_reaction(reaction, user);
+    (0, summon_1.invite_reaction)(reaction, user);
 });
 client.login(config_1.token).then(function () {
 });

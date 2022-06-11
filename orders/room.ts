@@ -8,7 +8,7 @@ import Discord, {
 } from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {clone_flat_map, get_payload, sanitize_channel_name} from "../functions";
+import {clone_flat_map, get_payload, sanitize_channel_name, clone_dict} from "../functions";
 import {create_channel} from "../models";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
@@ -42,73 +42,83 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             msg.channel.send("テキストチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
             return;
         }
+        //
+        //
+        // text_category.permissionOverwrites.create(everyoneRole.id, {VIEW_CHANNEL: true}).then((p: PermissionOverwrites) => {
+        //     console.log({p});
+        // })
+        return;
 
-        // @ts-ignore
-        const permissionOverwrites: Map<string, PermissionOverwrites> = clone_flat_map(text_category.permissionOverwrites);
 
-        permissionOverwrites.set(`${msg.author.id}`, {
-            id: msg.author.id,
-            // @ts-ignore
-            allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
-        });
-        permissionOverwrites.set(everyoneRole!.id, {
-            id: everyoneRole!.id,
-            // @ts-ignore
-            deny: ['VIEW_CHANNEL'],
-        });
-
-        msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
-            type: 'text',
-            parent: text_category_id,
-            // @ts-ignore
-            permissionOverwrites: permissionOverwrites,
-            topic: `作成者: ${msg.author.username}`
-            // @ts-ignore
-        }).then((text_channel_created: TextChannel) => {
-
-            client.channels.fetch(voice_category_id).then(voice_category => {
-                if (!voice_category) {
-                    msg.channel.send("ボイスチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
-                    return;
-                }
-
-                // @ts-ignore
-                const permissionOverwrites_v: Map<string, PermissionOverwrites> = clone_flat_map(voice_category.permissionOverwrites);
-
-                permissionOverwrites_v.set(`${msg.author.id}`, {
-                    id: msg.author.id,
-                    // @ts-ignore
-                    allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
-                });
-                permissionOverwrites_v.set(everyoneRole!.id, {
-                    id: everyoneRole!.id,
-                    // @ts-ignore
-                    deny: ['VIEW_CHANNEL'],
-                });
-
-                msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'voice' }>{
-                    type: 'voice',
-                    parent: voice_category_id,
-                    // @ts-ignore
-                    permissionOverwrites: permissionOverwrites_v,
-                    topic: `作成者: ${msg.author.username}`
-                    // @ts-ignore
-                }).then((voice_channel_created: VoiceChannel) => {
-
-                    create_channel({
-                        owner: msg.author.id,
-                        owner_name: msg.author.username,
-                        channel_name: parsed.payload,
-                        text_channel: `${text_channel_created.id}`,
-                        voice_channel: `${voice_channel_created.id}`
-                    }).then((ch_data) => {
-                        msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
-                    }).catch(console.error);
-                })
-            });
-        }).catch((err: Error) => {
-            console.error(err);
-        });
+        // // @ts-ignore
+        // const permissionOverwrites: Map<string, PermissionOverwrites> = clone_dict(text_category.permissionOverwrites);
+        // console.log(permissionOverwrites)
+        // // const permissionOverwrites: any[] = [];
+        //
+        // permissionOverwrites.push({
+        //     id: msg.author.id,
+        //     // @ts-ignore
+        //     allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
+        // });
+        // permissionOverwrites.push({
+        //     id: everyoneRole!.id,
+        //     // @ts-ignore
+        //     deny: ['VIEW_CHANNEL'],
+        // });
+        //
+        // msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
+        //     type: 'text',
+        //     parent: text_category_id,
+        //     // @ts-ignore
+        //     permissionOverwrites: permissionOverwrites,
+        //     topic: `作成者: ${msg.author.username}`
+        //     // @ts-ignore
+        // }).then((text_channel_created: TextChannel) => {
+        //
+        //     client.channels.fetch(voice_category_id).then(voice_category => {
+        //         if (!voice_category) {
+        //             msg.channel.send("ボイスチャンネルカテゴリの特定に失敗しました。botの管理者に連絡してください。").then();
+        //             return;
+        //         }
+        //
+        //         // @ts-ignore
+        //         // const permissionOverwrites_v: Map<string, PermissionOverwrites> = clone_flat_map(voice_category.permissionOverwrites);
+        //         const permissionOverwrites_v: any[] = [];
+        //
+        //         permissionOverwrites_v.push({
+        //             id: msg.author.id,
+        //             // @ts-ignore
+        //             allow: ['VIEW_CHANNEL', 'MANAGE_CHANNELS'],
+        //         });
+        //         permissionOverwrites_v.push({
+        //             id: everyoneRole!.id,
+        //             // @ts-ignore
+        //             deny: ['VIEW_CHANNEL'],
+        //         });
+        //
+        //         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'voice' }>{
+        //             type: 'voice',
+        //             parent: voice_category_id,
+        //             // @ts-ignore
+        //             permissionOverwrites: permissionOverwrites_v,
+        //             topic: `作成者: ${msg.author.username}`
+        //             // @ts-ignore
+        //         }).then((voice_channel_created: VoiceChannel) => {
+        //
+        //             create_channel({
+        //                 owner: msg.author.id,
+        //                 owner_name: msg.author.username,
+        //                 channel_name: parsed.payload,
+        //                 text_channel: `${text_channel_created.id}`,
+        //                 voice_channel: `${voice_channel_created.id}`
+        //             }).then((ch_data) => {
+        //                 msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
+        //             }).catch(console.error);
+        //         })
+        //     });
+        // }).catch((err: Error) => {
+        //     console.error(err);
+        // });
     });
 };
 

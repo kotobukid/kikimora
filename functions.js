@@ -1,6 +1,17 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sanitize_channel_name = exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_flat_map = void 0;
+exports.sanitize_channel_name = exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_dict = exports.clone_flat_map = void 0;
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -35,14 +46,19 @@ var check_user_has_some_role = function (client, msg, next) {
     }
 };
 exports.check_user_has_some_role = check_user_has_some_role;
+function clone_dict(source) {
+    return __assign({}, source);
+}
+exports.clone_dict = clone_dict;
 function clone_flat_map(source) {
+    console.log(source);
     // permissionOverwritesは結局配列的な存在っぽい
     // @ts-ignore
     return source.concat([]);
 }
 exports.clone_flat_map = clone_flat_map;
 var date_to_string = function (d) {
-    return "" + d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+    return "".concat(d.getFullYear()).concat(('0' + (d.getMonth() + 1)).slice(-2)).concat(('0' + d.getDate()).slice(-2));
 };
 exports.date_to_string = date_to_string;
 var sanitize_channel_name = function (name) {

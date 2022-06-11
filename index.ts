@@ -22,39 +22,38 @@ const client: Discord.Client & { channels: { cache: Record<string, any> } } = ne
 
 
 client.once('ready', async () => {
+    const data = [{
+        name: 'recruit',
+        description: '募集チャンネルを作成します!',
+         options: [{
+            type: "STRING",
+            name: "input",
+            description: "The input to echo back",
+            required: true
+        }],
+    }];
     // @ts-ignore
-    // for (const [key, value] of client.channels.cache) {
-    //     if ((value as TextChannel).name === '一般' && value.type === 'text') {
-    //         notice_channel = key;
-    //         break;
-    //     }
-    // }
-
-    // const data = [{
-    //     name: '募集',
-    //     description: '募集チャンネルを作成します'
-    // }];
-    // await client.application.commands.set(data, '');
+    await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 });
 
-// client.on("interactionCreate", async (interaction) => {
-//     if (!interaction.isCommand()) {
-//         return;
-//     }
-//
-//     console.log(interaction);
-//
-//     if (interaction.commandName === '募集') {
-//         // const message = await interaction.fetchReply();
-//         // console.log({message});
-//         check_user_has_some_role(client, message, (client, message) => {
-//             recruit(client, message);
-//             interaction.reply('応答');
-//             // await interaction.reply('応答');
-//         });
-//     }
-// });
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isCommand()) {
+        return;
+    }
+
+    console.log(interaction);
+
+    if (interaction.commandName === 'recruit') {
+        // const message = await interaction.fetchReply();
+        // console.log({message});
+        // check_user_has_some_role(client, interaction, (client, message) => {
+        //     recruit(client, message);
+        //     interaction.reply('応答');
+        //     // await interaction.reply('応答');
+        // });
+    }
+});
 
 // @ts-ignore
 client.on('messageCreate', async (msg: Message & { channel: { name: string } }) => {
@@ -64,14 +63,14 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
     // console.log(msg);
     if (msg.author.bot) {
         return;
-        // } else if (message_text === '!logout') {
-        //     logout(client, msg);
+    } else if (message_text === '!logout') {
+        logout(client, msg);
     } else if (parsed.order === '!募集') {
         check_user_has_some_role(client, msg, recruit);
     } else if (parsed.order === '!説明') {
         check_user_has_some_role(client, msg, explain);
     } else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') {    // チャンネルを作成する
-        check_user_has_some_role(client, msg, room);
+        // check_user_has_some_role(client, msg, room);
     } else if (parsed.order === '!変更') {
         change(client, msg);
     } else if (parsed.order === '!案内') {
@@ -82,8 +81,8 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
         wipe(client, msg);
     } else if (parsed.order === '!削除') {
         _delete(client, msg);
-    // } else if (parsed.order === '!情報') { // デバッグ用
-    //     information(client, msg);
+        // } else if (parsed.order === '!情報') { // デバッグ用
+        //     information(client, msg);
     }
 });
 
