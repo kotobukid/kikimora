@@ -70,7 +70,7 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
     } else if (parsed.order === '!説明') {
         check_user_has_some_role(client, msg, explain);
     } else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') {    // チャンネルを作成する
-        // check_user_has_some_role(client, msg, room);
+        check_user_has_some_role(client, msg, room);
     } else if (parsed.order === '!変更') {
         change(client, msg);
     } else if (parsed.order === '!案内') {

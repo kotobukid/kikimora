@@ -67,6 +67,7 @@ var config_1 = require("./config");
 var functions_1 = require("./functions");
 var recruit_1 = __importDefault(require("./orders/recruit"));
 var explain_1 = __importDefault(require("./orders/explain"));
+var room_1 = __importDefault(require("./orders/room"));
 var change_1 = __importDefault(require("./orders/change"));
 var delete_1 = __importDefault(require("./orders/delete"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
@@ -139,7 +140,7 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
             (0, functions_1.check_user_has_some_role)(client, msg, explain_1.default);
         }
         else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') { // チャンネルを作成する
-            // check_user_has_some_role(client, msg, room);
+            (0, functions_1.check_user_has_some_role)(client, msg, room_1.default);
         }
         else if (parsed.order === '!変更') {
             (0, change_1.default)(client, msg);

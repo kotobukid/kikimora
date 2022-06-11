@@ -8,17 +8,6 @@ var functions_1 = require("../functions");
 var models_1 = require("../models");
 var async_1 = __importDefault(require("async"));
 var lodash_1 = __importDefault(require("lodash"));
-var omit_id = function (o) {
-    var next = {};
-    // @ts-ignore
-    var keys = Object.keys(o);
-    lodash_1.default.each(keys, function (key) {
-        if (key !== 'id') {
-            next[key] = o[key];
-        }
-    });
-    return next;
-};
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = (0, functions_1.get_payload)(message_text);
@@ -55,7 +44,7 @@ var func = function (client, msg) {
                 async_1.default.series(lodash_1.default.map(permissionSettings, function (p) {
                     return (function (done) {
                         var id = p.id;
-                        var pop = omit_id(p);
+                        var pop = (0, functions_1.omit_id)(p);
                         // @ts-ignore
                         ch.permissionOverwrites.create(id, pop).then(function (_ch, err) {
                             done(err);

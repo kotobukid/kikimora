@@ -8,22 +8,10 @@ import Discord, {
 } from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {get_payload, sanitize_channel_name} from "../functions";
+import {get_payload, sanitize_channel_name, omit_id} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from 'lodash';
-
-const omit_id = <T>(o: T & {id: any}): T => {
-    const next = {} as T;
-    // @ts-ignore
-    const keys: (keyof T)[] = Object.keys(o);
-    _.each(keys, (key: keyof T) => {
-        if (key !== 'id') {
-            next[key] = o[key];
-        }
-    });
-    return next;
-};
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();

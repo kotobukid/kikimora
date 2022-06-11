@@ -10,8 +10,12 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sanitize_channel_name = exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_dict = exports.clone_flat_map = void 0;
+exports.omit_id = exports.sanitize_channel_name = exports.date_to_string = exports.check_user_has_some_role = exports.get_payload = exports.clone_dict = exports.clone_flat_map = void 0;
+var lodash_1 = __importDefault(require("lodash"));
 var get_payload = function (s) {
     var _s = s.replace(/　/ig, ' ');
     var tokens = _s.split(' ');
@@ -68,3 +72,15 @@ var sanitize_channel_name = function (name) {
         .replace(/\)/g, '）');
 };
 exports.sanitize_channel_name = sanitize_channel_name;
+var omit_id = function (o) {
+    var next = {};
+    // @ts-ignore
+    var keys = Object.keys(o);
+    lodash_1.default.each(keys, function (key) {
+        if (key !== 'id') {
+            next[key] = o[key];
+        }
+    });
+    return next;
+};
+exports.omit_id = omit_id;

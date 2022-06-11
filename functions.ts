@@ -1,4 +1,5 @@
 import Discord, {Message} from "discord.js";
+import _ from "lodash";
 
 const get_payload = (s: string) => {
     const _s: string = s.replace(/　/ig, ' ');
@@ -57,11 +58,24 @@ const sanitize_channel_name = (name: string): string => {
         .replace(/\)/g, '）');
 }
 
+const omit_id = <T>(o: T & {id: any}): T => {
+    const next = {} as T;
+    // @ts-ignore
+    const keys: (keyof T)[] = Object.keys(o);
+    _.each(keys, (key: keyof T) => {
+        if (key !== 'id') {
+            next[key] = o[key];
+        }
+    });
+    return next;
+}
+
 export {
     clone_flat_map,
     clone_dict,
     get_payload,
     check_user_has_some_role,
     date_to_string,
-    sanitize_channel_name
+    sanitize_channel_name,
+    omit_id
 }
