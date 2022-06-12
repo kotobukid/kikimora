@@ -74,6 +74,7 @@ var wipe_1 = __importDefault(require("./orders/wipe"));
 var close_1 = __importDefault(require("./orders/close"));
 var summon_1 = __importStar(require("./orders/summon"));
 var logout_1 = __importDefault(require("./orders/logout"));
+var parse_datetime_1 = require("./sample_scripts/parse_datetime");
 // @ts-ignore
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES] });
 // let notice_channel: string = '';
@@ -122,7 +123,7 @@ client.on("interactionCreate", function (interaction) { return __awaiter(void 0,
 }); });
 // @ts-ignore
 client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var message_text, parsed;
+    var message_text, parsed, dt_parsed;
     return __generator(this, function (_a) {
         message_text = msg.content.trim();
         parsed = (0, functions_1.get_payload)(message_text);
@@ -132,6 +133,15 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         }
         else if (message_text === '!logout') {
             (0, logout_1.default)(client, msg);
+        }
+        else if (parsed.order === '!parse') {
+            dt_parsed = (0, parse_datetime_1.parse_datetime)(msg.content.trim());
+            if (dt_parsed.d && dt_parsed.m && dt_parsed.message_payload) {
+                msg.channel.send("".concat(dt_parsed.m, "\u6708").concat(dt_parsed.d, "\u65E5 ").concat(dt_parsed.message_payload)).then();
+            }
+            else {
+                msg.channel.send("日付解釈エラー ```!parse 1225クリスマス中止のお知らせ```　のように入力してください").then();
+            }
         }
         else if (parsed.order === '!募集') {
             (0, functions_1.check_user_has_some_role)(client, msg, recruit_1.default);

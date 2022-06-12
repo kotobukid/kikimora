@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "run": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node sample_scripts/test_parse_datetime.js",
     "tsc": "tsc --watch",
     "sequelize": "sequelize",
     "generate": "node bin/create_random_data.js",
