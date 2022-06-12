@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parse_datetime = void 0;
+exports.to_channel_name = exports.parse_datetime = void 0;
 var to_half_num = function (text) {
     var dict = {
         '０': '0',
@@ -48,3 +48,17 @@ var parse_datetime = function (message) {
     return apply_regex(to_half_num(message));
 };
 exports.parse_datetime = parse_datetime;
+var to_channel_name = function (r) {
+    if (r.m !== '') {
+        if (r.d !== '') {
+            return "".concat(r.m, "\u6708").concat(r.d, "\u65E5 ").concat(r.message_payload);
+        }
+        else {
+            return "".concat(r.m, "\u6708 ").concat(r.message_payload);
+        }
+    }
+    else {
+        return r.message_payload;
+    }
+};
+exports.to_channel_name = to_channel_name;

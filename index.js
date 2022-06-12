@@ -137,10 +137,10 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         else if (parsed.order === '!parse') {
             dt_parsed = (0, parse_datetime_1.parse_datetime)(msg.content.trim());
             if (dt_parsed.d && dt_parsed.m && dt_parsed.message_payload) {
-                msg.channel.send("".concat(dt_parsed.m, "\u6708").concat(dt_parsed.d, "\u65E5 ").concat(dt_parsed.message_payload)).then();
+                msg.channel.send((0, parse_datetime_1.to_channel_name)(dt_parsed)).then();
             }
             else {
-                msg.channel.send("日付解釈エラー ```!parse 1225クリスマス中止のお知らせ```　のように入力してください").then();
+                msg.channel.send("\u65E5\u4ED8\u89E3\u91C8\u30A8\u30E9\u30FC ```!parse 1225\u30AF\u30EA\u30B9\u30DE\u30B9\u4E2D\u6B62\u306E\u304A\u77E5\u3089\u305B```\u3000\u306E\u3088\u3046\u306B\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\n".concat((0, parse_datetime_1.to_channel_name)(dt_parsed))).then();
             }
         }
         else if (parsed.order === '!募集') {

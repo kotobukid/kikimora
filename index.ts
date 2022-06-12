@@ -14,7 +14,7 @@ import information from './orders/information';
 import _ from 'lodash';
 import {find_channel} from "./models";
 import {ChannelSource} from "./models/channel";
-import {parse_datetime} from "./sample_scripts/parse_datetime";
+import {parse_datetime, to_channel_name} from "./sample_scripts/parse_datetime";
 
 // @ts-ignore
 const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
@@ -69,9 +69,9 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
     } else if (parsed.order === '!parse') {
         const dt_parsed = parse_datetime(msg.content.trim());
         if (dt_parsed.d && dt_parsed.m && dt_parsed.message_payload) {
-            msg.channel.send(`${dt_parsed.m}月${dt_parsed.d}日 ${dt_parsed.message_payload}`).then();
+            msg.channel.send(to_channel_name(dt_parsed)).then();
         } else {
-            msg.channel.send("日付解釈エラー ```!parse 1225クリスマス中止のお知らせ```　のように入力してください").then();
+            msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name(dt_parsed)}`).then();
         }
     } else if (parsed.order === '!募集') {
         check_user_has_some_role(client, msg, recruit);

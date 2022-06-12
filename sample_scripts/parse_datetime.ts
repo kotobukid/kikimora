@@ -53,6 +53,18 @@ const parse_datetime= (message: string): ParsedMessage => {
     return apply_regex(to_half_num(message));
 }
 
+const to_channel_name = (r: ParsedMessage): string => {
+    if (r.m !== '') {
+        if (r.d !== '') {
+            return `${r.m}月${r.d}日 ${r.message_payload}`;
+        } else {
+            return `${r.m}月 ${r.message_payload}`;
+        }
+    } else {
+        return r.message_payload;
+    }
+}
+
 export {
-    parse_datetime
+    parse_datetime, to_channel_name
 }
