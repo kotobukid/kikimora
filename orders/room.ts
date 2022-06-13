@@ -31,6 +31,10 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
 
     let text_category_id = '';
     let voice_category_id = '';
+    let everyOneRolePOP: PermissionOverwriteOptions & { id: Snowflake } = {
+        id: everyoneRole.id,
+        VIEW_CHANNEL: true,
+    };
     if (parsed.order === '!教室') {
         text_category_id = category.text;
         voice_category_id = category.voice;
@@ -38,6 +42,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         // キャンペーン
         text_category_id = category.text_cp
         voice_category_id = category.voice_cp;
+        everyOneRolePOP.VIEW_CHANNEL = false;
     }
 
     // @ts-ignore
@@ -47,14 +52,12 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             return;
         }
 
-        const permissionSettings: ({id: Snowflake} & PermissionOverwriteOptions)[] = [
-            {
-                id: everyoneRole.id,
-                VIEW_CHANNEL: true,
-            },
+        const permissionSettings: ({ id: Snowflake } & PermissionOverwriteOptions)[] = [
+            everyOneRolePOP,
             {
                 id: msg.author.id,
-                MANAGE_CHANNELS: true
+                MANAGE_CHANNELS: true,
+                VIEW_CHANNEL: true
             }
         ];
 
@@ -67,8 +70,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         }).then((text_channel_created: TextChannel) => {
 
             text_channel_created.lockPermissions()
-            .then(() => {
-                async.series(_.map(permissionSettings, (p: {id: Snowflake} & PermissionOverwriteOptions) => {
+                .then(() => {
+                    async.series(_.map(permissionSettings, (p: { id: Snowflake } & PermissionOverwriteOptions) => {
                         return ((done: AsyncFunction<boolean, Error>) => {
                             const id: string = p.id!;
                             const pop: PermissionOverwriteOptions = omit_id(p);
@@ -85,11 +88,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                                 return;
                             }
 
-                            const permissionOverwrites_v: ({id: Snowflake} & PermissionOverwriteOptions)[] = [
-                                {
-                                    id: everyoneRole.id,
-                                    VIEW_CHANNEL: false,
-                                },
+                            const permissionOverwrites_v: ({ id: Snowflake } & PermissionOverwriteOptions)[] = [
+                                everyOneRolePOP,
                                 {
                                     id: msg.author.id,
                                     MANAGE_CHANNELS: true,
@@ -105,33 +105,33 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                                 // @ts-ignore
                             }).then((voice_channel_created: VoiceChannel) => {
                                 voice_channel_created.lockPermissions()
-                                .then(() => {
-                                    async.series(_.map(permissionOverwrites_v, (p: {id: Snowflake} & PermissionOverwriteOptions) => {
-                                        return ((done: AsyncFunction<boolean, Error>) => {
-                                            const id: string = p.id!;
-                                            const pop: PermissionOverwriteOptions = omit_id(p);
+                                    .then(() => {
+                                        async.series(_.map(permissionOverwrites_v, (p: { id: Snowflake } & PermissionOverwriteOptions) => {
+                                            return ((done: AsyncFunction<boolean, Error>) => {
+                                                const id: string = p.id!;
+                                                const pop: PermissionOverwriteOptions = omit_id(p);
 
-                                            // @ts-ignore
-                                            voice_channel_created.permissionOverwrites.create(id, pop).then((_ch: NonThreadGuildBasedChannel, err) => {
-                                                done(err);
+                                                // @ts-ignore
+                                                voice_channel_created.permissionOverwrites.create(id, pop).then((_ch: NonThreadGuildBasedChannel, err) => {
+                                                    done(err);
+                                                });
                                             });
+                                        }), () => {
+                                            create_channel({
+                                                owner: msg.author.id,
+                                                owner_name: msg.author.username,
+                                                channel_name: parsed.payload,
+                                                text_channel: `${text_channel_created.id}`,
+                                                voice_channel: `${voice_channel_created.id}`
+                                            }).then((ch_data) => {
+                                                msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
+                                            }).catch(console.error);
                                         });
-                                    }), () => {
-                                         create_channel({
-                                            owner: msg.author.id,
-                                            owner_name: msg.author.username,
-                                            channel_name: parsed.payload,
-                                            text_channel: `${text_channel_created.id}`,
-                                            voice_channel: `${voice_channel_created.id}`
-                                        }).then((ch_data) => {
-                                            msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
-                                        }).catch(console.error);
                                     });
-                                });
                             });
                         });
                     });
-            });
+                });
         }).catch((err: Error) => {
             console.error(err);
         });

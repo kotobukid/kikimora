@@ -19,6 +19,10 @@ var func = function (client, msg) {
     var everyoneRole = msg.guild.roles.everyone;
     var text_category_id = '';
     var voice_category_id = '';
+    var everyOneRolePOP = {
+        id: everyoneRole.id,
+        VIEW_CHANNEL: true,
+    };
     if (parsed.order === '!教室') {
         text_category_id = config_1.category.text;
         voice_category_id = config_1.category.voice;
@@ -27,6 +31,7 @@ var func = function (client, msg) {
         // キャンペーン
         text_category_id = config_1.category.text_cp;
         voice_category_id = config_1.category.voice_cp;
+        everyOneRolePOP.VIEW_CHANNEL = false;
     }
     // @ts-ignore
     client.channels.fetch(text_category_id).then(function (text_category) {
@@ -35,13 +40,11 @@ var func = function (client, msg) {
             return;
         }
         var permissionSettings = [
-            {
-                id: everyoneRole.id,
-                VIEW_CHANNEL: true,
-            },
+            everyOneRolePOP,
             {
                 id: msg.author.id,
-                MANAGE_CHANNELS: true
+                MANAGE_CHANNELS: true,
+                VIEW_CHANNEL: true
             }
         ];
         msg.guild.channels.create(channel_name, {
@@ -68,10 +71,7 @@ var func = function (client, msg) {
                             return;
                         }
                         var permissionOverwrites_v = [
-                            {
-                                id: everyoneRole.id,
-                                VIEW_CHANNEL: false,
-                            },
+                            everyOneRolePOP,
                             {
                                 id: msg.author.id,
                                 MANAGE_CHANNELS: true,
