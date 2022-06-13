@@ -42,7 +42,7 @@ var func = function (client, msg) {
                         if (text_channel) {
                             if (text_channel.parentId) {
                                 // @ts-ignore
-                                client.channels.fetch(text_channel.parentID).then(function (category) {
+                                client.channels.fetch(text_channel.parentId).then(function (category) {
                                     done(null, {
                                         text_name: text_channel.name,
                                         text_id: ch.text_channel,

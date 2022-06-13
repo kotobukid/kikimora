@@ -41,7 +41,6 @@ const func = (client: KikimoraClient, msg: any) => {
             msg.channel.send('あなたの作成したチャンネルを見つけられませんでした。');
         } else if (channels.length === 1) {
             //     // 当該ユーザーが作成したチャンネルが一つしかない
-
             msg.channel.send(`「<#${channels[0].text_channel}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
                 create_message_room({
                     message: sent_message.id,
@@ -64,7 +63,7 @@ const func = (client: KikimoraClient, msg: any) => {
                         if (text_channel) {
                             if (text_channel.parentId) {
                                 // @ts-ignore
-                                client.channels.fetch(text_channel.parentID).then((category: CategoryChannel) => {
+                                client.channels.fetch(text_channel.parentId).then((category: CategoryChannel) => {
                                     done(null, {
                                         text_name: text_channel.name,
                                         text_id: ch.text_channel,
