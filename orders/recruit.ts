@@ -4,7 +4,7 @@ import Discord, {
     NonThreadGuildBasedChannel,
     PermissionOverwrites,
     TextChannel,
-    PermissionOverwriteOptions, Snowflake
+    PermissionOverwriteOptions, Snowflake,
 } from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
@@ -12,6 +12,7 @@ import {get_payload, sanitize_channel_name, omit_id} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from 'lodash';
+import {ChannelTypes} from "discord.js/typings/enums";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
@@ -46,7 +47,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         ];
 
         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
-            type: 'text',
+            type: ChannelTypes.GUILD_TEXT,
             parent: category.recruit,
             topic: `作成者: ${msg.author.username}`
 

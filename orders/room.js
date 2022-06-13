@@ -45,7 +45,7 @@ var func = function (client, msg) {
             }
         ];
         msg.guild.channels.create(channel_name, {
-            type: 'text',
+            type: 0 /* GUILD_TEXT */,
             parent: text_category_id,
             topic: "\u4F5C\u6210\u8005: ".concat(msg.author.username)
             // @ts-ignore
@@ -79,7 +79,7 @@ var func = function (client, msg) {
                             }
                         ];
                         msg.guild.channels.create(channel_name, {
-                            type: 'voice',
+                            type: 2 /* GUILD_VOICE */,
                             parent: voice_category_id,
                             topic: "\u4F5C\u6210\u8005: ".concat(msg.author.username)
                             // @ts-ignore

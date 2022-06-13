@@ -1,17 +1,20 @@
-import Discord, {
+import {
     Channel,
     GuildChannelCreateOptions,
-    Message, NonThreadGuildBasedChannel, PermissionOverwriteOptions,
+    Message,
+    NonThreadGuildBasedChannel,
+    PermissionOverwriteOptions,
     Snowflake,
     TextChannel,
-    VoiceChannel
+    VoiceChannel,
 } from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
-import {clone_flat_map, get_payload, sanitize_channel_name, clone_dict, omit_id} from "../functions";
+import {get_payload, omit_id, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from "lodash";
+import {ChannelTypes} from "discord.js/typings/enums";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
@@ -56,7 +59,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         ];
 
         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
-            type: 'text',
+            type: ChannelTypes.GUILD_TEXT,
             parent: text_category_id,
             topic: `作成者: ${msg.author.username}`
 
@@ -95,7 +98,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                             ];
 
                             msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'voice' }>{
-                                type: 'voice',
+                                type: ChannelTypes.GUILD_VOICE,
                                 parent: voice_category_id,
                                 topic: `作成者: ${msg.author.username}`
 
