@@ -76,7 +76,7 @@ var summon_1 = __importStar(require("./orders/summon"));
 var logout_1 = __importDefault(require("./orders/logout"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
 // @ts-ignore
-var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES] });
+var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 // let notice_channel: string = '';
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
     var data;

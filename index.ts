@@ -17,7 +17,7 @@ import {ChannelSource} from "./models/channel";
 import {parse_datetime, to_channel_name, get_date_to_delete} from "./sample_scripts/parse_datetime";
 
 // @ts-ignore
-const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
+const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
 // let notice_channel: string = '';
 
