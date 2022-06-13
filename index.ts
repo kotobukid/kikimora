@@ -14,7 +14,7 @@ import information from './orders/information';
 import _ from 'lodash';
 import {find_channel} from "./models";
 import {ChannelSource} from "./models/channel";
-import {parse_datetime, to_channel_name} from "./sample_scripts/parse_datetime";
+import {parse_datetime, to_channel_name, get_date_to_delete} from "./sample_scripts/parse_datetime";
 
 // @ts-ignore
 const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
@@ -68,8 +68,8 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
         logout(client, msg);
     } else if (parsed.order === '!parse') {
         const dt_parsed = parse_datetime(msg.content.trim());
-        if (dt_parsed.d) {
-            msg.channel.send(to_channel_name(dt_parsed)).then();
+        if (dt_parsed.m) {
+            msg.channel.send(`チャンネル名: ${to_channel_name(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed)}`).then();
         } else {
             msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name(dt_parsed)}`).then();
         }

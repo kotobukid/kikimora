@@ -136,8 +136,8 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         }
         else if (parsed.order === '!parse') {
             dt_parsed = (0, parse_datetime_1.parse_datetime)(msg.content.trim());
-            if (dt_parsed.d) {
-                msg.channel.send((0, parse_datetime_1.to_channel_name)(dt_parsed)).then();
+            if (dt_parsed.m) {
+                msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D: ".concat((0, parse_datetime_1.to_channel_name)(dt_parsed), "\n\u524A\u9664\u4E88\u5B9A\u65E5: ").concat((0, parse_datetime_1.get_date_to_delete)(dt_parsed))).then();
             }
             else {
                 msg.channel.send("\u65E5\u4ED8\u89E3\u91C8\u30A8\u30E9\u30FC ```!parse 1225\u30AF\u30EA\u30B9\u30DE\u30B9\u4E2D\u6B62\u306E\u304A\u77E5\u3089\u305B```\u3000\u306E\u3088\u3046\u306B\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\n".concat((0, parse_datetime_1.to_channel_name)(dt_parsed))).then();

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.to_channel_name = exports.parse_datetime = void 0;
+exports.get_date_to_delete = exports.to_channel_name = exports.parse_datetime = void 0;
 var to_half_num = function (text) {
     var dict = {
         '０': '0',
@@ -62,3 +62,34 @@ var to_channel_name = function (r) {
     }
 };
 exports.to_channel_name = to_channel_name;
+var zero_pad_xx = function (x) {
+    return ('0' + "".concat(x)).slice(-2);
+};
+var get_date_to_delete = function (r) {
+    var adjusts = '';
+    var today = new Date();
+    var m = Number(r.m);
+    var d;
+    var year = today.getFullYear();
+    var this_month = today.getMonth() + 1;
+    if (r.d !== '') {
+        d = Number(r.d);
+    }
+    else {
+        m = m + 1;
+        d = 1;
+    }
+    if (m < this_month) {
+        year = today.getFullYear() + 1;
+        adjusts += 'next year / ';
+    }
+    else if (m === this_month) {
+        if (d < today.getDate()) {
+            year = today.getFullYear() + 1;
+            adjusts += 'next year / ';
+        }
+    }
+    var target_date = new Date(year, m - 1, d + 2);
+    return "".concat(target_date.getFullYear(), "/").concat(zero_pad_xx(target_date.getMonth() + 1), "/").concat(zero_pad_xx(target_date.getDate()), " (").concat(adjusts, "+2 days)");
+};
+exports.get_date_to_delete = get_date_to_delete;
