@@ -54,7 +54,7 @@ var to_channel_name = function (r) {
             return "".concat(r.m, "\u6708").concat(r.d, "\u65E5 ").concat(r.message_payload);
         }
         else {
-            return "".concat(r.m, "\u6708 ").concat(r.message_payload);
+            return "".concat(r.m, "\u6708--\u65E5 ").concat(r.message_payload);
         }
     }
     else {

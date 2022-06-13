@@ -136,7 +136,7 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         }
         else if (parsed.order === '!parse') {
             dt_parsed = (0, parse_datetime_1.parse_datetime)(msg.content.trim());
-            if (dt_parsed.d && dt_parsed.m && dt_parsed.message_payload) {
+            if (dt_parsed.d) {
                 msg.channel.send((0, parse_datetime_1.to_channel_name)(dt_parsed)).then();
             }
             else {

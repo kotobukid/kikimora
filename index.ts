@@ -68,7 +68,7 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
         logout(client, msg);
     } else if (parsed.order === '!parse') {
         const dt_parsed = parse_datetime(msg.content.trim());
-        if (dt_parsed.d && dt_parsed.m && dt_parsed.message_payload) {
+        if (dt_parsed.d) {
             msg.channel.send(to_channel_name(dt_parsed)).then();
         } else {
             msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name(dt_parsed)}`).then();
