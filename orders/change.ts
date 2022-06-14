@@ -2,8 +2,9 @@ import {KikimoraClient} from "../types";
 import {get_payload} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
+import {Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 

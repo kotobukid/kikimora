@@ -1,7 +1,8 @@
 import {KikimoraClient} from "../types";
 import process from "process";
+import {Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
     msg.channel.send("I'll be back").then();
     console.log("I'll be back");
 

@@ -35,7 +35,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
 
         const everyoneRole = msg.guild!.roles.everyone;
 
-        const permissionSettings: ({id: Snowflake} & PermissionOverwriteOptions)[] = [
+        const permissionSettings: ({ id: Snowflake } & PermissionOverwriteOptions)[] = [
             {
                 id: everyoneRole.id,
                 VIEW_CHANNEL: true,
@@ -54,32 +54,32 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             // @ts-ignore
         }).then((ch: TextChannel) => {
             ch.lockPermissions()
-            .then(() => {
-                async.series(_.map(permissionSettings, (p: {id: Snowflake} & PermissionOverwriteOptions) => {
-                    return ((done: AsyncFunction<boolean, Error>) => {
-                        const id: string = p.id!;
-                        const pop: PermissionOverwriteOptions = omit_id(p);
+                .then(() => {
+                    async.series(_.map(permissionSettings, (p: { id: Snowflake } & PermissionOverwriteOptions) => {
+                        return ((done: AsyncFunction<boolean, Error>) => {
+                            const id: string = p.id!;
+                            const pop: PermissionOverwriteOptions = omit_id(p);
 
-                        // @ts-ignore
-                        ch.permissionOverwrites.create(id, pop).then((_ch: NonThreadGuildBasedChannel, err) => {
-                            done(err);
+                            // @ts-ignore
+                            ch.permissionOverwrites.create(id, pop).then((_ch: NonThreadGuildBasedChannel, err) => {
+                                done(err);
+                            });
                         });
-                    });
-                }), () => {
-                    ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
-                        create_channel({
-                            owner: msg.author.id,
-                            owner_name: msg.author.username,
-                            channel_name: channel_name,
-                            text_channel: `${ch.id}`,
-                            voice_channel: ''
-                        }).then((ch_data) => {
-                            msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`).then();
-                        }).catch(console.error);
-                    });
+                    }), () => {
+                        ch.createInvite({maxAge: 86400 * 7}).then((invite: Discord.Invite) => {
+                            create_channel({
+                                owner: msg.author.id,
+                                owner_name: msg.author.username,
+                                channel_name: channel_name,
+                                text_channel: `${ch.id}`,
+                                voice_channel: ''
+                            }).then((ch_data) => {
+                                msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`).then();
+                            }).catch(console.error);
+                        });
+                    })
                 })
-            })
-            .catch(console.error);
+                .catch(console.error);
         });
     });
 }

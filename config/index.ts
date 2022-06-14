@@ -1,6 +1,7 @@
 import fs from "fs";
 import process from "process";
 import path from 'path';
+
 let token: string = '';
 
 if (fs.existsSync(path.join(__dirname, './secret.js'))) {

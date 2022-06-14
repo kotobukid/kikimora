@@ -18,7 +18,7 @@ const get_payload = (s: string) => {
     return {order, payload};
 };
 
-const check_user_has_some_role = (client: Discord.Client & { channels: { cache: Record<string, any> } }, msg: Message, next: Function): void => {
+const check_user_has_some_role = (client: Discord.Client, msg: Message, next: Function): void => {
     let not_everyone_role_found: boolean = false;
     // @ts-ignore
     msg.member.roles.cache.each((value) => {
@@ -36,7 +36,7 @@ const check_user_has_some_role = (client: Discord.Client & { channels: { cache: 
     }
 };
 
-function clone_dict<T>(source: T):T {
+function clone_dict<T>(source: T): T {
     return {...source};
 }
 
@@ -58,10 +58,10 @@ const sanitize_channel_name = (name: string): string => {
         .replace(/\)/g, '）');
 }
 
-const omit_id = <T>(o: T & {id: any}): T => {
+const omit_id = <T>(o: T & { id: any }): T => {
     const next = {} as T;
-    // @ts-ignore
-    const keys: (keyof T)[] = Object.keys(o);
+
+    const keys = Object.keys(o) as (keyof T)[];
     _.each(keys, (key: keyof T) => {
         if (key !== 'id') {
             next[key] = o[key];

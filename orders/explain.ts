@@ -1,6 +1,7 @@
 import {KikimoraClient} from "../types";
+import {Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
     const info_text = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
         '** ● 募集を立てたいとき ● **\n' +
         '> サーバー内のいずれかのテキストチャンネル内で`!募集 教室名`と発言してください。\n' +

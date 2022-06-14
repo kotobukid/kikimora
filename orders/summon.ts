@@ -32,7 +32,7 @@ declare type message_id = string;
 
 const reaction_check_information: Record<message_id, ReactionCheckInfo> = {}
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
     find_channel({owner: msg.author.id, is_deleted: 0}, 10, true).then((channels: ChannelSource[]) => {
@@ -51,14 +51,14 @@ const func = (client: KikimoraClient, msg: any) => {
                     } catch (e) {
                         console.error(e);
                     }
-                })
+                });
             }).catch(console.error);
         } else {
             // 当該ユーザーが作成したチャンネルが複数ある
             const async_funcs: Array<AsyncFunction<unknown, Error>> = channels.map((ch: ChannelSource) => {
                 return (done: Function) => {
                     // @ts-ignore
-                    client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel) => {
+                    client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel | undefined) => {
                         if (text_channel) {
                             if (text_channel.parentId) {
                                 // @ts-ignore
@@ -101,7 +101,7 @@ const func = (client: KikimoraClient, msg: any) => {
 
                 const emojis: string[] = [
                     '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
-                ]
+                ];
 
                 const over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
 

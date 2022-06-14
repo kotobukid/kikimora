@@ -3,8 +3,9 @@ import {find_channel} from "../models";
 import {Channel} from "../models/channel";
 import _ from 'lodash';
 import async, {AsyncFunction} from 'async';
+import {Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
     msg.channel.send(`<@!${msg.author.id}> メンテナンスモードを開始します。`);
     find_channel({
         is_deleted: false
@@ -25,7 +26,7 @@ const func = (client: KikimoraClient, msg: any) => {
                         } else {
                             done(e, null);
                         }
-                    })
+                    });
                 });
             };
         });
@@ -33,14 +34,15 @@ const func = (client: KikimoraClient, msg: any) => {
         // @ts-ignore
         async.series(funcs, (e: any, results: any[]): void => {
             const deleted: string[] = _.filter(results, r => r) as string[]
+
             if (deleted.length > 0) {
-                msg.channel.send(`<@!${msg.author.id}> 削除済みチャンネルの状態をデータベースに反映させました。\n${deleted.join('\n')}\nメンテナンスモードを終了します。`)
+                msg.channel.send(`<@!${msg.author.id}> 削除済みチャンネルの状態をデータベースに反映させました。\n${deleted.join('\n')}\nメンテナンスモードを終了します。`);
             } else {
                 msg.channel.send(`<@!${msg.author.id}> 処置の必要はありませんでした。メンテナンスモードを終了します。`);
             }
         });
     }).catch((err: Error) => {
-        console.error(err)
+        console.error(err);
     });
 }
 

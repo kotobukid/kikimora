@@ -1,4 +1,4 @@
-import Discord, {CollectorFilter, Message, TextChannel, Intents} from 'discord.js';
+import Discord, {Message, Intents, CacheType, Interaction} from 'discord.js';
 import {token} from "./config";
 import {check_user_has_some_role, get_payload} from './functions'
 import recruit from './orders/recruit';
@@ -10,23 +10,15 @@ import wipe from './orders/wipe';
 import close from './orders/close';
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
-import information from './orders/information';
-import _ from 'lodash';
-import {find_channel} from "./models";
-import {ChannelSource} from "./models/channel";
 import {parse_datetime, to_channel_name, get_date_to_delete} from "./sample_scripts/parse_datetime";
 
-// @ts-ignore
-const client: Discord.Client & { channels: { cache: Record<string, any> } } = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
-
-// let notice_channel: string = '';
-
+const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
 client.once('ready', async () => {
     const data = [{
         name: 'recruit',
         description: '募集チャンネルを作成します!',
-         options: [{
+        options: [{
             type: "STRING",
             name: "input",
             description: "The input to echo back",
@@ -38,7 +30,7 @@ client.once('ready', async () => {
     console.log(`${client.user!.tag} でログイン`);
 });
 
-client.on("interactionCreate", async (interaction) => {
+client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
     if (!interaction.isCommand()) {
         return;
     }
@@ -56,8 +48,7 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-// @ts-ignore
-client.on('messageCreate', async (msg: Message & { channel: { name: string } }) => {
+client.on('messageCreate', async (msg: Message) => {
     const message_text = msg.content.trim();
 
     const parsed = get_payload(message_text);
@@ -93,7 +84,6 @@ client.on('messageCreate', async (msg: Message & { channel: { name: string } }) 
         //     information(client, msg);
     }
 });
-
 
 // @ts-ignore
 client.on('messageReactionAdd', (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {

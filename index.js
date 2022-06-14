@@ -75,9 +75,7 @@ var close_1 = __importDefault(require("./orders/close"));
 var summon_1 = __importStar(require("./orders/summon"));
 var logout_1 = __importDefault(require("./orders/logout"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
-// @ts-ignore
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
-// let notice_channel: string = '';
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
     var data;
     return __generator(this, function (_a) {
@@ -121,7 +119,6 @@ client.on("interactionCreate", function (interaction) { return __awaiter(void 0,
         return [2 /*return*/];
     });
 }); });
-// @ts-ignore
 client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
     var message_text, parsed, dt_parsed;
     return __generator(this, function (_a) {

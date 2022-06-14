@@ -1,9 +1,9 @@
-import {Channel} from 'discord.js';
+import {Channel, Message} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
 
-const func = (client: KikimoraClient, msg: any) => {
+const func = (client: KikimoraClient, msg: Message) => {
 
     find_channel({
         owner: msg.author.id,

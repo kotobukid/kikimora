@@ -1,5 +1,4 @@
-import {Sequelize, Model, DataTypes} from 'sequelize';
-import db from "./index";
+import {DataTypes} from 'sequelize';
 
 declare type ChannelSource = {
     owner: string,

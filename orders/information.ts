@@ -1,9 +1,7 @@
-import Discord, {Message, PermissionOverwrites, TextChannel} from 'discord.js';
+import {Message} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {category} from "../config";
 import {get_payload} from "../functions";
-import {create_channel} from "../models";
-import _ from 'lodash';
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();

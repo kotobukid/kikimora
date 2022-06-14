@@ -16,7 +16,7 @@ import async, {AsyncFunction} from "async";
 import _ from "lodash";
 import {ChannelTypes} from "discord.js/typings/enums";
 
-const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
+const func = (client: KikimoraClient, msg: Message) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 
