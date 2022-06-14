@@ -1,5 +1,5 @@
 import {KikimoraClient} from "../types";
-import {clone_flat_map, get_payload} from "../functions";
+import {get_payload} from "../functions";
 import {
     create_message_room,
     create_summon_cache,
@@ -10,10 +10,9 @@ import {
 import {ChannelSource} from "../models/channel";
 import Discord, {
     Message,
-    PermissionOverwrites,
     CategoryChannel,
     TextChannel,
-    DiscordAPIError
+    DiscordAPIError, PermissionOverwriteOptions, Snowflake
 } from "discord.js";
 import {SummonCache} from "../models/summon_cache";
 import {MessageRoom} from "../models/message_room";
@@ -48,7 +47,7 @@ const func = (client: KikimoraClient, msg: any) => {
                     voice_channel: channels[0].voice_channel || '',
                 }, () => {
                     try {
-                        sent_message.react('✅');
+                        sent_message.react('✅').then();
                     } catch (e) {
                         console.error(e);
                     }
@@ -132,7 +131,7 @@ const func = (client: KikimoraClient, msg: any) => {
                             if (i < emojis.length) {
                                 setTimeout(() => {
                                     try {
-                                        sent_message.react(emojis[i])
+                                        sent_message.react(emojis[i]).then();
                                     } catch (e) {
                                         console.error(e);
                                     }
@@ -148,24 +147,18 @@ const func = (client: KikimoraClient, msg: any) => {
     });
 }
 
-const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, room_info: RoomInfo, user_id: string, next: (result: boolean) => void) => {
+const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, room_info: RoomInfo, user_id: Snowflake, next: (result: boolean) => void) => {
     // @ts-ignore
     const t_c: Discord.GuildChannel | null = channels.resolve(room_info.text_channel);
+
     if (t_c == null) {
         next(false);
     } else {
+        const pop: PermissionOverwriteOptions = {
+            VIEW_CHANNEL: true
+        };
 
-        // @ts-ignore
-        const permissionOverwrites_v: Map<string, PermissionOverwrites> = clone_flat_map(t_c.permissionOverwrites);
-
-        permissionOverwrites_v.set(`${user_id}`, {
-            id: user_id,
-            // @ts-ignore
-            allow: ['VIEW_CHANNEL'],
-        });
-
-        // @ts-ignore
-        t_c.overwritePermissions(permissionOverwrites_v);
+        t_c.permissionOverwrites.create(user_id, pop).then();
 
         // @ts-ignore
         const v_c: Discord.GuildChannel | null = channels.resolve(room_info.voice_channel);
@@ -173,22 +166,11 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
         if (v_c == null) {
             next(true);
         } else {
-            // @ts-ignore
-            const permissionOverwrites_v: Map<string, PermissionOverwrites> = clone_flat_map(v_c.permissionOverwrites);
-
-            permissionOverwrites_v.set(`${user_id}`, {
-                id: user_id,
-                // @ts-ignore
-                allow: ['VIEW_CHANNEL'],
-            });
-
-            // @ts-ignore
-            v_c.overwritePermissions(permissionOverwrites_v);
+            v_c.permissionOverwrites.create(user_id, pop).then();
 
             next(true);
         }
     }
-
 };
 
 const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: ChannelSource) => {
@@ -200,7 +182,7 @@ const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: Cha
                 voice_channel: sc.voice
             }, () => {
                 try {
-                    sent_message.react('✅');
+                    sent_message.react('✅').then();
                 } catch (e) {
                     console.error(e);
                 }

@@ -25,7 +25,7 @@ var func = function (client, msg) {
                     voice_channel: channels[0].voice_channel || '',
                 }, function () {
                     try {
-                        sent_message.react('✅');
+                        sent_message.react('✅').then();
                     }
                     catch (e) {
                         console.error(e);
@@ -101,7 +101,7 @@ var func = function (client, msg) {
                             if (i < emojis.length) {
                                 setTimeout(function () {
                                     try {
-                                        sent_message.react(emojis[i]);
+                                        sent_message.react(emojis[i]).then();
                                     }
                                     catch (e) {
                                         console.error(e);
@@ -130,30 +130,17 @@ var add_user_as_channel_controller = function (channels, room_info, user_id, nex
         next(false);
     }
     else {
-        // @ts-ignore
-        var permissionOverwrites_v = (0, functions_1.clone_flat_map)(t_c.permissionOverwrites);
-        permissionOverwrites_v.set("".concat(user_id), {
-            id: user_id,
-            // @ts-ignore
-            allow: ['VIEW_CHANNEL'],
-        });
-        // @ts-ignore
-        t_c.overwritePermissions(permissionOverwrites_v);
+        var pop = {
+            VIEW_CHANNEL: true
+        };
+        t_c.permissionOverwrites.create(user_id, pop).then();
         // @ts-ignore
         var v_c = channels.resolve(room_info.voice_channel);
         if (v_c == null) {
             next(true);
         }
         else {
-            // @ts-ignore
-            var permissionOverwrites_v_1 = (0, functions_1.clone_flat_map)(v_c.permissionOverwrites);
-            permissionOverwrites_v_1.set("".concat(user_id), {
-                id: user_id,
-                // @ts-ignore
-                allow: ['VIEW_CHANNEL'],
-            });
-            // @ts-ignore
-            v_c.overwritePermissions(permissionOverwrites_v_1);
+            v_c.permissionOverwrites.create(user_id, pop).then();
             next(true);
         }
     }
@@ -167,7 +154,7 @@ var suggest_invite = function (message, sc, channel) {
                 voice_channel: sc.voice
             }, function () {
                 try {
-                    sent_message.react('✅');
+                    sent_message.react('✅').then();
                 }
                 catch (e) {
                     console.error(e);
