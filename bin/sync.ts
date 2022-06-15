@@ -5,7 +5,7 @@
 import models from '../models'
 
 models.channel!.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {
@@ -14,7 +14,7 @@ models.channel!.sync({
     });
 
 models.message_room!.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {
@@ -23,7 +23,7 @@ models.message_room!.sync({
     });
 
 models.summon_cache!.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {

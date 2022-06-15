@@ -5,7 +5,8 @@ declare type ChannelSource = {
     owner_name: string,
     channel_name: string,
     text_channel: string,
-    voice_channel: string
+    voice_channel: string,
+    deleted_at?: string
 }
 
 declare type Channel = {
@@ -43,6 +44,10 @@ const ModelSource = {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         default: false
+    },
+    deleted_at: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 };
 

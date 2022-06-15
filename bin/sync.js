@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var models_1 = __importDefault(require("../models"));
 models_1.default.channel.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {
@@ -14,7 +14,7 @@ models_1.default.channel.sync({
     // return models.Sequelize.close()
 });
 models_1.default.message_room.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {
@@ -22,7 +22,7 @@ models_1.default.message_room.sync({
     // return models.Sequelize.close()
 });
 models_1.default.summon_cache.sync({
-    force: true,
+    force: false,
     logging: console.log,
 })
     .then(function () {

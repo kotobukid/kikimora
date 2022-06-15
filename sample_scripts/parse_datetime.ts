@@ -1,4 +1,4 @@
-declare type ParsedMessage = { m: string, d: string, message_payload: string }
+import {ParsedMessage} from "../types";
 
 const to_half_num = (text: string): string => {
     const dict = {
@@ -69,7 +69,7 @@ const zero_pad_xx = (x: number | string): string => {
     return ('0' + `${x}`).slice(-2);
 };
 
-const get_date_to_delete = (r: ParsedMessage): string => {
+const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
     let adjusts: string = '';
     const today = new Date();
 
@@ -98,7 +98,11 @@ const get_date_to_delete = (r: ParsedMessage): string => {
 
     const target_date = new Date(year, m - 1, d + 2);
 
-    return `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())} (${adjusts}+2 days)`;
+    return {
+        // s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())} (${adjusts}+2 days)`,
+        s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())}`,
+        n: `${target_date.getFullYear()}${zero_pad_xx(target_date.getMonth() + 1)}${zero_pad_xx(target_date.getDate())}`
+    };
 }
 
 export {

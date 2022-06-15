@@ -74,7 +74,6 @@ var sanitize_channel_name = function (name) {
 exports.sanitize_channel_name = sanitize_channel_name;
 var omit_id = function (o) {
     var next = {};
-    // @ts-ignore
     var keys = Object.keys(o);
     lodash_1.default.each(keys, function (key) {
         if (key !== 'id') {

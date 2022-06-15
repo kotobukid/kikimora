@@ -8,9 +8,13 @@ var functions_1 = require("../functions");
 var models_1 = require("../models");
 var async_1 = __importDefault(require("async"));
 var lodash_1 = __importDefault(require("lodash"));
+var parse_datetime_1 = require("../sample_scripts/parse_datetime");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = (0, functions_1.get_payload)(message_text);
+    var dt_parsed = (0, parse_datetime_1.parse_datetime)(parsed.payload);
+    var _channel_name = dt_parsed.message_payload;
+    var delete_date = (0, parse_datetime_1.get_date_to_delete)(dt_parsed);
     // @ts-ignore
     client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_category) {
         if (!recruit_category) {
@@ -21,7 +25,7 @@ var func = function (client, msg) {
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
         }
-        var channel_name = (0, functions_1.sanitize_channel_name)(parsed.payload);
+        var channel_name = (0, functions_1.sanitize_channel_name)(_channel_name);
         var everyoneRole = msg.guild.roles.everyone;
         var permissionSettings = [
             {
@@ -57,9 +61,11 @@ var func = function (client, msg) {
                             owner_name: msg.author.username,
                             channel_name: channel_name,
                             text_channel: "".concat(ch.id),
-                            voice_channel: ''
+                            voice_channel: '',
+                            deleted_at: delete_date.n
                         }).then(function (ch_data) {
                             msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C<#".concat(ch.id, ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002")).then();
+                            ch.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
                         }).catch(console.error);
                     });
                 });

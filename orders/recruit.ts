@@ -6,17 +6,22 @@ import Discord, {
     TextChannel,
     PermissionOverwriteOptions, Snowflake,
 } from 'discord.js';
-import {KikimoraClient} from "../types";
+import {KikimoraClient, ParsedMessage} from "../types";
 import {category} from "../config";
 import {get_payload, sanitize_channel_name, omit_id} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from 'lodash';
 import {ChannelTypes} from "discord.js/typings/enums";
+import {get_date_to_delete, parse_datetime} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
+
+    const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
+    const _channel_name: string = dt_parsed.message_payload;
+    const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
 
     // @ts-ignore
     client.channels.fetch(category.recruit, false, true).then((recruit_category: Discord.Channel & { permissionOverwrites: Map<string, PermissionOverwrites> }) => {
@@ -31,7 +36,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             return;
         }
 
-        let channel_name = sanitize_channel_name(parsed.payload);
+        let channel_name = sanitize_channel_name(_channel_name);
 
         const everyoneRole = msg.guild!.roles.everyone;
 
@@ -72,9 +77,15 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                                 owner_name: msg.author.username,
                                 channel_name: channel_name,
                                 text_channel: `${ch.id}`,
-                                voice_channel: ''
+                                voice_channel: '',
+                                deleted_at: delete_date.n
                             }).then((ch_data) => {
                                 msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`).then();
+                                if (delete_date.n !== '') {
+                                    ch.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                } else {
+                                    ch.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                }
                             }).catch(console.error);
                         });
                     })

@@ -72,9 +72,10 @@ var change_1 = __importDefault(require("./orders/change"));
 var delete_1 = __importDefault(require("./orders/delete"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
 var close_1 = __importDefault(require("./orders/close"));
+var trigger_delete_1 = __importDefault(require("./orders/trigger_delete"));
 var summon_1 = __importStar(require("./orders/summon"));
-var logout_1 = __importDefault(require("./orders/logout"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
+var trigger_delete_2 = require("./orders/trigger_delete");
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
     var data;
@@ -97,6 +98,9 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
                 // @ts-ignore
                 _a.sent();
                 console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
+                setInterval(function () {
+                    (0, trigger_delete_2.delete_channels_expired)(client);
+                }, 1000 * 60 * 30);
                 return [2 /*return*/];
         }
     });
@@ -129,12 +133,12 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
             return [2 /*return*/];
         }
         else if (message_text === '!logout') {
-            (0, logout_1.default)(client, msg);
+            // logout(client, msg);
         }
         else if (parsed.order === '!parse') {
             dt_parsed = (0, parse_datetime_1.parse_datetime)(msg.content.trim());
             if (dt_parsed.m) {
-                msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D: ".concat((0, parse_datetime_1.to_channel_name)(dt_parsed), "\n\u524A\u9664\u4E88\u5B9A\u65E5: ").concat((0, parse_datetime_1.get_date_to_delete)(dt_parsed))).then();
+                msg.channel.send("\u30C1\u30E3\u30F3\u30CD\u30EB\u540D: ".concat((0, parse_datetime_1.to_channel_name)(dt_parsed), "\n\u524A\u9664\u4E88\u5B9A\u65E5: ").concat((0, parse_datetime_1.get_date_to_delete)(dt_parsed).s)).then();
             }
             else {
                 msg.channel.send("\u65E5\u4ED8\u89E3\u91C8\u30A8\u30E9\u30FC ```!parse 1225\u30AF\u30EA\u30B9\u30DE\u30B9\u4E2D\u6B62\u306E\u304A\u77E5\u3089\u305B```\u3000\u306E\u3088\u3046\u306B\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\n".concat((0, parse_datetime_1.to_channel_name)(dt_parsed))).then();
@@ -160,6 +164,9 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         }
         else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
             (0, wipe_1.default)(client, msg);
+        }
+        else if (parsed.order === '!自動削除') { // ほぼデバッグ用
+            (0, trigger_delete_1.default)(client, msg);
         }
         else if (parsed.order === '!削除') {
             (0, delete_1.default)(client, msg);

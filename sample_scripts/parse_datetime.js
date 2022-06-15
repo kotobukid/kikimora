@@ -90,6 +90,10 @@ var get_date_to_delete = function (r) {
         }
     }
     var target_date = new Date(year, m - 1, d + 2);
-    return "".concat(target_date.getFullYear(), "/").concat(zero_pad_xx(target_date.getMonth() + 1), "/").concat(zero_pad_xx(target_date.getDate()), " (").concat(adjusts, "+2 days)");
+    return {
+        // s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())} (${adjusts}+2 days)`,
+        s: "".concat(target_date.getFullYear(), "/").concat(zero_pad_xx(target_date.getMonth() + 1), "/").concat(zero_pad_xx(target_date.getDate())),
+        n: "".concat(target_date.getFullYear()).concat(zero_pad_xx(target_date.getMonth() + 1)).concat(zero_pad_xx(target_date.getDate()))
+    };
 };
 exports.get_date_to_delete = get_date_to_delete;

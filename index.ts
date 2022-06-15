@@ -8,9 +8,11 @@ import change from './orders/change';
 import _delete from './orders/delete';
 import wipe from './orders/wipe';
 import close from './orders/close';
+import trigger_delete from "./orders/trigger_delete";
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
 import {parse_datetime, to_channel_name, get_date_to_delete} from "./sample_scripts/parse_datetime";
+import {delete_channels_expired} from "./orders/trigger_delete";
 
 const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
@@ -28,6 +30,10 @@ client.once('ready', async () => {
     // @ts-ignore
     await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
+
+    setInterval(() => {
+        delete_channels_expired(client);
+    }, 1000 * 60 * 30);
 });
 
 client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
@@ -56,11 +62,11 @@ client.on('messageCreate', async (msg: Message) => {
     if (msg.author.bot) {
         return;
     } else if (message_text === '!logout') {
-        logout(client, msg);
+        // logout(client, msg);
     } else if (parsed.order === '!parse') {
         const dt_parsed = parse_datetime(msg.content.trim());
         if (dt_parsed.m) {
-            msg.channel.send(`チャンネル名: ${to_channel_name(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed)}`).then();
+            msg.channel.send(`チャンネル名: ${to_channel_name(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed).s}`).then();
         } else {
             msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name(dt_parsed)}`).then();
         }
@@ -78,6 +84,8 @@ client.on('messageCreate', async (msg: Message) => {
         close(client, msg);
     } else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
         wipe(client, msg);
+    } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
+        trigger_delete(client, msg);
     } else if (parsed.order === '!削除') {
         _delete(client, msg);
         // } else if (parsed.order === '!情報') { // デバッグ用

@@ -1,13 +1,33 @@
 'use strict';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetch_message_room = exports.create_message_room = exports.fetch_summon_target = exports.create_summon_cache = exports.find_channel = exports.create_channel = void 0;
+exports.fetch_message_room = exports.create_message_room = exports.fetch_summon_target = exports.create_summon_cache = exports.find_channel_expired = exports.find_channel = exports.create_channel = void 0;
 var functions_1 = require("../functions");
 var fs = require('fs');
 var path = require('path');
-var sequelize_1 = __importDefault(require("sequelize"));
+var sequelize_1 = __importStar(require("sequelize"));
 // @ts-ignore
 var basename = path.basename(__filename);
 var env = process.env.NODE_ENV || 'development';
@@ -43,6 +63,7 @@ var create_channel = function (source) {
         c.channel_name = source.channel_name;
         c.text_channel = source.text_channel;
         c.voice_channel = source.voice_channel;
+        c.deleted_at = source.deleted_at || '';
         c.is_deleted = false;
         resolve(c.save());
     });
@@ -67,6 +88,30 @@ var find_channel = function (condition, limit, reverse) {
     });
 };
 exports.find_channel = find_channel;
+var zero_pad_xx = function (x) {
+    return ('0' + "".concat(x)).slice(-2);
+};
+var find_channel_expired = function () {
+    return new Promise(function (resolve, reject) {
+        var _a, _b;
+        var today = new Date();
+        var today_string = "".concat(today.getFullYear()).concat(zero_pad_xx(today.getMonth() + 1)).concat(zero_pad_xx(today.getDate()));
+        db.channel.findAll({
+            where: {
+                deleted_at: (_a = {},
+                    _a[sequelize_1.Op.lte] = today_string,
+                    _a[sequelize_1.Op.not] = '',
+                    _a),
+                is_deleted: (_b = {},
+                    _b[sequelize_1.Op.not] = 1,
+                    _b)
+            }
+        }).then(function (data) {
+            resolve(data);
+        });
+    });
+};
+exports.find_channel_expired = find_channel_expired;
 var create_summon_cache = function (info, next) {
     var today = new Date();
     today.setDate(today.getDate() + 30);

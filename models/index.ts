@@ -4,7 +4,7 @@ import {date_to_string} from "../functions";
 
 const fs = require('fs');
 const path = require('path');
-import Sequelize from "sequelize";
+import Sequelize, {Op} from "sequelize";
 
 // @ts-ignore
 const basename = path.basename(__filename);
@@ -49,6 +49,7 @@ const create_channel = (source: ChannelSource): Promise<any> => {
         c.channel_name = source.channel_name
         c.text_channel = source.text_channel
         c.voice_channel = source.voice_channel
+        c.deleted_at = source.deleted_at || ''
         c.is_deleted = false
         resolve(c.save())
     })
@@ -73,6 +74,31 @@ const find_channel = (condition: Record<string, any>, limit?: number | null, rev
             resolve(data)
         })
     })
+}
+
+const zero_pad_xx = (x: number | string): string => {
+    return ('0' + `${x}`).slice(-2);
+};
+
+const find_channel_expired = () => {
+    return new Promise((resolve, reject) => {
+        const today = new Date();
+        const today_string = `${today.getFullYear()}${zero_pad_xx(today.getMonth() + 1)}${zero_pad_xx(today.getDate())}`
+
+        db.channel.findAll({
+            where: {
+                deleted_at: {
+                    [Op.lte]: today_string,
+                    [Op.not]: ''
+                },
+                is_deleted: {
+                    [Op.not]: 1
+                }
+            }
+        }).then((data: any[]) => {
+            resolve(data);
+        });
+    });
 }
 
 declare type CreateSummonCacheOption = {
@@ -169,4 +195,12 @@ const fetch_message_room = (message: string, next: (mr: MessageRoom) => void) =>
 
 db.Sequelize = Sequelize;
 export default db;
-export {create_channel, find_channel, create_summon_cache, fetch_summon_target, create_message_room, fetch_message_room}
+export {
+    create_channel,
+    find_channel,
+    find_channel_expired,
+    create_summon_cache,
+    fetch_summon_target,
+    create_message_room,
+    fetch_message_room
+}

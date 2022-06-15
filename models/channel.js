@@ -32,6 +32,10 @@ var ModelSource = {
         type: sequelize_1.DataTypes.BOOLEAN,
         allowNull: true,
         default: false
+    },
+    deleted_at: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     }
 };
 exports.ModelSource = ModelSource;
