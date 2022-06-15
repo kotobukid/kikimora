@@ -65,7 +65,12 @@ var func = function (client, msg) {
                             deleted_at: delete_date.n
                         }).then(function (ch_data) {
                             msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C<#".concat(ch.id, ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002")).then();
-                            ch.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                            if (delete_date.n !== '') {
+                                ch.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                            }
+                            else {
+                                ch.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                            }
                         }).catch(console.error);
                     });
                 });
