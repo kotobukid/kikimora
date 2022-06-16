@@ -58,7 +58,6 @@ const func = (client: KikimoraClient, msg: Message) => {
                                             // @ts-ignore
                                             tc.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
                                         }
-
                                     });
                                 }
                             }).catch((e: Error) => {
@@ -74,6 +73,16 @@ const func = (client: KikimoraClient, msg: Message) => {
                                 });
                             });
                         } else {
+                            // voice_channelがない場合(==募集チャンネル)
+                            // @ts-ignore
+                            channels[i].update({
+                                channel_name: new_title,
+                                deleted_at: delete_date.n
+                                // @ts-ignore
+                            }).then().catch((e: error) => {
+                                console.error(e);
+                            });
+
                             msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
                                 if (delete_date.n !== '') {
                                     // @ts-ignore
@@ -82,7 +91,6 @@ const func = (client: KikimoraClient, msg: Message) => {
                                     // @ts-ignore
                                     tc.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
                                 }
-
                             });
                         }
                     }).catch((e: Error) => {
