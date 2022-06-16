@@ -2,10 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var functions_1 = require("../functions");
 var models_1 = require("../models");
+var parse_datetime_1 = require("../sample_scripts/parse_datetime");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = (0, functions_1.get_payload)(message_text);
-    var new_title = parsed.payload;
+    var dt_parsed = (0, parse_datetime_1.parse_datetime)(parsed.payload);
+    var _channel_name = dt_parsed.message_payload;
+    var delete_date = (0, parse_datetime_1.get_date_to_delete)(dt_parsed);
+    var channel_name = (0, functions_1.sanitize_channel_name)(_channel_name);
+    var new_title = "".concat((0, parse_datetime_1.to_channel_name_date)(dt_parsed)).concat(channel_name);
     (0, models_1.find_channel)({
         owner: msg.author.id,
         text_channel: msg.channel.id,
@@ -22,22 +27,62 @@ var func = function (client, msg) {
                                     // @ts-ignore
                                     vc.setName(new_title).then(function () {
                                         // @ts-ignore
-                                        channels[i].update({ channel_name: new_title }).then().catch(function (e) {
+                                        channels[i].update({
+                                            channel_name: new_title,
+                                            deleted_at: delete_date.n
+                                            // @ts-ignore
+                                        }).then().catch(function (e) {
                                             console.error(e);
                                         });
-                                        msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">"));
+                                        msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">")).then(function () {
+                                            if (delete_date.n !== '') {
+                                                // @ts-ignore
+                                                tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                            }
+                                            else {
+                                                // @ts-ignore
+                                                tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                            }
+                                        });
                                     });
                                 }
                                 else {
-                                    msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">"));
+                                    msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">")).then(function () {
+                                        if (delete_date.n !== '') {
+                                            // @ts-ignore
+                                            tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                        }
+                                        else {
+                                            // @ts-ignore
+                                            tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                        }
+                                    });
                                 }
                             }).catch(function (e) {
                                 console.error(e);
-                                msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">\n\u30DC\u30A4\u30B9\u30C1\u30E3\u30F3\u30CD\u30EB\u3092\u307F\u3064\u3051\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002"));
+                                msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">\n\u30DC\u30A4\u30B9\u30C1\u30E3\u30F3\u30CD\u30EB\u3092\u307F\u3064\u3051\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002")).then(function () {
+                                    if (delete_date.n !== '') {
+                                        // @ts-ignore
+                                        tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                    }
+                                    else {
+                                        // @ts-ignore
+                                        tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                    }
+                                });
                             });
                         }
                         else {
-                            msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">"));
+                            msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">")).then(function () {
+                                if (delete_date.n !== '') {
+                                    // @ts-ignore
+                                    tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                }
+                                else {
+                                    // @ts-ignore
+                                    tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                }
+                            });
                         }
                     }).catch(function (e) {
                         console.error(e);
