@@ -13,8 +13,20 @@ import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
 import {parse_datetime, to_channel_name_date, get_date_to_delete} from "./sample_scripts/parse_datetime";
 import {delete_channels_expired} from "./orders/trigger_delete";
+import {ParsedMessage} from "./types";
+import Timeout = NodeJS.Timeout;
 
 const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
+
+const generate_today_string = (): string => {
+    const today = new Date();
+    const parsed_dt: ParsedMessage = {
+        m: `${today.getMonth() + 1}`,
+        d: `${today.getDate()}`,
+        message_payload: ''
+    };
+    return get_date_to_delete(parsed_dt).n;
+};
 
 client.once('ready', async () => {
     const data = [{
@@ -31,8 +43,20 @@ client.once('ready', async () => {
     await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 
-    setInterval(() => {
-        delete_channels_expired(client);
+    const today_string = generate_today_string();
+
+    delete_channels_expired(client);    // 起動直後に自動削除
+
+    const outer: Timeout = setInterval(() => {  // 30分毎に日付が変わっていないかを確認
+        const now_string = generate_today_string();
+        if (now_string !== today_string) {  // 日付の変更が確認できてからは24時間に1回の自動削除を行う
+
+            clearTimeout(outer);
+
+            setInterval(() => {
+                delete_channels_expired(client);
+            }, 1000 * 60 * 60 * 24);
+        }
     }, 1000 * 60 * 30);
 });
 
