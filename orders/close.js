@@ -39,6 +39,10 @@ var func = function (client, msg) {
                                     });
                                 }
                                 else {
+                                    // @ts-ignore
+                                    channels[i].update({ channel_name: new_title_1 }).then().catch(function (e) {
+                                        console.error(e);
+                                    });
                                     msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">"));
                                 }
                             }).catch(function (e) {

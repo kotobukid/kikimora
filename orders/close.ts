@@ -42,6 +42,10 @@ const func = (client: KikimoraClient, msg: Message) => {
                                         msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                     });
                                 } else {
+                                    // @ts-ignore
+                                    channels[i].update({channel_name: new_title}).then().catch((e: error) => {
+                                        console.error(e);
+                                    });
                                     msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                 }
                             }).catch((e: Error) => {
