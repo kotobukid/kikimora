@@ -13,7 +13,7 @@ import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from 'lodash';
 import {ChannelTypes} from "discord.js/typings/enums";
-import {get_date_to_delete, parse_datetime} from "../sample_scripts/parse_datetime";
+import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }) => {
     const message_text = msg.content.trim();
@@ -22,6 +22,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
     const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
     const _channel_name: string = dt_parsed.message_payload;
     const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
+    let channel_name = sanitize_channel_name(_channel_name);
+    channel_name = `${to_channel_name_date(dt_parsed)}${channel_name}`;
 
     // @ts-ignore
     client.channels.fetch(category.recruit, false, true).then((recruit_category: Discord.Channel & { permissionOverwrites: Map<string, PermissionOverwrites> }) => {
@@ -35,8 +37,6 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
         }
-
-        let channel_name = sanitize_channel_name(_channel_name);
 
         const everyoneRole = msg.guild!.roles.everyone;
 

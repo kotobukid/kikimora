@@ -15,6 +15,8 @@ var func = function (client, msg) {
     var dt_parsed = (0, parse_datetime_1.parse_datetime)(parsed.payload);
     var _channel_name = dt_parsed.message_payload;
     var delete_date = (0, parse_datetime_1.get_date_to_delete)(dt_parsed);
+    var channel_name = (0, functions_1.sanitize_channel_name)(_channel_name);
+    channel_name = "".concat((0, parse_datetime_1.to_channel_name_date)(dt_parsed)).concat(channel_name);
     // @ts-ignore
     client.channels.fetch(config_1.category.recruit, false, true).then(function (recruit_category) {
         if (!recruit_category) {
@@ -25,7 +27,6 @@ var func = function (client, msg) {
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
         }
-        var channel_name = (0, functions_1.sanitize_channel_name)(_channel_name);
         var everyoneRole = msg.guild.roles.everyone;
         var permissionSettings = [
             {

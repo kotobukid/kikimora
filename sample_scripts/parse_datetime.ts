@@ -53,15 +53,15 @@ const parse_datetime = (message: string): ParsedMessage => {
     return apply_regex(to_half_num(message));
 }
 
-const to_channel_name = (r: ParsedMessage): string => {
+const to_channel_name_date = (r: ParsedMessage): string => {
     if (r.m !== '') {
         if (r.d !== '') {
-            return `${r.m}月${r.d}日 ${r.message_payload}`;
+            return `${r.m}月${r.d}日`;
         } else {
-            return `${r.m}月--日 ${r.message_payload}`;
+            return `${r.m}月--日`;
         }
     } else {
-        return r.message_payload;
+        return '';
     }
 }
 
@@ -82,8 +82,13 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
     if (r.d !== '') {
         d = Number(r.d);
     } else {
-        m = m + 1;
-        d = 1;
+        if (!m) {
+            m = this_month;
+            d = today.getDate();
+        } else {
+            m = m + 1;
+            d = 1;
+        }
     }
 
     if (m < this_month) {
@@ -107,6 +112,6 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
 
 export {
     parse_datetime,
-    to_channel_name,
+    to_channel_name_date,
     get_date_to_delete
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_date_to_delete = exports.to_channel_name = exports.parse_datetime = void 0;
+exports.get_date_to_delete = exports.to_channel_name_date = exports.parse_datetime = void 0;
 var to_half_num = function (text) {
     var dict = {
         '０': '0',
@@ -48,20 +48,20 @@ var parse_datetime = function (message) {
     return apply_regex(to_half_num(message));
 };
 exports.parse_datetime = parse_datetime;
-var to_channel_name = function (r) {
+var to_channel_name_date = function (r) {
     if (r.m !== '') {
         if (r.d !== '') {
-            return "".concat(r.m, "\u6708").concat(r.d, "\u65E5 ").concat(r.message_payload);
+            return "".concat(r.m, "\u6708").concat(r.d, "\u65E5");
         }
         else {
-            return "".concat(r.m, "\u6708--\u65E5 ").concat(r.message_payload);
+            return "".concat(r.m, "\u6708--\u65E5");
         }
     }
     else {
-        return r.message_payload;
+        return '';
     }
 };
-exports.to_channel_name = to_channel_name;
+exports.to_channel_name_date = to_channel_name_date;
 var zero_pad_xx = function (x) {
     return ('0' + "".concat(x)).slice(-2);
 };
@@ -76,8 +76,14 @@ var get_date_to_delete = function (r) {
         d = Number(r.d);
     }
     else {
-        m = m + 1;
-        d = 1;
+        if (!m) {
+            m = this_month;
+            d = today.getDate();
+        }
+        else {
+            m = m + 1;
+            d = 1;
+        }
     }
     if (m < this_month) {
         year = today.getFullYear() + 1;

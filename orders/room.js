@@ -8,10 +8,15 @@ var functions_1 = require("../functions");
 var models_1 = require("../models");
 var async_1 = __importDefault(require("async"));
 var lodash_1 = __importDefault(require("lodash"));
+var parse_datetime_1 = require("../sample_scripts/parse_datetime");
 var func = function (client, msg) {
     var message_text = msg.content.trim();
     var parsed = (0, functions_1.get_payload)(message_text);
-    var channel_name = (0, functions_1.sanitize_channel_name)(parsed.payload);
+    var dt_parsed = (0, parse_datetime_1.parse_datetime)(parsed.payload);
+    var _channel_name = dt_parsed.message_payload;
+    var delete_date = (0, parse_datetime_1.get_date_to_delete)(dt_parsed);
+    var channel_name = (0, functions_1.sanitize_channel_name)(_channel_name);
+    channel_name = "".concat((0, parse_datetime_1.to_channel_name_date)(dt_parsed)).concat(channel_name);
     if (channel_name.trim() === '') {
         msg.channel.send("教室名を指定してください。").then();
         return;
@@ -101,9 +106,16 @@ var func = function (client, msg) {
                                         owner_name: msg.author.username,
                                         channel_name: parsed.payload,
                                         text_channel: "".concat(text_channel_created.id),
-                                        voice_channel: "".concat(voice_channel_created.id)
+                                        voice_channel: "".concat(voice_channel_created.id),
+                                        deleted_at: delete_date.n
                                     }).then(function (ch_data) {
                                         msg.channel.send("\u6559\u5BA4\u300C<#".concat(text_channel_created.id, ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002"));
+                                        if (delete_date.n !== '') {
+                                            text_channel_created.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                        }
+                                        else {
+                                            text_channel_created.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                        }
                                     }).catch(console.error);
                                 });
                             });

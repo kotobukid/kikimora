@@ -11,7 +11,7 @@ import close from './orders/close';
 import trigger_delete from "./orders/trigger_delete";
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
-import {parse_datetime, to_channel_name, get_date_to_delete} from "./sample_scripts/parse_datetime";
+import {parse_datetime, to_channel_name_date, get_date_to_delete} from "./sample_scripts/parse_datetime";
 import {delete_channels_expired} from "./orders/trigger_delete";
 
 const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
@@ -66,9 +66,9 @@ client.on('messageCreate', async (msg: Message) => {
     } else if (parsed.order === '!parse') {
         const dt_parsed = parse_datetime(msg.content.trim());
         if (dt_parsed.m) {
-            msg.channel.send(`チャンネル名: ${to_channel_name(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed).s}`).then();
+            msg.channel.send(`チャンネル名: ${to_channel_name_date(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed).s}`).then();
         } else {
-            msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name(dt_parsed)}`).then();
+            msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name_date(dt_parsed)}`).then();
         }
     } else if (parsed.order === '!募集') {
         check_user_has_some_role(client, msg, recruit);

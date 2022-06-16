@@ -8,19 +8,25 @@ import {
     TextChannel,
     VoiceChannel,
 } from 'discord.js';
-import {KikimoraClient} from "../types";
+import {KikimoraClient, ParsedMessage} from "../types";
 import {category} from "../config";
 import {get_payload, omit_id, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from "lodash";
 import {ChannelTypes} from "discord.js/typings/enums";
+import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message) => {
     const message_text = msg.content.trim();
     const parsed = get_payload(message_text);
 
-    const channel_name = sanitize_channel_name(parsed.payload);
+    const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
+    const _channel_name: string = dt_parsed.message_payload;
+    const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
+
+    let channel_name = sanitize_channel_name(_channel_name);
+    channel_name = `${to_channel_name_date(dt_parsed)}${channel_name}`;
 
     if (channel_name.trim() === '') {
         msg.channel.send("教室名を指定してください。").then();
@@ -122,9 +128,15 @@ const func = (client: KikimoraClient, msg: Message) => {
                                                 owner_name: msg.author.username,
                                                 channel_name: parsed.payload,
                                                 text_channel: `${text_channel_created.id}`,
-                                                voice_channel: `${voice_channel_created.id}`
+                                                voice_channel: `${voice_channel_created.id}`,
+                                                deleted_at: delete_date.n
                                             }).then((ch_data) => {
                                                 msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
+                                                if (delete_date.n !== '') {
+                                                    text_channel_created.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                                } else {
+                                                    text_channel_created.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                                }
                                             }).catch(console.error);
                                         });
                                     });
