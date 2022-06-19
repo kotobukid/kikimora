@@ -37,6 +37,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         '※一つの教室に対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後まで反映されないといったことがありますのでご注意ください。\n' +
         '※教室の名前については、学園のルールに準拠するようにしてください。';
     msg.author.send(info_text).then();
+    msg.react('✅').then();
 }
 
 export default func;
