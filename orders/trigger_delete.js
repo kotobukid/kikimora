@@ -59,7 +59,13 @@ var delete_channels_expired = function (client) {
                         }
                     });
                 }
-            }).catch(console.error);
+            }).catch(function (e) {
+                console.error(e);
+                // @ts-ignore
+                channels[i].update({
+                    is_deleted: true
+                });
+            });
         };
         for (var i = 0; i < channels.length; i++) {
             _loop_1(i);
