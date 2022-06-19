@@ -9,7 +9,8 @@ _.range(10).forEach(i => {
         owner_name: 'hagege',
         channel_name: '俺のチャンネル' + i,
         text_channel: `${Math.floor(Math.random() * 100000000000000)}`,
-        voice_channel: `${Math.floor(Math.random() * 100000000000000)}`
+        voice_channel: `${Math.floor(Math.random() * 100000000000000)}`,
+        prevent_auto_delete: 0
     }).then((ch: Model<Channel>) => {
         console.log(ch)
     })

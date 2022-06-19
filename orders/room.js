@@ -28,6 +28,7 @@ var func = function (client, msg) {
         id: everyoneRole.id,
         VIEW_CHANNEL: true,
     };
+    var prevent_auto_delete = 0;
     if (parsed.order === '!教室') {
         text_category_id = config_1.category.text;
         voice_category_id = config_1.category.voice;
@@ -37,6 +38,7 @@ var func = function (client, msg) {
         text_category_id = config_1.category.text_cp;
         voice_category_id = config_1.category.voice_cp;
         everyOneRolePOP.VIEW_CHANNEL = false;
+        prevent_auto_delete = 1;
     }
     // @ts-ignore
     client.channels.fetch(text_category_id).then(function (text_category) {
@@ -107,7 +109,8 @@ var func = function (client, msg) {
                                         channel_name: parsed.payload,
                                         text_channel: "".concat(text_channel_created.id),
                                         voice_channel: "".concat(voice_channel_created.id),
-                                        deleted_at: delete_date.n
+                                        deleted_at: delete_date.n,
+                                        prevent_auto_delete: prevent_auto_delete
                                     }).then(function (ch_data) {
                                         msg.channel.send("\u6559\u5BA4\u300C<#".concat(text_channel_created.id, ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002"));
                                         if (delete_date.n !== '') {

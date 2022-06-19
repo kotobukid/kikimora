@@ -6,7 +6,8 @@ declare type ChannelSource = {
     channel_name: string,
     text_channel: string,
     voice_channel: string,
-    deleted_at?: string
+    deleted_at?: string,
+    prevent_auto_delete: number
 }
 
 declare type Channel = {
@@ -48,6 +49,11 @@ const ModelSource = {
     deleted_at: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    prevent_auto_delete: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        default: 0
     }
 };
 

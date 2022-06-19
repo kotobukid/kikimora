@@ -78,7 +78,8 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
                                 channel_name: channel_name,
                                 text_channel: `${ch.id}`,
                                 voice_channel: '',
-                                deleted_at: delete_date.n
+                                deleted_at: delete_date.n,
+                                prevent_auto_delete: 0
                             }).then((ch_data) => {
                                 msg.channel.send(`募集チャンネル「<#${ch.id}>」を作成しました。`).then();
                                 if (delete_date.n !== '') {

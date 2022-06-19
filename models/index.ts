@@ -51,6 +51,7 @@ const create_channel = (source: ChannelSource): Promise<any> => {
         c.voice_channel = source.voice_channel
         c.deleted_at = source.deleted_at || ''
         c.is_deleted = false
+        c.prevent_auto_delete = source.prevent_auto_delete
         resolve(c.save())
     })
 }
@@ -91,7 +92,8 @@ const find_channel_expired_on_date = (target_day: string): Promise<ChannelSource
                 },
                 is_deleted: {
                     [Op.not]: 1
-                }
+                },
+                prevent_auto_delete: 0
             }
         }).then((data: ChannelSource[]) => {
             resolve(data);
@@ -112,7 +114,8 @@ const find_channel_expired = (): Promise<ChannelSource[]> => {
                 },
                 is_deleted: {
                     [Op.not]: 1
-                }
+                },
+                prevent_auto_delete: 0
             }
         }).then((data: ChannelSource[]) => {
             resolve(data);

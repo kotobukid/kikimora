@@ -36,6 +36,11 @@ var ModelSource = {
     deleted_at: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
+    },
+    prevent_auto_delete: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        default: 0
     }
 };
 exports.ModelSource = ModelSource;

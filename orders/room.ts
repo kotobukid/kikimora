@@ -41,6 +41,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         id: everyoneRole.id,
         VIEW_CHANNEL: true,
     };
+    let prevent_auto_delete: 1 | 0 = 0;
     if (parsed.order === '!教室') {
         text_category_id = category.text;
         voice_category_id = category.voice;
@@ -49,6 +50,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         text_category_id = category.text_cp
         voice_category_id = category.voice_cp;
         everyOneRolePOP.VIEW_CHANNEL = false;
+        prevent_auto_delete = 1;
     }
 
     // @ts-ignore
@@ -129,7 +131,8 @@ const func = (client: KikimoraClient, msg: Message) => {
                                                 channel_name: parsed.payload,
                                                 text_channel: `${text_channel_created.id}`,
                                                 voice_channel: `${voice_channel_created.id}`,
-                                                deleted_at: delete_date.n
+                                                deleted_at: delete_date.n,
+                                                prevent_auto_delete
                                             }).then((ch_data) => {
                                                 msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
                                                 if (delete_date.n !== '') {

@@ -63,7 +63,8 @@ var func = function (client, msg) {
                             channel_name: channel_name,
                             text_channel: "".concat(ch.id),
                             voice_channel: '',
-                            deleted_at: delete_date.n
+                            deleted_at: delete_date.n,
+                            prevent_auto_delete: 0
                         }).then(function (ch_data) {
                             msg.channel.send("\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u300C<#".concat(ch.id, ">\u300D\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002")).then();
                             if (delete_date.n !== '') {

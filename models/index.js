@@ -65,6 +65,7 @@ var create_channel = function (source) {
         c.voice_channel = source.voice_channel;
         c.deleted_at = source.deleted_at || '';
         c.is_deleted = false;
+        c.prevent_auto_delete = source.prevent_auto_delete;
         resolve(c.save());
     });
 };
@@ -102,7 +103,8 @@ var find_channel_expired_on_date = function (target_day) {
                     _a),
                 is_deleted: (_b = {},
                     _b[sequelize_1.Op.not] = 1,
-                    _b)
+                    _b),
+                prevent_auto_delete: 0
             }
         }).then(function (data) {
             resolve(data);
@@ -123,7 +125,8 @@ var find_channel_expired = function () {
                     _a),
                 is_deleted: (_b = {},
                     _b[sequelize_1.Op.not] = 1,
-                    _b)
+                    _b),
+                prevent_auto_delete: 0
             }
         }).then(function (data) {
             resolve(data);

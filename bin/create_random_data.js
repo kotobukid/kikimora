@@ -11,7 +11,8 @@ lodash_1.default.range(10).forEach(function (i) {
         owner_name: 'hagege',
         channel_name: '俺のチャンネル' + i,
         text_channel: "".concat(Math.floor(Math.random() * 100000000000000)),
-        voice_channel: "".concat(Math.floor(Math.random() * 100000000000000))
+        voice_channel: "".concat(Math.floor(Math.random() * 100000000000000)),
+        prevent_auto_delete: 0
     }).then(function (ch) {
         console.log(ch);
     });
