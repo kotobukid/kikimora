@@ -80,7 +80,26 @@ const zero_pad_xx = (x: number | string): string => {
     return ('0' + `${x}`).slice(-2);
 };
 
-const find_channel_expired = () => {
+const find_channel_expired_on_date = (target_day: string): Promise<ChannelSource[]> => {
+    return new Promise((resolve, reject) => {
+
+        db.channel.findAll({
+            where: {
+                deleted_at: {
+                    [Op.lte]: target_day,
+                    [Op.not]: ''
+                },
+                is_deleted: {
+                    [Op.not]: 1
+                }
+            }
+        }).then((data: ChannelSource[]) => {
+            resolve(data);
+        });
+    });
+}
+
+const find_channel_expired = (): Promise<ChannelSource[]> => {
     return new Promise((resolve, reject) => {
         const today = new Date();
         const today_string = `${today.getFullYear()}${zero_pad_xx(today.getMonth() + 1)}${zero_pad_xx(today.getDate())}`
@@ -95,7 +114,7 @@ const find_channel_expired = () => {
                     [Op.not]: 1
                 }
             }
-        }).then((data: any[]) => {
+        }).then((data: ChannelSource[]) => {
             resolve(data);
         });
     });
@@ -199,6 +218,7 @@ export {
     create_channel,
     find_channel,
     find_channel_expired,
+    find_channel_expired_on_date,
     create_summon_cache,
     fetch_summon_target,
     create_message_room,

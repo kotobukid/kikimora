@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetch_message_room = exports.create_message_room = exports.fetch_summon_target = exports.create_summon_cache = exports.find_channel_expired = exports.find_channel = exports.create_channel = void 0;
+exports.fetch_message_room = exports.create_message_room = exports.fetch_summon_target = exports.create_summon_cache = exports.find_channel_expired_on_date = exports.find_channel_expired = exports.find_channel = exports.create_channel = void 0;
 var functions_1 = require("../functions");
 var fs = require('fs');
 var path = require('path');
@@ -91,6 +91,25 @@ exports.find_channel = find_channel;
 var zero_pad_xx = function (x) {
     return ('0' + "".concat(x)).slice(-2);
 };
+var find_channel_expired_on_date = function (target_day) {
+    return new Promise(function (resolve, reject) {
+        var _a, _b;
+        db.channel.findAll({
+            where: {
+                deleted_at: (_a = {},
+                    _a[sequelize_1.Op.lte] = target_day,
+                    _a[sequelize_1.Op.not] = '',
+                    _a),
+                is_deleted: (_b = {},
+                    _b[sequelize_1.Op.not] = 1,
+                    _b)
+            }
+        }).then(function (data) {
+            resolve(data);
+        });
+    });
+};
+exports.find_channel_expired_on_date = find_channel_expired_on_date;
 var find_channel_expired = function () {
     return new Promise(function (resolve, reject) {
         var _a, _b;

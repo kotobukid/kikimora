@@ -77,17 +77,28 @@ var summon_1 = __importStar(require("./orders/summon"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
 var trigger_delete_2 = require("./orders/trigger_delete");
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
-var generate_today_string = function () {
+var generate_today_string = function (days_offset) {
+    var parsed_dt;
     var today = new Date();
-    var parsed_dt = {
-        m: "".concat(today.getMonth() + 1),
-        d: "".concat(today.getDate()),
-        message_payload: ''
-    };
-    return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n;
+    if (days_offset == undefined) {
+        parsed_dt = {
+            m: "".concat(today.getMonth() + 1),
+            d: "".concat(today.getDate()),
+            message_payload: ''
+        };
+    }
+    else {
+        var target_day = new Date("".concat(today.getFullYear(), "/").concat(today.getMonth() + 1, "/").concat(today.getDate() + days_offset));
+        parsed_dt = {
+            m: "".concat(target_day.getMonth() + 1),
+            d: "".concat(target_day.getDate()),
+            message_payload: ''
+        };
+    }
+    return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n; // (+2 days)
 };
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var data, today_string, outer;
+    var data, today_string, tomorrow_string, outer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -109,12 +120,16 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
                 console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
                 today_string = generate_today_string();
                 (0, trigger_delete_2.delete_channels_expired)(client); // 起動直後に自動削除
+                tomorrow_string = generate_today_string(1);
+                (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
                 outer = setInterval(function () {
                     var now_string = generate_today_string();
                     if (now_string !== today_string) { // 日付の変更が確認できてからは24時間に1回の自動削除を行う
                         clearTimeout(outer);
                         setInterval(function () {
                             (0, trigger_delete_2.delete_channels_expired)(client);
+                            var tomorrow_string = generate_today_string(1);
+                            (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
                         }, 1000 * 60 * 60 * 24);
                     }
                 }, 1000 * 60 * 30);
