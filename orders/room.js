@@ -57,7 +57,7 @@ var func = function (client, msg) {
         msg.guild.channels.create(channel_name, {
             type: 0 /* GUILD_TEXT */,
             parent: text_category_id,
-            topic: "\u4F5C\u6210\u8005: ".concat(msg.author.username)
+            topic: "\u4F5C\u6210\u8005: ".concat(msg.author.username, " ").concat(prevent_auto_delete ? '[永続]' : '')
             // @ts-ignore
         }).then(function (text_channel_created) {
             text_channel_created.lockPermissions()

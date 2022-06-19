@@ -72,7 +72,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
             type: ChannelTypes.GUILD_TEXT,
             parent: text_category_id,
-            topic: `作成者: ${msg.author.username}`
+            topic: `作成者: ${msg.author.username} ${prevent_auto_delete ? '[永続]' : ''}`
 
             // @ts-ignore
         }).then((text_channel_created: TextChannel) => {
