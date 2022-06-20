@@ -65,7 +65,9 @@ const func = (client: KikimoraClient, msg: Message) => {
             {
                 id: msg.author.id,
                 MANAGE_CHANNELS: true,
-                VIEW_CHANNEL: true
+                VIEW_CHANNEL: true,
+                MANAGE_MESSAGES: true,
+                MANAGE_THREADS: true
             }
         ];
 
@@ -101,7 +103,8 @@ const func = (client: KikimoraClient, msg: Message) => {
                                 {
                                     id: msg.author.id,
                                     MANAGE_CHANNELS: true,
-                                    VIEW_CHANNEL: true
+                                    VIEW_CHANNEL: true,
+                                    MANAGE_MESSAGES: true
                                 }
                             ];
 

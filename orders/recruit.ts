@@ -47,7 +47,9 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             },
             {
                 id: msg.author.id,
-                MANAGE_CHANNELS: true
+                MANAGE_CHANNELS: true,
+                MANAGE_MESSAGES: true,
+                MANAGE_THREADS: true
             }
         ];
 

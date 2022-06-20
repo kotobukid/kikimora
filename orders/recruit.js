@@ -35,7 +35,9 @@ var func = function (client, msg) {
             },
             {
                 id: msg.author.id,
-                MANAGE_CHANNELS: true
+                MANAGE_CHANNELS: true,
+                MANAGE_MESSAGES: true,
+                MANAGE_THREADS: true
             }
         ];
         msg.guild.channels.create(channel_name, {

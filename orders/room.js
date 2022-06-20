@@ -51,7 +51,9 @@ var func = function (client, msg) {
             {
                 id: msg.author.id,
                 MANAGE_CHANNELS: true,
-                VIEW_CHANNEL: true
+                VIEW_CHANNEL: true,
+                MANAGE_MESSAGES: true,
+                MANAGE_THREADS: true
             }
         ];
         msg.guild.channels.create(channel_name, {
@@ -82,7 +84,8 @@ var func = function (client, msg) {
                             {
                                 id: msg.author.id,
                                 MANAGE_CHANNELS: true,
-                                VIEW_CHANNEL: true
+                                VIEW_CHANNEL: true,
+                                MANAGE_MESSAGES: true
                             }
                         ];
                         msg.guild.channels.create(channel_name, {
