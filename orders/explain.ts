@@ -1,5 +1,5 @@
 import {KikimoraClient} from "../types";
-import {Message} from "discord.js";
+import {DiscordAPIError, Message} from "discord.js";
 
 const func = (client: KikimoraClient, msg: Message) => {
     const info_text = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
@@ -36,7 +36,11 @@ const func = (client: KikimoraClient, msg: Message) => {
         '> 続いて表示されるメッセージに従ってください。\n\n' +
         '※一つの教室に対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後まで反映されないといったことがありますのでご注意ください。\n' +
         '※教室の名前については、学園のルールに準拠するようにしてください。';
-    msg.author.send(info_text).then();
+    msg.author.send(info_text).then().catch((e: Error) => {
+        if (e instanceof DiscordAPIError) {
+            msg.channel.send(info_text);
+        }
+    });
     msg.react('✅').then();
 }
 

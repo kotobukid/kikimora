@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var discord_js_1 = require("discord.js");
 var func = function (client, msg) {
     var info_text = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
         '** ● 新ルール 日付4文字 ● **\n' +
@@ -35,7 +36,11 @@ var func = function (client, msg) {
         '> 続いて表示されるメッセージに従ってください。\n\n' +
         '※一つの教室に対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後まで反映されないといったことがありますのでご注意ください。\n' +
         '※教室の名前については、学園のルールに準拠するようにしてください。';
-    msg.author.send(info_text).then();
+    msg.author.send(info_text).then().catch(function (e) {
+        if (e instanceof discord_js_1.DiscordAPIError) {
+            msg.channel.send(info_text);
+        }
+    });
     msg.react('✅').then();
 };
 exports.default = func;
