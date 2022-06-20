@@ -54,7 +54,7 @@ var to_channel_name_date = function (r) {
             return "".concat(r.m, "\u6708").concat(r.d, "\u65E5");
         }
         else {
-            return "".concat(r.m, "\u6708--\u65E5");
+            return "".concat(r.m, "\u6708");
         }
     }
     else {
@@ -90,7 +90,7 @@ var get_date_to_delete = function (r) {
         adjusts += 'next year / ';
     }
     else if (m === this_month) {
-        if (d < today.getDate()) {
+        if (d + 2 < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / ';
         }

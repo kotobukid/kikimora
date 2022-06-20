@@ -95,7 +95,7 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
         year = today.getFullYear() + 1;
         adjusts += 'next year / '
     } else if (m === this_month) {
-        if (d < today.getDate()) {
+        if (d + 2 < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / '
         }
