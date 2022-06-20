@@ -15,6 +15,8 @@ import {parse_datetime, to_channel_name_date, get_date_to_delete} from "./sample
 import {delete_channels_expired, warn_channels_to_delete} from "./orders/trigger_delete";
 import {ParsedMessage} from "./types";
 import Timeout = NodeJS.Timeout;
+import fs from 'fs';
+import path from 'path';
 
 const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
@@ -54,12 +56,24 @@ client.once('ready', async () => {
     await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 
+    const filename = path.join(__dirname, 'last_checked.txt');
+
+    let last_checked: string = '';
+    if (fs.existsSync(filename)) {
+        last_checked = fs.readFileSync(filename).toString();
+    }
+
     const today_string = generate_today_string();
 
     delete_channels_expired(client);    // 起動直後に自動削除
 
     const tomorrow_string = generate_today_string(1);
-    warn_channels_to_delete(client, tomorrow_string);
+
+    if (last_checked !== today_string) {
+        // 本日初めての警告
+        warn_channels_to_delete(client, tomorrow_string);
+        fs.writeFile(filename, today_string, () => {});
+    }
 
     const outer: Timeout = setInterval(() => {  // 30分毎に日付が変わっていないかを確認
         const now_string = generate_today_string();
@@ -70,8 +84,12 @@ client.once('ready', async () => {
             setInterval(() => {
                 delete_channels_expired(client);
 
+                const today_string_inner = generate_today_string();
+
                 const tomorrow_string = generate_today_string(1);
                 warn_channels_to_delete(client, tomorrow_string);
+
+                fs.writeFile(filename, today_string_inner, () => {});
             }, 1000 * 60 * 60 * 24);
         }
     }, 1000 * 60 * 30);

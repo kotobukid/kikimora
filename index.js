@@ -76,6 +76,8 @@ var trigger_delete_1 = __importDefault(require("./orders/trigger_delete"));
 var summon_1 = __importStar(require("./orders/summon"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
 var trigger_delete_2 = require("./orders/trigger_delete");
+var fs_1 = __importDefault(require("fs"));
+var path_1 = __importDefault(require("path"));
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 var generate_today_string = function (days_offset) {
     var parsed_dt;
@@ -98,7 +100,7 @@ var generate_today_string = function (days_offset) {
     return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n; // (+2 days)
 };
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var data, today_string, tomorrow_string, outer;
+    var data, filename, last_checked, today_string, tomorrow_string, outer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -118,18 +120,29 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
                 // @ts-ignore
                 _a.sent();
                 console.log("".concat(client.user.tag, " \u3067\u30ED\u30B0\u30A4\u30F3"));
+                filename = path_1.default.join(__dirname, 'last_checked.txt');
+                last_checked = '';
+                if (fs_1.default.existsSync(filename)) {
+                    last_checked = fs_1.default.readFileSync(filename).toString();
+                }
                 today_string = generate_today_string();
                 (0, trigger_delete_2.delete_channels_expired)(client); // 起動直後に自動削除
                 tomorrow_string = generate_today_string(1);
-                (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
+                if (last_checked !== today_string) {
+                    // 本日初めての警告
+                    (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
+                    fs_1.default.writeFile(filename, today_string, function () { });
+                }
                 outer = setInterval(function () {
                     var now_string = generate_today_string();
                     if (now_string !== today_string) { // 日付の変更が確認できてからは24時間に1回の自動削除を行う
                         clearTimeout(outer);
                         setInterval(function () {
                             (0, trigger_delete_2.delete_channels_expired)(client);
+                            var today_string_inner = generate_today_string();
                             var tomorrow_string = generate_today_string(1);
                             (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
+                            fs_1.default.writeFile(filename, today_string_inner, function () { });
                         }, 1000 * 60 * 60 * 24);
                     }
                 }, 1000 * 60 * 30);
