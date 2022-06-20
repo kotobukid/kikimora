@@ -58,7 +58,7 @@ const to_channel_name_date = (r: ParsedMessage): string => {
         if (r.d !== '') {
             return `${r.m}月${r.d}日`;
         } else {
-            return `${r.m}月--日`;
+            return `${r.m}月`;
         }
     } else {
         return '';
