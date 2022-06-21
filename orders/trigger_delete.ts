@@ -1,12 +1,37 @@
 import {AnyChannel, Channel, Message, TextChannel} from 'discord.js';
-import {KikimoraClient} from "../types";
+import {KikimoraClient, ParsedMessage} from "../types";
 import {find_channel_expired, find_channel_expired_on_date} from "../models";
 import {ChannelSource} from "../models/channel";
 import {AsyncFunction} from "async";
 import _ from 'lodash';
 import async from "async";
+import {get_date_to_delete} from "../sample_scripts/parse_datetime";
+
+const generate_today_string = (days_offset?: number): string => {
+    let parsed_dt!: ParsedMessage;
+    const today = new Date();
+
+    if (days_offset == undefined) {
+        parsed_dt = {
+            m: `${today.getMonth() + 1}`,
+            d: `${today.getDate()}`,
+            message_payload: ''
+        };
+    } else {
+        const target_day: Date = new Date(`${today.getFullYear()}/${today.getMonth()+1}/${today.getDate() + days_offset}`);
+        parsed_dt = {
+            m: `${target_day.getMonth() + 1}`,
+            d: `${target_day.getDate()}`,
+            message_payload: ''
+        };
+    }
+    return get_date_to_delete(parsed_dt).n; // (+2 days)
+};
 
 export const warn_channels_to_delete = (client: KikimoraClient, threshold_date: string) => {
+    const today_string = generate_today_string();
+    console.log(`${today_string} warn_channels_to_delete()`);
+
     find_channel_expired_on_date(threshold_date).then((channels: ChannelSource[]) => {
         const funcs: AsyncFunction<any, any>[] = _.map(channels, (ch: ChannelSource) => {
             return (done: Function) => {

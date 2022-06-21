@@ -8,7 +8,30 @@ var discord_js_1 = require("discord.js");
 var models_1 = require("../models");
 var lodash_1 = __importDefault(require("lodash"));
 var async_1 = __importDefault(require("async"));
+var parse_datetime_1 = require("../sample_scripts/parse_datetime");
+var generate_today_string = function (days_offset) {
+    var parsed_dt;
+    var today = new Date();
+    if (days_offset == undefined) {
+        parsed_dt = {
+            m: "".concat(today.getMonth() + 1),
+            d: "".concat(today.getDate()),
+            message_payload: ''
+        };
+    }
+    else {
+        var target_day = new Date("".concat(today.getFullYear(), "/").concat(today.getMonth() + 1, "/").concat(today.getDate() + days_offset));
+        parsed_dt = {
+            m: "".concat(target_day.getMonth() + 1),
+            d: "".concat(target_day.getDate()),
+            message_payload: ''
+        };
+    }
+    return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n; // (+2 days)
+};
 var warn_channels_to_delete = function (client, threshold_date) {
+    var today_string = generate_today_string();
+    console.log("".concat(today_string, " warn_channels_to_delete()"));
     (0, models_1.find_channel_expired_on_date)(threshold_date).then(function (channels) {
         var funcs = lodash_1.default.map(channels, function (ch) {
             return function (done) {
