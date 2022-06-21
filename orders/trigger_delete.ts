@@ -59,11 +59,9 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                     });
                 }
             }).catch((e: Error) => {
-                console.error(e);
                 // @ts-ignore
-                channels[i].update({
-                    is_deleted: true
-                });
+                channels[i].update({is_deleted: true}).then();
+                console.error(e);
             });
         }
     }).catch((err: Error) => {
