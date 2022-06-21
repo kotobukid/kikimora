@@ -133,17 +133,22 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
                     (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
                     fs_1.default.writeFile(filename, today_string, function () { });
                 }
+                console.log({ last_checked: last_checked });
                 outer = setInterval(function () {
                     var now_string = generate_today_string();
+                    console.log({ now_string: now_string });
                     if (now_string !== today_string) { // 日付の変更が確認できてからは24時間に1回の自動削除を行う
-                        clearTimeout(outer);
-                        setInterval(function () {
+                        clearInterval(outer);
+                        var every_day_process = function () {
                             (0, trigger_delete_2.delete_channels_expired)(client);
                             var today_string_inner = generate_today_string();
+                            console.log("every day process ".concat(today_string_inner));
                             var tomorrow_string = generate_today_string(1);
                             (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
                             fs_1.default.writeFile(filename, today_string_inner, function () { });
-                        }, 1000 * 60 * 60 * 24);
+                        };
+                        every_day_process();
+                        setInterval(every_day_process, 1000 * 60 * 60 * 24);
                     }
                 }, 1000 * 60 * 30);
                 return [2 /*return*/];

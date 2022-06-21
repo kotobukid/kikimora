@@ -74,23 +74,30 @@ client.once('ready', async () => {
         warn_channels_to_delete(client, tomorrow_string);
         fs.writeFile(filename, today_string, () => {});
     }
+    console.log({last_checked})
 
     const outer: Timeout = setInterval(() => {  // 30分毎に日付が変わっていないかを確認
         const now_string = generate_today_string();
+        console.log({now_string})
         if (now_string !== today_string) {  // 日付の変更が確認できてからは24時間に1回の自動削除を行う
 
-            clearTimeout(outer);
+            clearInterval(outer);
 
-            setInterval(() => {
+            const every_day_process = () => {
                 delete_channels_expired(client);
 
                 const today_string_inner = generate_today_string();
+                console.log(`every day process ${today_string_inner}`)
 
                 const tomorrow_string = generate_today_string(1);
                 warn_channels_to_delete(client, tomorrow_string);
 
                 fs.writeFile(filename, today_string_inner, () => {});
-            }, 1000 * 60 * 60 * 24);
+            }
+
+            every_day_process();
+
+            setInterval(every_day_process, 1000 * 60 * 60 * 24);
         }
     }, 1000 * 60 * 30);
 });
