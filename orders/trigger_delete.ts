@@ -14,6 +14,8 @@ export const warn_channels_to_delete = (client: KikimoraClient, threshold_date: 
                     if (tc && tc instanceof TextChannel) {
                         tc.send(`<@!${ch.owner}> 自動削除予定日が近付いています。削除予定を延期する場合は \`!変更\` コマンドでセッション予定日を含むチャンネル名を設定してください。`).then(() => {
                             done()
+                        }).catch((e: Error) => {
+                            console.log(e);
                         });
                     }
                 });

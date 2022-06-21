@@ -16,6 +16,8 @@ var warn_channels_to_delete = function (client, threshold_date) {
                     if (tc && tc instanceof discord_js_1.TextChannel) {
                         tc.send("<@!".concat(ch.owner, "> \u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u65E5\u304C\u8FD1\u4ED8\u3044\u3066\u3044\u307E\u3059\u3002\u524A\u9664\u4E88\u5B9A\u3092\u5EF6\u671F\u3059\u308B\u5834\u5408\u306F `!\u5909\u66F4` \u30B3\u30DE\u30F3\u30C9\u3067\u30BB\u30C3\u30B7\u30E7\u30F3\u4E88\u5B9A\u65E5\u3092\u542B\u3080\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u8A2D\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002")).then(function () {
                             done();
+                        }).catch(function (e) {
+                            console.log(e);
                         });
                     }
                 });
