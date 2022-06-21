@@ -42,18 +42,18 @@ const generate_today_string = (days_offset?: number): string => {
 };
 
 client.once('ready', async () => {
-    const data = [{
-        name: 'recruit',
-        description: '募集チャンネルを作成します!',
-        options: [{
-            type: "STRING",
-            name: "input",
-            description: "The input to echo back",
-            required: true
-        }],
-    }];
-    // @ts-ignore
-    await client.application.commands.set(data, '');
+    // const data = [{
+    //     name: 'recruit',
+    //     description: '募集チャンネルを作成します!',
+    //     options: [{
+    //         type: "STRING",
+    //         name: "input",
+    //         description: "The input to echo back",
+    //         required: true
+    //     }],
+    // }];
+    // // @ts-ignore
+    // await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 
     const filename = path.join(__dirname, 'last_checked.txt');
