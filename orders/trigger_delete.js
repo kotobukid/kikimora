@@ -59,14 +59,19 @@ var delete_channels_expired = function (client) {
         }
         var _loop_1 = function (i) {
             client.channels.fetch(channels[i].text_channel).then(function (tc) {
+                console.log(tc);
                 if (tc) {
                     tc.delete().then(function (tc_deleted) {
                         if (channels[i].voice_channel) {
                             client.channels.fetch(channels[i].voice_channel).then(function (vc) {
+                                console.log(vc);
                                 if (vc) {
                                     vc.delete().then(function (vc_deleted) {
                                         // @ts-ignore
                                         channels[i].update({ is_deleted: true }).then();
+                                    }).catch(function (e) {
+                                        console.log('A');
+                                        console.log(e);
                                     });
                                 }
                                 else {
@@ -74,6 +79,7 @@ var delete_channels_expired = function (client) {
                                     channels[i].update({ is_deleted: true }).then();
                                 }
                             }).catch(function () {
+                                console.log('C');
                                 // @ts-ignore
                                 channels[i].update({ is_deleted: true }).then();
                             });
@@ -82,6 +88,9 @@ var delete_channels_expired = function (client) {
                             // @ts-ignore
                             channels[i].update({ is_deleted: true }).then();
                         }
+                    }).catch(function (e) {
+                        console.log('B');
+                        console.log(e);
                     });
                 }
             }).catch(function (e) {

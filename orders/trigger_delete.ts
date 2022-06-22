@@ -18,7 +18,7 @@ const generate_today_string = (days_offset?: number): string => {
             message_payload: ''
         };
     } else {
-        const target_day: Date = new Date(`${today.getFullYear()}/${today.getMonth()+1}/${today.getDate() + days_offset}`);
+        const target_day: Date = new Date(`${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate() + days_offset}`);
         parsed_dt = {
             m: `${target_day.getMonth() + 1}`,
             d: `${target_day.getDate()}`,
@@ -62,20 +62,26 @@ export const delete_channels_expired = (client: KikimoraClient) => {
 
         for (let i: number = 0; i < channels.length; i++) {
             client.channels.fetch(channels[i].text_channel).then(tc => {
+                console.log(tc);
                 if (tc) {
                     tc.delete().then((tc_deleted: Channel) => {
                         if (channels[i].voice_channel) {
                             client.channels.fetch(channels[i].voice_channel).then(vc => {
+                                console.log(vc)
                                 if (vc) {
                                     vc.delete().then((vc_deleted: Channel) => {
                                         // @ts-ignore
                                         channels[i].update({is_deleted: true}).then();
+                                    }).catch((e: Error) => {
+                                        console.log('A');
+                                        console.log(e);
                                     });
                                 } else {
                                     // @ts-ignore
                                     channels[i].update({is_deleted: true}).then();
                                 }
                             }).catch(() => {
+                                console.log('C');
                                 // @ts-ignore
                                 channels[i].update({is_deleted: true}).then();
                             });
@@ -83,6 +89,9 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                             // @ts-ignore
                             channels[i].update({is_deleted: true}).then();
                         }
+                    }).catch((e: Error) => {
+                        console.log('B');
+                        console.log(e);
                     });
                 }
             }).catch((e: Error) => {
