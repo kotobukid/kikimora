@@ -52,6 +52,8 @@ export const warn_channels_to_delete = (client: KikimoraClient, threshold_date: 
     })
 };
 
+const rehearsal_mode: boolean = true;
+
 export const delete_channels_expired = (client: KikimoraClient) => {
     console.log('"delete_channels_expired" is kicked.')
 
@@ -61,42 +63,50 @@ export const delete_channels_expired = (client: KikimoraClient) => {
         }
 
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel).then(tc => {
+            client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null) => {
                 console.log(tc);
                 if (tc) {
-                    tc.delete().then((tc_deleted: Channel) => {
-                        if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then(vc => {
-                                console.log(vc)
-                                if (vc) {
-                                    vc.delete().then((vc_deleted: Channel) => {
+                    if (rehearsal_mode) {
+                        if (tc instanceof TextChannel) {
+                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then();
+                        }
+                    } else {
+                        tc.delete().then((tc_deleted: Channel) => {
+                            if (channels[i].voice_channel) {
+                                client.channels.fetch(channels[i].voice_channel).then(vc => {
+                                    console.log(vc)
+                                    if (vc) {
+                                        vc.delete().then((vc_deleted: Channel) => {
+                                            // @ts-ignore
+                                            channels[i].update({is_deleted: true}).then();
+                                        }).catch((e: Error) => {
+                                            console.log('A');
+                                            console.log(e);
+                                        });
+                                    } else {
                                         // @ts-ignore
                                         channels[i].update({is_deleted: true}).then();
-                                    }).catch((e: Error) => {
-                                        console.log('A');
-                                        console.log(e);
-                                    });
-                                } else {
+                                    }
+                                }).catch(() => {
+                                    console.log('C');
                                     // @ts-ignore
                                     channels[i].update({is_deleted: true}).then();
-                                }
-                            }).catch(() => {
-                                console.log('C');
+                                });
+                            } else {
                                 // @ts-ignore
                                 channels[i].update({is_deleted: true}).then();
-                            });
-                        } else {
-                            // @ts-ignore
-                            channels[i].update({is_deleted: true}).then();
-                        }
-                    }).catch((e: Error) => {
-                        console.log('B');
-                        console.log(e);
-                    });
+                            }
+                        }).catch((e: Error) => {
+                            console.log('B');
+                            console.log(e);
+                        });
+                    }
                 }
             }).catch((e: Error) => {
-                // @ts-ignore
-                channels[i].update({is_deleted: true}).then();
+                if (!rehearsal_mode) {
+                    // @ts-ignore
+                    channels[i].update({is_deleted: true}).then();
+                }
                 console.error(e);
             });
         }

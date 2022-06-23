@@ -51,6 +51,7 @@ var warn_channels_to_delete = function (client, threshold_date) {
     });
 };
 exports.warn_channels_to_delete = warn_channels_to_delete;
+var rehearsal_mode = true;
 var delete_channels_expired = function (client) {
     console.log('"delete_channels_expired" is kicked.');
     (0, models_1.find_channel_expired)().then(function (channels) {
@@ -61,41 +62,50 @@ var delete_channels_expired = function (client) {
             client.channels.fetch(channels[i].text_channel).then(function (tc) {
                 console.log(tc);
                 if (tc) {
-                    tc.delete().then(function (tc_deleted) {
-                        if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then(function (vc) {
-                                console.log(vc);
-                                if (vc) {
-                                    vc.delete().then(function (vc_deleted) {
+                    if (rehearsal_mode) {
+                        if (tc instanceof discord_js_1.TextChannel) {
+                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then();
+                        }
+                    }
+                    else {
+                        tc.delete().then(function (tc_deleted) {
+                            if (channels[i].voice_channel) {
+                                client.channels.fetch(channels[i].voice_channel).then(function (vc) {
+                                    console.log(vc);
+                                    if (vc) {
+                                        vc.delete().then(function (vc_deleted) {
+                                            // @ts-ignore
+                                            channels[i].update({ is_deleted: true }).then();
+                                        }).catch(function (e) {
+                                            console.log('A');
+                                            console.log(e);
+                                        });
+                                    }
+                                    else {
                                         // @ts-ignore
                                         channels[i].update({ is_deleted: true }).then();
-                                    }).catch(function (e) {
-                                        console.log('A');
-                                        console.log(e);
-                                    });
-                                }
-                                else {
+                                    }
+                                }).catch(function () {
+                                    console.log('C');
                                     // @ts-ignore
                                     channels[i].update({ is_deleted: true }).then();
-                                }
-                            }).catch(function () {
-                                console.log('C');
+                                });
+                            }
+                            else {
                                 // @ts-ignore
                                 channels[i].update({ is_deleted: true }).then();
-                            });
-                        }
-                        else {
-                            // @ts-ignore
-                            channels[i].update({ is_deleted: true }).then();
-                        }
-                    }).catch(function (e) {
-                        console.log('B');
-                        console.log(e);
-                    });
+                            }
+                        }).catch(function (e) {
+                            console.log('B');
+                            console.log(e);
+                        });
+                    }
                 }
             }).catch(function (e) {
-                // @ts-ignore
-                channels[i].update({ is_deleted: true }).then();
+                if (!rehearsal_mode) {
+                    // @ts-ignore
+                    channels[i].update({ is_deleted: true }).then();
+                }
                 console.error(e);
             });
         };
