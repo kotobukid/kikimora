@@ -64,7 +64,9 @@ var delete_channels_expired = function (client) {
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof discord_js_1.TextChannel) {
-                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then();
+                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch(function (e) {
+                                console.log(e);
+                            });
                         }
                     }
                     else {
@@ -85,7 +87,8 @@ var delete_channels_expired = function (client) {
                                         // @ts-ignore
                                         channels[i].update({ is_deleted: true }).then();
                                     }
-                                }).catch(function () {
+                                }).catch(function (e) {
+                                    console.log(e);
                                     console.log('C');
                                     // @ts-ignore
                                     channels[i].update({ is_deleted: true }).then();

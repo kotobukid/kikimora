@@ -68,7 +68,9 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof TextChannel) {
-                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then();
+                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch((e: Error) => {
+                                console.log(e);
+                            });
                         }
                     } else {
                         tc.delete().then((tc_deleted: Channel) => {
@@ -87,7 +89,8 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                                         // @ts-ignore
                                         channels[i].update({is_deleted: true}).then();
                                     }
-                                }).catch(() => {
+                                }).catch((e: Error) => {
+                                    console.log(e);
                                     console.log('C');
                                     // @ts-ignore
                                     channels[i].update({is_deleted: true}).then();
