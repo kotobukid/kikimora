@@ -95,16 +95,15 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
         year = today.getFullYear() + 1;
         adjusts += 'next year / '
     } else if (m === this_month) {
-        if (d + 2 < today.getDate()) {
+        if (d + 3 < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / '
         }
     }
 
-    const target_date = new Date(year, m - 1, d + 2);
+    const target_date = new Date(year, m - 1, d + 3);
 
     return {
-        // s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())} (${adjusts}+2 days)`,
         s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())}`,
         n: `${target_date.getFullYear()}${zero_pad_xx(target_date.getMonth() + 1)}${zero_pad_xx(target_date.getDate())}`
     };

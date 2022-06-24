@@ -90,14 +90,13 @@ var get_date_to_delete = function (r) {
         adjusts += 'next year / ';
     }
     else if (m === this_month) {
-        if (d + 2 < today.getDate()) {
+        if (d + 3 < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / ';
         }
     }
-    var target_date = new Date(year, m - 1, d + 2);
+    var target_date = new Date(year, m - 1, d + 3);
     return {
-        // s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())} (${adjusts}+2 days)`,
         s: "".concat(target_date.getFullYear(), "/").concat(zero_pad_xx(target_date.getMonth() + 1), "/").concat(zero_pad_xx(target_date.getDate())),
         n: "".concat(target_date.getFullYear()).concat(zero_pad_xx(target_date.getMonth() + 1)).concat(zero_pad_xx(target_date.getDate()))
     };
