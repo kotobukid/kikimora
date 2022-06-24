@@ -43,6 +43,8 @@ export const warn_channels_to_delete = (client: KikimoraClient, threshold_date: 
                             console.log(e);
                         });
                     }
+                }).catch((e: Error) => {
+                    console.log('not found3');
                 });
             }
         });
@@ -63,11 +65,12 @@ export const delete_channels_expired = (client: KikimoraClient) => {
         }
 
         for (let i: number = 0; i < channels.length; i++) {
+            // console.log(channels[i])
             client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null) => {
-                console.log(tc);
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof TextChannel) {
+                            console.log(tc.name)
                             tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch((e: Error) => {
                                 console.log(e);
                             });
@@ -82,7 +85,6 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                                             // @ts-ignore
                                             channels[i].update({is_deleted: true}).then();
                                         }).catch((e: Error) => {
-                                            console.log('A');
                                             console.log(e);
                                         });
                                     } else {
@@ -91,7 +93,6 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                                     }
                                 }).catch((e: Error) => {
                                     console.log(e);
-                                    console.log('C');
                                     // @ts-ignore
                                     channels[i].update({is_deleted: true}).then();
                                 });
@@ -100,10 +101,10 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                                 channels[i].update({is_deleted: true}).then();
                             }
                         }).catch((e: Error) => {
-                            console.log('B');
                             console.log(e);
                         });
                     }
+                } else {
                 }
             }).catch((e: Error) => {
                 if (!rehearsal_mode) {

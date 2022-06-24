@@ -43,6 +43,8 @@ var warn_channels_to_delete = function (client, threshold_date) {
                             console.log(e);
                         });
                     }
+                }).catch(function (e) {
+                    console.log('not found3');
                 });
             };
         });
@@ -59,11 +61,12 @@ var delete_channels_expired = function (client) {
             console.log("".concat(channels.length, " channel(s) found."));
         }
         var _loop_1 = function (i) {
+            // console.log(channels[i])
             client.channels.fetch(channels[i].text_channel).then(function (tc) {
-                console.log(tc);
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof discord_js_1.TextChannel) {
+                            console.log(tc.name);
                             tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch(function (e) {
                                 console.log(e);
                             });
@@ -79,7 +82,6 @@ var delete_channels_expired = function (client) {
                                             // @ts-ignore
                                             channels[i].update({ is_deleted: true }).then();
                                         }).catch(function (e) {
-                                            console.log('A');
                                             console.log(e);
                                         });
                                     }
@@ -89,7 +91,6 @@ var delete_channels_expired = function (client) {
                                     }
                                 }).catch(function (e) {
                                     console.log(e);
-                                    console.log('C');
                                     // @ts-ignore
                                     channels[i].update({ is_deleted: true }).then();
                                 });
@@ -99,10 +100,11 @@ var delete_channels_expired = function (client) {
                                 channels[i].update({ is_deleted: true }).then();
                             }
                         }).catch(function (e) {
-                            console.log('B');
                             console.log(e);
                         });
                     }
+                }
+                else {
                 }
             }).catch(function (e) {
                 if (!rehearsal_mode) {

@@ -138,10 +138,14 @@ const func = (client: KikimoraClient, msg: Message) => {
                                                 prevent_auto_delete
                                             }).then((ch_data) => {
                                                 msg.channel.send(`教室「<#${text_channel_created.id}>」を作成しました。`);
-                                                if (delete_date.n !== '') {
-                                                    text_channel_created.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                                if (prevent_auto_delete !== 1) {
+                                                    if (delete_date.n !== '') {
+                                                        text_channel_created.send(`このチャンネルは${delete_date.s}に削除予定です。`).then();
+                                                    } else {
+                                                        text_channel_created.send(`このチャンネルには自動削除予定が設定されていません。`).then();
+                                                    }
                                                 } else {
-                                                    text_channel_created.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                                    text_channel_created.send(`このチャンネルは自動削除予定が設定されていません。`).then();
                                                 }
                                             }).catch(console.error);
                                         });

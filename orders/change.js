@@ -17,6 +17,7 @@ var func = function (client, msg) {
         is_deleted: false
     }).then(function (channels) {
         var _loop_1 = function (i) {
+            var prevent_auto_delete = channels[i].prevent_auto_delete !== 0;
             client.channels.fetch(channels[i].text_channel).then(function (tc) {
                 if (tc) {
                     // @ts-ignore
@@ -24,6 +25,7 @@ var func = function (client, msg) {
                         if (channels[i].voice_channel) {
                             client.channels.fetch(channels[i].voice_channel).then(function (vc) {
                                 if (vc) {
+                                    // vcがあるので教室/キャンペーンチャンネル
                                     // @ts-ignore
                                     vc.setName(new_title).then(function () {
                                         // @ts-ignore
@@ -35,26 +37,39 @@ var func = function (client, msg) {
                                             console.error(e);
                                         });
                                         msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">")).then(function () {
-                                            if (delete_date.n !== '') {
-                                                // @ts-ignore
-                                                tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                            if (!prevent_auto_delete) {
+                                                if (delete_date.n !== '') {
+                                                    // @ts-ignore
+                                                    tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                                }
+                                                else {
+                                                    // @ts-ignore
+                                                    tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                                }
                                             }
                                             else {
                                                 // @ts-ignore
-                                                tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                                tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F\u81EA\u52D5\u524A\u9664\u5BFE\u8C61\u5916\u306B\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u3059\u3002").then();
                                             }
                                         });
                                     });
                                 }
                                 else {
+                                    // vcのIDは記録されているがサーバーからは見つけられない(手動削除済みなど)
                                     msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">")).then(function () {
-                                        if (delete_date.n !== '') {
-                                            // @ts-ignore
-                                            tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                        if (!prevent_auto_delete) {
+                                            if (delete_date.n !== '') {
+                                                // @ts-ignore
+                                                tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                            }
+                                            else {
+                                                // @ts-ignore
+                                                tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                            }
                                         }
                                         else {
                                             // @ts-ignore
-                                            tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                            tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F\u81EA\u52D5\u524A\u9664\u5BFE\u8C61\u5916\u306B\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u3059\u3002").then();
                                         }
                                     });
                                 }
@@ -63,12 +78,14 @@ var func = function (client, msg) {
                                 msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u5909\u66F4\u3057\u307E\u3057\u305F\u3002<#").concat(channels[i].text_channel, ">\n\u30DC\u30A4\u30B9\u30C1\u30E3\u30F3\u30CD\u30EB\u3092\u307F\u3064\u3051\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002")).then(function () {
                                     if (delete_date.n !== '') {
                                         // @ts-ignore
-                                        tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
+                                        tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F".concat(delete_date.s, "\u306B\u524A\u9664\u4E88\u5B9A\u3067\u3059\u3002")).then();
                                     }
                                     else {
                                         // @ts-ignore
-                                        tc.send("\u3053\u306E\u52DF\u96C6\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
+                                        tc.send("\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306B\u306F\u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002").then();
                                     }
+                                }).catch(function (e) {
+                                    console.log(e);
                                 });
                             });
                         }
@@ -98,6 +115,13 @@ var func = function (client, msg) {
                         msg.channel.send("<@!".concat(msg.author.id, "> \u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u306E\u5909\u66F4\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002"));
                     });
                 }
+                else {
+                    // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
+                    console.log('not found1');
+                }
+            }).catch(function (e) {
+                // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
+                console.log('not found2');
             });
         };
         for (var i = 0; i < channels.length; i++) {

@@ -22,6 +22,8 @@ const func = (client: KikimoraClient, msg: Message) => {
         is_deleted: false
     }).then((channels: ChannelSource []) => {
         for (let i: number = 0; i < channels.length; i++) {
+            const prevent_auto_delete: boolean = channels[i].prevent_auto_delete !== 0;
+
             client.channels.fetch(channels[i].text_channel).then((tc) => {
                 if (tc) {
                     // @ts-ignore
@@ -29,6 +31,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                         if (channels[i].voice_channel) {
                             client.channels.fetch(channels[i].voice_channel).then(vc => {
                                 if (vc) {
+                                    // vcがあるので教室/キャンペーンチャンネル
                                     // @ts-ignore
                                     vc.setName(new_title).then(() => {
                                         // @ts-ignore
@@ -40,23 +43,34 @@ const func = (client: KikimoraClient, msg: Message) => {
                                             console.error(e);
                                         });
                                         msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
-                                            if (delete_date.n !== '') {
-                                                // @ts-ignore
-                                                tc.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                            if (!prevent_auto_delete) {
+                                                if (delete_date.n !== '') {
+                                                    // @ts-ignore
+                                                    tc.send(`このチャンネルは${delete_date.s}に削除予定です。`).then();
+                                                } else {
+                                                    // @ts-ignore
+                                                    tc.send(`このチャンネルには自動削除予定が設定されていません。`).then();
+                                                }
                                             } else {
                                                 // @ts-ignore
-                                                tc.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                                tc.send(`このチャンネルは自動削除対象外に設定されています。`).then();
                                             }
                                         });
                                     });
                                 } else {
+                                    // vcのIDは記録されているがサーバーからは見つけられない(手動削除済みなど)
                                     msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
-                                        if (delete_date.n !== '') {
-                                            // @ts-ignore
-                                            tc.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                        if (!prevent_auto_delete) {
+                                            if (delete_date.n !== '') {
+                                                // @ts-ignore
+                                                tc.send(`このチャンネルは${delete_date.s}に削除予定です。`).then();
+                                            } else {
+                                                // @ts-ignore
+                                                tc.send(`このチャンネルには自動削除予定が設定されていません。`).then();
+                                            }
                                         } else {
                                             // @ts-ignore
-                                            tc.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                            tc.send(`このチャンネルは自動削除対象外に設定されています。`).then();
                                         }
                                     });
                                 }
@@ -65,11 +79,13 @@ const func = (client: KikimoraClient, msg: Message) => {
                                 msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`).then(() => {
                                     if (delete_date.n !== '') {
                                         // @ts-ignore
-                                        tc.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
+                                        tc.send(`このチャンネルは${delete_date.s}に削除予定です。`).then();
                                     } else {
                                         // @ts-ignore
-                                        tc.send(`この募集チャンネルには自動削除予定が設定されていません。`).then();
+                                        tc.send(`このチャンネルには自動削除予定が設定されていません。`).then();
                                     }
+                                }).catch((e: Error) => {
+                                    console.log(e);
                                 });
                             });
                         } else {
@@ -97,7 +113,13 @@ const func = (client: KikimoraClient, msg: Message) => {
                         console.error(e);
                         msg.channel.send(`<@!${msg.author.id}> チャンネル名の変更に失敗しました。`);
                     });
+                } else {
+                    // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
+                    console.log('not found1');
                 }
+            }).catch((e: Error) => {
+                // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
+                console.log('not found2');
             });
         }
     }).catch((err: Error) => {
