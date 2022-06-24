@@ -11,7 +11,8 @@
     "generate": "node bin/create_random_data.js",
     "sync": "node bin/sync.js",
     "runserver": "sudo forever start -l ./kikimira-log.txt -a index.js",
-    "stopserver": "sudo forever stop index.js"
+    "stopserver": "sudo forever stop index.js",
+    "pad": "node sample_scripts/turn_pad_flag_on.js"
   },
   "author": "",
   "license": "ISC",
