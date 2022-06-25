@@ -37,6 +37,7 @@ export const warn_channels_to_delete = (client: KikimoraClient, threshold_date: 
             return (done: Function) => {
                 client.channels.fetch(ch.text_channel).then((tc: AnyChannel | null) => {
                     if (tc && tc instanceof TextChannel) {
+                        console.log(`削除予定通知 to "${tc.name}"`)
                         tc.send(`<@!${ch.owner}> 自動削除予定日が近付いています。削除予定を延期する場合は \`!変更\` コマンドでセッション予定日を含むチャンネル名を設定してください。`).then(() => {
                             done()
                         }).catch((e: Error) => {
@@ -70,8 +71,8 @@ export const delete_channels_expired = (client: KikimoraClient) => {
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof TextChannel) {
-                            console.log(tc.name)
-                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch((e: Error) => {
+                            console.log(`削除メッセージ(リハーサル) to "${tc.name}"`)
+                            tc.send('このチャンネルは削除されました（リハーサルによりメッセージのみ）').then().catch((e: Error) => {
                                 console.log(e);
                             });
                         }

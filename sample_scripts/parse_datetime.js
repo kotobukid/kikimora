@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_date_to_delete = exports.to_channel_name_date = exports.parse_datetime = void 0;
+exports.get_today_pm = exports.get_tomorrow = exports.get_date_to_delete = exports.to_channel_name_date = exports.parse_datetime = void 0;
 var to_half_num = function (text) {
     var dict = {
         '０': '0',
@@ -65,9 +65,12 @@ exports.to_channel_name_date = to_channel_name_date;
 var zero_pad_xx = function (x) {
     return ('0' + "".concat(x)).slice(-2);
 };
-var get_date_to_delete = function (r) {
+var get_coming_date = function (r, offset_days) {
     var adjusts = '';
     var today = new Date();
+    if (offset_days == undefined) {
+        offset_days = 0;
+    }
     var m = Number(r.m);
     var d;
     var year = today.getFullYear();
@@ -90,15 +93,31 @@ var get_date_to_delete = function (r) {
         adjusts += 'next year / ';
     }
     else if (m === this_month) {
-        if (d + 3 < today.getDate()) {
+        if (d + offset_days < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / ';
         }
     }
-    var target_date = new Date(year, m - 1, d + 3);
+    var target_date = new Date(year, m - 1, d + offset_days);
     return {
         s: "".concat(target_date.getFullYear(), "/").concat(zero_pad_xx(target_date.getMonth() + 1), "/").concat(zero_pad_xx(target_date.getDate())),
         n: "".concat(target_date.getFullYear()).concat(zero_pad_xx(target_date.getMonth() + 1)).concat(zero_pad_xx(target_date.getDate()))
     };
 };
+var get_date_to_delete = function (r) {
+    return get_coming_date(r, 3);
+};
 exports.get_date_to_delete = get_date_to_delete;
+var get_tomorrow = function (r) {
+    return get_coming_date(r, 1);
+};
+exports.get_tomorrow = get_tomorrow;
+var get_today_pm = function () {
+    var today = new Date();
+    return {
+        m: "".concat(today.getMonth() + 1),
+        d: "".concat(today.getDate()),
+        message_payload: ''
+    };
+};
+exports.get_today_pm = get_today_pm;

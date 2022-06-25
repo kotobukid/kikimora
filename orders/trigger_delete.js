@@ -37,6 +37,7 @@ var warn_channels_to_delete = function (client, threshold_date) {
             return function (done) {
                 client.channels.fetch(ch.text_channel).then(function (tc) {
                     if (tc && tc instanceof discord_js_1.TextChannel) {
+                        console.log("\u524A\u9664\u4E88\u5B9A\u901A\u77E5 to \"".concat(tc.name, "\""));
                         tc.send("<@!".concat(ch.owner, "> \u81EA\u52D5\u524A\u9664\u4E88\u5B9A\u65E5\u304C\u8FD1\u4ED8\u3044\u3066\u3044\u307E\u3059\u3002\u524A\u9664\u4E88\u5B9A\u3092\u5EF6\u671F\u3059\u308B\u5834\u5408\u306F `!\u5909\u66F4` \u30B3\u30DE\u30F3\u30C9\u3067\u30BB\u30C3\u30B7\u30E7\u30F3\u4E88\u5B9A\u65E5\u3092\u542B\u3080\u30C1\u30E3\u30F3\u30CD\u30EB\u540D\u3092\u8A2D\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002")).then(function () {
                             done();
                         }).catch(function (e) {
@@ -66,8 +67,8 @@ var delete_channels_expired = function (client) {
                 if (tc) {
                     if (rehearsal_mode) {
                         if (tc instanceof discord_js_1.TextChannel) {
-                            console.log(tc.name);
-                            tc.send('このチャンネルは削除される予定でした（リハーサル）').then().catch(function (e) {
+                            console.log("\u524A\u9664\u30E1\u30C3\u30BB\u30FC\u30B8(\u30EA\u30CF\u30FC\u30B5\u30EB) to \"".concat(tc.name, "\""));
+                            tc.send('このチャンネルは削除されました（リハーサルによりメッセージのみ）').then().catch(function (e) {
                                 console.log(e);
                             });
                         }

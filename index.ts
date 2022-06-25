@@ -11,7 +11,7 @@ import close from './orders/close';
 import trigger_delete from "./orders/trigger_delete";
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
-import {parse_datetime, to_channel_name_date, get_date_to_delete} from "./sample_scripts/parse_datetime";
+import {parse_datetime, to_channel_name_date, get_date_to_delete, get_tomorrow, get_today_pm} from "./sample_scripts/parse_datetime";
 import {delete_channels_expired, warn_channels_to_delete} from "./orders/trigger_delete";
 import {ParsedMessage} from "./types";
 import Timeout = NodeJS.Timeout;
@@ -38,7 +38,7 @@ const generate_today_string = (days_offset?: number): string => {
             message_payload: ''
         };
     }
-    return get_date_to_delete(parsed_dt).n; // (+2 days)
+    return get_date_to_delete(parsed_dt).n; // (+3 days)
 };
 
 client.once('ready', async () => {
@@ -63,15 +63,18 @@ client.once('ready', async () => {
         last_checked = fs.readFileSync(filename).toString();
     }
 
+    const today_pm: ParsedMessage = get_today_pm();
+
     const today_string = generate_today_string();
 
     delete_channels_expired(client);    // 起動直後に自動削除
 
-    const tomorrow_string = generate_today_string(1);
+    // const tomorrow_string = generate_today_string(1);
+    const tomorrow_string = get_tomorrow(today_pm);
 
     if (last_checked !== today_string) {
         // 本日初めての警告
-        warn_channels_to_delete(client, tomorrow_string);
+        warn_channels_to_delete(client,  tomorrow_string.n);
         fs.writeFile(filename, today_string, () => {});
     }
     console.log({last_checked})
@@ -86,11 +89,12 @@ client.once('ready', async () => {
             const every_day_process = () => {
                 delete_channels_expired(client);
 
+                const today_pm: ParsedMessage = get_today_pm();
                 const today_string_inner = generate_today_string();
                 console.log(`every day process ${today_string_inner}`)
 
-                const tomorrow_string = generate_today_string(1);
-                warn_channels_to_delete(client, tomorrow_string);
+                const tomorrow_string = get_tomorrow(today_pm);
+                warn_channels_to_delete(client, tomorrow_string.n);
 
                 fs.writeFile(filename, today_string_inner, () => {});
             }
@@ -102,23 +106,23 @@ client.once('ready', async () => {
     }, 1000 * 60 * 30);
 });
 
-client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
-    if (!interaction.isCommand()) {
-        return;
-    }
-
-    console.log(interaction);
-
-    if (interaction.commandName === 'recruit') {
-        // const message = await interaction.fetchReply();
-        // console.log({message});
-        // check_user_has_some_role(client, interaction, (client, message) => {
-        //     recruit(client, message);
-        //     interaction.reply('応答');
-        //     // await interaction.reply('応答');
-        // });
-    }
-});
+// client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
+//     if (!interaction.isCommand()) {
+//         return;
+//     }
+//
+//     console.log(interaction);
+//
+//     // if (interaction.commandName === 'recruit') {
+//         // const message = await interaction.fetchReply();
+//         // console.log({message});
+//         // check_user_has_some_role(client, interaction, (client, message) => {
+//         //     recruit(client, message);
+//         //     interaction.reply('応答');
+//         //     // await interaction.reply('応答');
+//         // });
+//     // }
+// });
 
 client.on('messageCreate', async (msg: Message) => {
     const message_text = msg.content.trim();
@@ -148,14 +152,14 @@ client.on('messageCreate', async (msg: Message) => {
         summon(client, msg);
     } else if (parsed.order === '!〆' || parsed.order === '!しめ') {
         close(client, msg);
-    } else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
+    } else if (parsed.order === '!掃除') {
         wipe(client, msg);
-    } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
-        trigger_delete(client, msg);
+    // } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
+    //     trigger_delete(client, msg);
     } else if (parsed.order === '!削除') {
         _delete(client, msg);
-        // } else if (parsed.order === '!情報') { // デバッグ用
-        //     information(client, msg);
+    // } else if (parsed.order === '!情報') { // デバッグ用
+    //     information(client, msg);
     }
 });
 

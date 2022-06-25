@@ -69,9 +69,13 @@ const zero_pad_xx = (x: number | string): string => {
     return ('0' + `${x}`).slice(-2);
 };
 
-const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
+const get_coming_date = (r: ParsedMessage, offset_days: number): {s: string, n: string} => {
     let adjusts: string = '';
     const today = new Date();
+
+    if (offset_days == undefined) {
+        offset_days = 0;
+    }
 
     let m: number = Number(r.m);
     let d!: number;
@@ -95,13 +99,13 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
         year = today.getFullYear() + 1;
         adjusts += 'next year / '
     } else if (m === this_month) {
-        if (d + 3 < today.getDate()) {
+        if (d + offset_days < today.getDate()) {
             year = today.getFullYear() + 1;
             adjusts += 'next year / '
         }
     }
 
-    const target_date = new Date(year, m - 1, d + 3);
+    const target_date = new Date(year, m - 1, d + offset_days);
 
     return {
         s: `${target_date.getFullYear()}/${zero_pad_xx(target_date.getMonth() + 1)}/${zero_pad_xx(target_date.getDate())}`,
@@ -109,8 +113,28 @@ const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
     };
 }
 
+
+const get_date_to_delete = (r: ParsedMessage): {s: string, n: string} => {
+    return get_coming_date(r, 3);
+}
+
+const get_tomorrow = (r: ParsedMessage): {s: string, n: string} => {
+    return get_coming_date(r, 1);
+}
+
+const get_today_pm = (): ParsedMessage => {
+    const today = new Date();
+    return {
+        m: `${today.getMonth() + 1}`,
+        d: `${today.getDate()}`,
+        message_payload: ''
+    }
+}
+
 export {
     parse_datetime,
     to_channel_name_date,
-    get_date_to_delete
+    get_date_to_delete,
+    get_tomorrow,
+    get_today_pm
 }

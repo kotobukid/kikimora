@@ -72,10 +72,9 @@ var change_1 = __importDefault(require("./orders/change"));
 var delete_1 = __importDefault(require("./orders/delete"));
 var wipe_1 = __importDefault(require("./orders/wipe"));
 var close_1 = __importDefault(require("./orders/close"));
-var trigger_delete_1 = __importDefault(require("./orders/trigger_delete"));
 var summon_1 = __importStar(require("./orders/summon"));
 var parse_datetime_1 = require("./sample_scripts/parse_datetime");
-var trigger_delete_2 = require("./orders/trigger_delete");
+var trigger_delete_1 = require("./orders/trigger_delete");
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var client = new discord_js_1.default.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES, discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
@@ -97,10 +96,10 @@ var generate_today_string = function (days_offset) {
             message_payload: ''
         };
     }
-    return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n; // (+2 days)
+    return (0, parse_datetime_1.get_date_to_delete)(parsed_dt).n; // (+3 days)
 };
 client.once('ready', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var filename, last_checked, today_string, tomorrow_string, outer;
+    var filename, last_checked, today_pm, today_string, tomorrow_string, outer;
     return __generator(this, function (_a) {
         // const data = [{
         //     name: 'recruit',
@@ -120,12 +119,13 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
         if (fs_1.default.existsSync(filename)) {
             last_checked = fs_1.default.readFileSync(filename).toString();
         }
+        today_pm = (0, parse_datetime_1.get_today_pm)();
         today_string = generate_today_string();
-        (0, trigger_delete_2.delete_channels_expired)(client); // 起動直後に自動削除
-        tomorrow_string = generate_today_string(1);
+        (0, trigger_delete_1.delete_channels_expired)(client); // 起動直後に自動削除
+        tomorrow_string = (0, parse_datetime_1.get_tomorrow)(today_pm);
         if (last_checked !== today_string) {
             // 本日初めての警告
-            (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
+            (0, trigger_delete_1.warn_channels_to_delete)(client, tomorrow_string.n);
             fs_1.default.writeFile(filename, today_string, function () { });
         }
         console.log({ last_checked: last_checked });
@@ -135,11 +135,12 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
             if (now_string !== today_string) { // 日付の変更が確認できてからは24時間に1回の自動削除を行う
                 clearInterval(outer);
                 var every_day_process = function () {
-                    (0, trigger_delete_2.delete_channels_expired)(client);
+                    (0, trigger_delete_1.delete_channels_expired)(client);
+                    var today_pm = (0, parse_datetime_1.get_today_pm)();
                     var today_string_inner = generate_today_string();
                     console.log("every day process ".concat(today_string_inner));
-                    var tomorrow_string = generate_today_string(1);
-                    (0, trigger_delete_2.warn_channels_to_delete)(client, tomorrow_string);
+                    var tomorrow_string = (0, parse_datetime_1.get_tomorrow)(today_pm);
+                    (0, trigger_delete_1.warn_channels_to_delete)(client, tomorrow_string.n);
                     fs_1.default.writeFile(filename, today_string_inner, function () { });
                 };
                 every_day_process();
@@ -149,24 +150,23 @@ client.once('ready', function () { return __awaiter(void 0, void 0, void 0, func
         return [2 /*return*/];
     });
 }); });
-client.on("interactionCreate", function (interaction) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        if (!interaction.isCommand()) {
-            return [2 /*return*/];
-        }
-        console.log(interaction);
-        if (interaction.commandName === 'recruit') {
-            // const message = await interaction.fetchReply();
-            // console.log({message});
-            // check_user_has_some_role(client, interaction, (client, message) => {
-            //     recruit(client, message);
-            //     interaction.reply('応答');
-            //     // await interaction.reply('応答');
-            // });
-        }
-        return [2 /*return*/];
-    });
-}); });
+// client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
+//     if (!interaction.isCommand()) {
+//         return;
+//     }
+//
+//     console.log(interaction);
+//
+//     // if (interaction.commandName === 'recruit') {
+//         // const message = await interaction.fetchReply();
+//         // console.log({message});
+//         // check_user_has_some_role(client, interaction, (client, message) => {
+//         //     recruit(client, message);
+//         //     interaction.reply('応答');
+//         //     // await interaction.reply('応答');
+//         // });
+//     // }
+// });
 client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, void 0, function () {
     var message_text, parsed, dt_parsed;
     return __generator(this, function (_a) {
@@ -206,11 +206,10 @@ client.on('messageCreate', function (msg) { return __awaiter(void 0, void 0, voi
         else if (parsed.order === '!〆' || parsed.order === '!しめ') {
             (0, close_1.default)(client, msg);
         }
-        else if (parsed.order === '!!掃除' || parsed.order === '!掃除') {
+        else if (parsed.order === '!掃除') {
             (0, wipe_1.default)(client, msg);
-        }
-        else if (parsed.order === '!自動削除') { // ほぼデバッグ用
-            (0, trigger_delete_1.default)(client, msg);
+            // } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
+            //     trigger_delete(client, msg);
         }
         else if (parsed.order === '!削除') {
             (0, delete_1.default)(client, msg);
