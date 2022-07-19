@@ -26,7 +26,7 @@ var func = function (client, msg) {
     var voice_category_id = '';
     var everyOneRolePOP = {
         id: everyoneRole.id,
-        VIEW_CHANNEL: true,
+        VIEW_CHANNEL: false,
     };
     var prevent_auto_delete = 0;
     if (parsed.order === '!教室') {

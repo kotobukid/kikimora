@@ -39,7 +39,7 @@ const func = (client: KikimoraClient, msg: Message) => {
     let voice_category_id = '';
     let everyOneRolePOP: PermissionOverwriteOptions & { id: Snowflake } = {
         id: everyoneRole.id,
-        VIEW_CHANNEL: true,
+        VIEW_CHANNEL: false,
     };
     let prevent_auto_delete: 1 | 0 = 0;
     if (parsed.order === '!教室') {
