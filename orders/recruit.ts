@@ -43,7 +43,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         const permissionSettings: ({ id: Snowflake } & PermissionOverwriteOptions)[] = [
             {
                 id: everyoneRole.id,
-                VIEW_CHANNEL: true,
+                VIEW_CHANNEL: false,
             },
             {
                 id: msg.author.id,

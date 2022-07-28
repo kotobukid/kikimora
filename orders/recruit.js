@@ -31,7 +31,7 @@ var func = function (client, msg) {
         var permissionSettings = [
             {
                 id: everyoneRole.id,
-                VIEW_CHANNEL: true,
+                VIEW_CHANNEL: false,
             },
             {
                 id: msg.author.id,
