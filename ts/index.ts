@@ -1,5 +1,5 @@
 import Discord, {Message, Intents, CacheType, Interaction} from 'discord.js';
-import {token} from "./config";
+import {token} from "./config_loader";
 import {check_user_has_some_role, get_orders} from './functions'
 import recruit from './orders/recruit';
 import explain from './orders/explain';
@@ -68,7 +68,7 @@ client.once('ready', async (): Promise<void> => {
     // await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 
-    const filename: string = path.join(__dirname, 'last_checked.txt');
+    const filename: string = path.join(__dirname, 'db/last_checked.txt');
 
     let last_checked: string = '';
     if (fs.existsSync(filename)) {

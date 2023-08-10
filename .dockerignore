@@ -1,0 +1,10 @@
+Dockerfile
+.dockerignore
+.gitignore
+.git/
+.idea/
+config/
+config.dummy/
+db/
+ts/
+README.md

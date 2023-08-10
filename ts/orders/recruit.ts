@@ -7,7 +7,7 @@ import Discord, {
     PermissionOverwriteOptions, Snowflake,
 } from 'discord.js';
 import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
-import {category} from "../config";
+import {category} from "../config_loader";
 import {get_orders, sanitize_channel_name, omit_id} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";

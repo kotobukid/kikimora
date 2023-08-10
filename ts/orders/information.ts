@@ -1,6 +1,6 @@
 import Discord, {AnyChannel, Message} from 'discord.js';
 import {KikimoraClient, OrderSet} from "../types";
-import {category} from "../config";
+import {category} from "../config_loader";
 import {get_orders} from "../functions";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }): void => {

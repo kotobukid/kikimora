@@ -73,6 +73,12 @@
       "es5",
       "scripthost",
       "es2015.promise"
-    ]
-  }
+    ],
+    "baseUrl": "./",
+    "outDir": "./out",
+    "rootDir": "./ts"
+  },
+  "include": [
+    "ts/**/*.ts"
+  ]
 }

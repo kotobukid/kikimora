@@ -10,7 +10,7 @@ import {
     VoiceChannel,
 } from 'discord.js';
 import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
-import {category} from "../config";
+import {category} from "../config_loader";
 import {get_orders, omit_id, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";

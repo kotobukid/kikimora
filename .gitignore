@@ -6,4 +6,5 @@ app.js
 /config/secret.js
 /config/category_.js
 /config/secret_.js
-/last_checked.txt
+/db/last_checked.txt
+/out/
