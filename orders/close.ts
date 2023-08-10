@@ -1,13 +1,11 @@
 import {KikimoraClient, OrderSet} from "../types";
-import {get_payload} from "../functions";
+import {get_orders} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
 import {AnyChannel, Message} from "discord.js";
 
 const func = (client: KikimoraClient, msg: Message): void => {
-    const message_text: string = msg.content.trim();
-    const parsed: OrderSet = get_payload(message_text);
-
+    // const {order, payload}: OrderSet = get_orders(msg);
     // const new_title: string = parsed.payload;
 
     find_channel({

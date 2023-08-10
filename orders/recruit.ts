@@ -8,7 +8,7 @@ import Discord, {
 } from 'discord.js';
 import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
 import {category} from "../config";
-import {get_payload, sanitize_channel_name, omit_id} from "../functions";
+import {get_orders, sanitize_channel_name, omit_id} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from 'lodash';
@@ -16,10 +16,9 @@ import {ChannelTypes} from "discord.js/typings/enums";
 import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message & { channel: { name: string } }): void => {
-    const message_text: string = msg.content.trim();
-    const parsed: OrderSet = get_payload(message_text);
+    const {order, payload}: OrderSet = get_orders(msg);
 
-    const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
+    const dt_parsed: ParsedMessage = parse_datetime(payload);
     const _channel_name: string = dt_parsed.message_payload;
     const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
     let channel_name: string = sanitize_channel_name(_channel_name);
@@ -33,7 +32,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
             return;
         }
 
-        if (parsed.payload.trim() === '') {
+        if (payload === '') {
             msg.channel.send("募集チャンネルの名前を指定してください。").then();
             return;
         }

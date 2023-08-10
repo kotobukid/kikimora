@@ -1,5 +1,5 @@
 import {KikimoraClient, OrderSet} from "../types";
-import {get_payload} from "../functions";
+import {get_orders} from "../functions";
 import {
     create_message_room,
     create_summon_cache,
@@ -33,8 +33,8 @@ declare type message_id = string;
 const reaction_check_information: Record<message_id, ReactionCheckInfo> = {}
 
 const func = (client: KikimoraClient, msg: Message): void => {
-    const message_text: string = msg.content.trim();
-    const parsed: OrderSet = get_payload(message_text);
+    // const {order, payload}: OrderSet = get_orders(msg);
+
     find_channel({owner: msg.author.id, is_deleted: 0}, 10, true).then((channels: ChannelSource[]): void => {
         if (channels.length === 0) {
             msg.channel.send('あなたの作成したチャンネルを見つけられませんでした。');

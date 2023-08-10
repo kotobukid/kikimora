@@ -2,6 +2,10 @@ import Discord, {Message} from "discord.js";
 import _ from "lodash";
 import {OrderSet} from "./types";
 
+const get_orders = (msg: Message): OrderSet => {
+    return get_payload(msg.content.trim());
+};
+
 const get_payload = (s: string): OrderSet => {
     const _s: string = s.replace(/　/ig, ' ');
     const tokens: string[] = _s.split(' ');
@@ -16,7 +20,7 @@ const get_payload = (s: string): OrderSet => {
         payload = '';
     }
 
-    return {order, payload};
+    return {order, payload: payload.trim()};
 };
 
 const check_user_has_some_role = (client: Discord.Client, msg: Message, next: Function): void => {
@@ -74,7 +78,7 @@ const omit_id = <T>(o: T & { id: any }): T => {
 export {
     clone_flat_map,
     clone_dict,
-    get_payload,
+    get_orders,
     check_user_has_some_role,
     date_to_string,
     sanitize_channel_name,

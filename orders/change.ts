@@ -1,15 +1,14 @@
 import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
-import {get_payload, sanitize_channel_name} from "../functions";
+import {get_orders, sanitize_channel_name} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
 import {AnyChannel, Message} from "discord.js";
 import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message): void => {
-    const message_text: string = msg.content.trim();
-    const parsed: OrderSet = get_payload(message_text);
+    const {order, payload}: OrderSet = get_orders(msg);
 
-    const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
+    const dt_parsed: ParsedMessage = parse_datetime(payload);
     const _channel_name: string = dt_parsed.message_payload;
     const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
 

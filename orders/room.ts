@@ -11,7 +11,7 @@ import {
 } from 'discord.js';
 import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
 import {category} from "../config";
-import {get_payload, omit_id, sanitize_channel_name} from "../functions";
+import {get_orders, omit_id, sanitize_channel_name} from "../functions";
 import {create_channel} from "../models";
 import async, {AsyncFunction} from "async";
 import _ from "lodash";
@@ -19,10 +19,9 @@ import {ChannelTypes} from "discord.js/typings/enums";
 import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
 const func = (client: KikimoraClient, msg: Message): void => {
-    const message_text: string = msg.content.trim();
-    const parsed: OrderSet = get_payload(message_text);
+    const {order, payload}: OrderSet = get_orders(msg);
 
-    const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
+    const dt_parsed: ParsedMessage = parse_datetime(payload);
     const _channel_name: string = dt_parsed.message_payload;
     const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
 
@@ -43,7 +42,7 @@ const func = (client: KikimoraClient, msg: Message): void => {
         VIEW_CHANNEL: false,
     };
     let prevent_auto_delete: 1 | 0 = 0;
-    if (parsed.order === '!教室') {
+    if (order === '!教室') {
         text_category_id = category.text;
         voice_category_id = category.voice;
     } else {
@@ -132,7 +131,7 @@ const func = (client: KikimoraClient, msg: Message): void => {
                                             create_channel({
                                                 owner: msg.author.id,
                                                 owner_name: msg.author.username,
-                                                channel_name: parsed.payload,
+                                                channel_name: payload,
                                                 text_channel: `${text_channel_created.id}`,
                                                 voice_channel: `${voice_channel_created.id}`,
                                                 deleted_at: delete_date.n,

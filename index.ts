@@ -1,6 +1,6 @@
 import Discord, {Message, Intents, CacheType, Interaction} from 'discord.js';
 import {token} from "./config";
-import {check_user_has_some_role, get_payload} from './functions'
+import {check_user_has_some_role, get_orders} from './functions'
 import recruit from './orders/recruit';
 import explain from './orders/explain';
 import room from './orders/room';
@@ -139,40 +139,39 @@ client.once('ready', async (): Promise<void> => {
 // });
 
 client.on('messageCreate', async (msg: Message): Promise<void> => {
-    const message_text: string = msg.content.trim();
 
-    const parsed: OrderSet = get_payload(message_text);
+    const {order, payload}: OrderSet = get_orders(msg);
     // console.log(msg);
     if (msg.author.bot) {
         return;
-    } else if (message_text === '!logout') {
+    } else if (payload === '!logout') {
         // logout(client, msg);
-    } else if (parsed.order === '!parse') {
-        const dt_parsed = parse_datetime(msg.content.trim());
+    } else if (order === '!parse') {
+        const dt_parsed: ParsedMessage = parse_datetime(msg.content.trim());
         if (dt_parsed.m) {
             msg.channel.send(`チャンネル名: ${to_channel_name_date(dt_parsed)}\n削除予定日: ${get_date_to_delete(dt_parsed).s}`).then();
         } else {
             msg.channel.send(`日付解釈エラー \`\`\`!parse 1225クリスマス中止のお知らせ\`\`\`　のように入力してください\n${to_channel_name_date(dt_parsed)}`).then();
         }
-    } else if (parsed.order === '!募集') {
+    } else if (order === '!募集') {
         check_user_has_some_role(client, msg, recruit);
-    } else if (parsed.order === '!説明') {
+    } else if (order === '!説明') {
         check_user_has_some_role(client, msg, explain);
-    } else if (parsed.order === '!教室' || parsed.order === '!キャンペーン') {    // チャンネルを作成する
+    } else if (order === '!教室' || order === '!キャンペーン') {    // チャンネルを作成する
         check_user_has_some_role(client, msg, room);
-    } else if (parsed.order === '!変更') {
+    } else if (order === '!変更') {
         change(client, msg);
-    } else if (parsed.order === '!案内') {
+    } else if (order === '!案内') {
         summon(client, msg);
-    } else if (parsed.order === '!〆' || parsed.order === '!しめ') {
+    } else if (order === '!〆' || order === '!しめ') {
         close(client, msg);
-    } else if (parsed.order === '!掃除') {
+    } else if (order === '!掃除') {
         wipe(client, msg);
-        // } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
+        // } else if (order === '!自動削除') {  // ほぼデバッグ用
         //     trigger_delete(client, msg);
-    } else if (parsed.order === '!削除') {
+    } else if (order === '!削除') {
         _delete(client, msg);
-        // } else if (parsed.order === '!情報') { // デバッグ用
+        // } else if (order === '!情報') { // デバッグ用
         //     information(client, msg);
     }
 });
