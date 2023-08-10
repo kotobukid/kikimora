@@ -3,43 +3,39 @@ import {KikimoraClient} from "../types";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
 
-const func = (client: KikimoraClient, msg: Message): void => {
+const func = async (client: KikimoraClient, msg: Message): Promise<void> => {
+    try {
+        const channels: ChannelSource[] = await find_channel({
+            owner: msg.author.id,
+            text_channel: msg.channel.id,
+            is_deleted: 0
+        });
 
-    find_channel({
-        owner: msg.author.id,
-        text_channel: msg.channel.id,
-        is_deleted: false
-    }).then((channels: ChannelSource []): void => {
-        for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null): void => {
+        for (let channel of channels) {
+            try {
+                const tc: AnyChannel | null = await client.channels.fetch(channel.text_channel);
                 if (tc) {
-                    tc.delete().then((tc_deleted: Channel): void => {
-                        if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then((vc: AnyChannel | null): void => {
-                                if (vc) {
-                                    vc.delete().then((vc_deleted: Channel): void => {
-                                        // @ts-ignore
-                                        channels[i].update({is_deleted: true}).then();
-                                    });
-                                } else {
-                                    // @ts-ignore
-                                    channels[i].update({is_deleted: true}).then();
-                                }
-                            }).catch((): void => {
-                                // @ts-ignore
-                                channels[i].update({is_deleted: true}).then();
-                            });
-                        } else {
-                            // @ts-ignore
-                            channels[i].update({is_deleted: true}).then();
+                    await tc.delete();
+                    if (channel.voice_channel) {
+                        try {
+                            const vc: AnyChannel | null = await client.channels.fetch(channel.voice_channel);
+                            if (vc) {
+                                await vc.delete();
+                            }
+                        } catch {
+                            // このブロックは、voice_channelの取得または削除に失敗した場合のみ実行されます
                         }
-                    });
+                    }
                 }
-            }).catch(console.error);
+                // @ts-ignore
+                await channel.update({is_deleted: true});
+            } catch (err) {
+                console.error(err);
+            }
         }
-    }).catch((err: Error): void => {
-        console.error(err)
-    });
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 export default func;

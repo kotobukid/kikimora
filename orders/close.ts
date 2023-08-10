@@ -11,7 +11,7 @@ const func = (client: KikimoraClient, msg: Message): void => {
     find_channel({
         owner: msg.author.id,
         text_channel: msg.channel.id,
-        is_deleted: false
+        is_deleted: 0
     }).then((channels: ChannelSource []): void => {
         for (let i: number = 0; i < channels.length; i++) {
             client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null): void => {

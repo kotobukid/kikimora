@@ -14,6 +14,7 @@ const db: Record<string, any> = {};
 import {ChannelSource} from "./channel"
 import {SummonCache} from "./summon_cache"
 import {MessageRoom} from "./message_room";
+import {ChannelInfo} from "../types";
 
 let sequelize: Sequelize.Sequelize;
 if (config.use_env_variable) {
@@ -56,7 +57,7 @@ const create_channel = (source: ChannelSource): Promise<any> => {
     })
 }
 
-const find_channel = (condition: Record<string, any>, limit?: number | null, reverse?: boolean | null): Promise<any> => {
+const find_channel = async (condition: ChannelInfo, limit?: number | null, reverse?: boolean | null): Promise<any> => {
     if (!limit) {
         limit = null;
     }
@@ -73,9 +74,9 @@ const find_channel = (condition: Record<string, any>, limit?: number | null, rev
             order
         }).then((data: any[]): void => {
             resolve(data)
-        })
-    })
-}
+        });
+    });
+};
 
 const zero_pad_xx = (x: number | string): string => {
     return ('0' + `${x}`).slice(-2);

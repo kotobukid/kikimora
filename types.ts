@@ -8,3 +8,10 @@ export type OrderSet = {
     order: string,
     payload: string
 }
+
+export type ChannelInfo = {
+    id?: number,
+    owner?: string,
+    text_channel?: string,
+    is_deleted?: 1 | 0
+}

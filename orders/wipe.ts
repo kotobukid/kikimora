@@ -8,7 +8,7 @@ import {AnyChannel, Message} from "discord.js";
 const func = (client: KikimoraClient, msg: Message): void => {
     msg.channel.send(`<@!${msg.author.id}> メンテナンスモードを開始します。`);
     find_channel({
-        is_deleted: false
+        is_deleted: 0
     }).then((channels: Channel []): void => {
         const funcs: AsyncFunction<unknown, Error>[] = _.map(channels, (ch: Channel) => {
             return (done: Function): void => {
