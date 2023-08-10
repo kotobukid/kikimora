@@ -1,23 +1,23 @@
-import {Channel, Message} from 'discord.js';
+import {AnyChannel, Channel, Message} from 'discord.js';
 import {KikimoraClient} from "../types";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
 
-const func = (client: KikimoraClient, msg: Message) => {
+const func = (client: KikimoraClient, msg: Message): void => {
 
     find_channel({
         owner: msg.author.id,
         text_channel: msg.channel.id,
         is_deleted: false
-    }).then((channels: ChannelSource []) => {
+    }).then((channels: ChannelSource []): void => {
         for (let i: number = 0; i < channels.length; i++) {
-            client.channels.fetch(channels[i].text_channel).then(tc => {
+            client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null): void => {
                 if (tc) {
-                    tc.delete().then((tc_deleted: Channel) => {
+                    tc.delete().then((tc_deleted: Channel): void => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel).then((vc: AnyChannel | null): void => {
                                 if (vc) {
-                                    vc.delete().then((vc_deleted: Channel) => {
+                                    vc.delete().then((vc_deleted: Channel): void => {
                                         // @ts-ignore
                                         channels[i].update({is_deleted: true}).then();
                                     });
@@ -25,7 +25,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                                     // @ts-ignore
                                     channels[i].update({is_deleted: true}).then();
                                 }
-                            }).catch(() => {
+                            }).catch((): void => {
                                 // @ts-ignore
                                 channels[i].update({is_deleted: true}).then();
                             });
@@ -37,7 +37,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                 }
             }).catch(console.error);
         }
-    }).catch((err: Error) => {
+    }).catch((err: Error): void => {
         console.error(err)
     });
 }

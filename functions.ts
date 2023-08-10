@@ -1,9 +1,10 @@
 import Discord, {Message} from "discord.js";
 import _ from "lodash";
+import {OrderSet} from "./types";
 
-const get_payload = (s: string) => {
+const get_payload = (s: string): OrderSet => {
     const _s: string = s.replace(/　/ig, ' ');
-    const tokens = _s.split(' ');
+    const tokens: string[] = _s.split(' ');
     let order: string = '';
     let payload: string = '';
 
@@ -21,7 +22,7 @@ const get_payload = (s: string) => {
 const check_user_has_some_role = (client: Discord.Client, msg: Message, next: Function): void => {
     let not_everyone_role_found: boolean = false;
     // @ts-ignore
-    msg.member.roles.cache.each((value) => {
+    msg.member.roles.cache.each((value: Discord.Role): void => {
         if (value.name !== '@everyone') {
             not_everyone_role_found = true;
         }
@@ -47,7 +48,7 @@ function clone_flat_map<T>(source: T[]): T[] {
     return source.concat([])
 }
 
-const date_to_string = (d: Date) => {
+const date_to_string = (d: Date): string => {
     return `${d.getFullYear()}${('0' + (d.getMonth() + 1)).slice(-2)}${('0' + d.getDate()).slice(-2)}`
 }
 
@@ -62,7 +63,7 @@ const omit_id = <T>(o: T & { id: any }): T => {
     const next = {} as T;
 
     const keys = Object.keys(o) as (keyof T)[];
-    _.each(keys, (key: keyof T) => {
+    _.each(keys, (key: keyof T): void => {
         if (key !== 'id') {
             next[key] = o[key];
         }

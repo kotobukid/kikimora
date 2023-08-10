@@ -1,23 +1,22 @@
-import {KikimoraClient} from "../types";
+import {KikimoraClient, OrderSet} from "../types";
 import {get_payload} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
-import {Channel, Message} from "discord.js";
+import {AnyChannel, Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: Message) => {
-    const message_text = msg.content.trim();
-    const parsed = get_payload(message_text);
+const func = (client: KikimoraClient, msg: Message): void => {
+    const message_text: string = msg.content.trim();
+    const parsed: OrderSet = get_payload(message_text);
 
-    const new_title: string = parsed.payload;
+    // const new_title: string = parsed.payload;
 
     find_channel({
         owner: msg.author.id,
         text_channel: msg.channel.id,
         is_deleted: false
-    }).then((channels: ChannelSource []) => {
+    }).then((channels: ChannelSource []): void => {
         for (let i: number = 0; i < channels.length; i++) {
-            // @ts-ignore
-            client.channels.fetch(channels[i].text_channel).then((tc: Channel) => {
+            client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null): void => {
                 if (tc) {
                     // @ts-ignore
                     const name: string = tc.name;
@@ -29,40 +28,40 @@ const func = (client: KikimoraClient, msg: Message) => {
                     }
 
                     // @ts-ignore
-                    tc.setName(new_title).then(() => {
+                    tc.setName(new_title).then((): void => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel).then((vc: AnyChannel | null): void => {
                                 if (vc) {
                                     // @ts-ignore
-                                    vc.setName(new_title).then(() => {
+                                    vc.setName(new_title).then((): void => {
                                         // @ts-ignore
-                                        channels[i].update({channel_name: new_title}).then().catch((e: error) => {
+                                        channels[i].update({channel_name: new_title}).then().catch((e: error): void => {
                                             console.error(e);
                                         });
                                         msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                     });
                                 } else {
                                     // @ts-ignore
-                                    channels[i].update({channel_name: new_title}).then().catch((e: error) => {
+                                    channels[i].update({channel_name: new_title}).then().catch((e: error): void => {
                                         console.error(e);
                                     });
                                     msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                                 }
-                            }).catch((e: Error) => {
+                            }).catch((e: Error): void => {
                                 console.error(e);
                                 msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`);
                             });
                         } else {
                             msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`);
                         }
-                    }).catch((e: Error) => {
+                    }).catch((e: Error): void => {
                         console.error(e);
                         msg.channel.send(`<@!${msg.author.id}> チャンネル名の変更に失敗しました。`);
                     });
                 }
             });
         }
-    }).catch((err: Error) => {
+    }).catch((err: Error): void => {
         console.error(err)
     });
 }

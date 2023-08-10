@@ -1,4 +1,4 @@
-import {KikimoraClient} from "../types";
+import {KikimoraClient, OrderSet} from "../types";
 import {get_payload} from "../functions";
 import {
     create_message_room,
@@ -32,20 +32,20 @@ declare type message_id = string;
 
 const reaction_check_information: Record<message_id, ReactionCheckInfo> = {}
 
-const func = (client: KikimoraClient, msg: Message) => {
-    const message_text = msg.content.trim();
-    const parsed = get_payload(message_text);
-    find_channel({owner: msg.author.id, is_deleted: 0}, 10, true).then((channels: ChannelSource[]) => {
+const func = (client: KikimoraClient, msg: Message): void => {
+    const message_text: string = msg.content.trim();
+    const parsed: OrderSet = get_payload(message_text);
+    find_channel({owner: msg.author.id, is_deleted: 0}, 10, true).then((channels: ChannelSource[]): void => {
         if (channels.length === 0) {
             msg.channel.send('あなたの作成したチャンネルを見つけられませんでした。');
         } else if (channels.length === 1) {
             //     // 当該ユーザーが作成したチャンネルが一つしかない
-            msg.channel.send(`「<#${channels[0].text_channel}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
+            msg.channel.send(`「<#${channels[0].text_channel}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message): void => {
                 create_message_room({
                     message: sent_message.id,
                     text_channel: channels[0].text_channel,
                     voice_channel: channels[0].voice_channel || '',
-                }, () => {
+                }, (): void => {
                     try {
                         sent_message.react('✅').then();
                     } catch (e) {
@@ -56,13 +56,13 @@ const func = (client: KikimoraClient, msg: Message) => {
         } else {
             // 当該ユーザーが作成したチャンネルが複数ある
             const async_funcs: Array<AsyncFunction<unknown, Error>> = channels.map((ch: ChannelSource) => {
-                return (done: Function) => {
+                return (done: Function): void => {
                     // @ts-ignore
-                    client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel | undefined) => {
+                    client.channels.fetch(ch.text_channel, false, true).then((text_channel: TextChannel | undefined): void => {
                         if (text_channel) {
                             if (text_channel.parentId) {
                                 // @ts-ignore
-                                client.channels.fetch(text_channel.parentId).then((category: CategoryChannel) => {
+                                client.channels.fetch(text_channel.parentId).then((category: CategoryChannel): void => {
                                     done(null, {
                                         text_name: text_channel.name,
                                         text_id: ch.text_channel,
@@ -82,7 +82,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                         } else {
                             done(null, null);
                         }
-                    }).catch((e: DiscordAPIError) => {
+                    }).catch((e: DiscordAPIError): void => {
                         done(null, null);   // エラーはここでは無視
                     });
                 }
@@ -94,7 +94,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                 text_id: string,
                 voice_id: string,
                 category_name: string,
-            } | null)[]) => {
+            } | null)[]): void => {
                 if (err) {
                     throw err;
                 }
@@ -103,7 +103,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                     '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'
                 ];
 
-                const over_limit_message = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
+                const over_limit_message: string = channels.length > 10 ? '\n※10個め以降は省略されました' : '';
 
                 const reactions: Record<string, { text: string, voice: string, category_name: string }> = {};
 
@@ -111,7 +111,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                     return !!__cs;
                 });
 
-                const mapping: string = _.filter(_cs.map(((c, index: number) => {
+                const mapping: string = _.filter(_cs.map(((c, index: number): string => {
                     if (!!c) {
                         reactions[emojis[index]] = {text: c.text_id, voice: c.voice_id, category_name: c.category_name};
                         return `${emojis[index]} ${c.category_name} <#${c.text_id}>`;
@@ -125,11 +125,11 @@ const func = (client: KikimoraClient, msg: Message) => {
                         owner: msg.author.id,
                         reactions: reactions,
                         message: sent_message.id
-                    }, () => {
+                    }, (): void => {
 
                         for (let i: number = 0; i < cs.length; i++) {
                             if (i < emojis.length) {
-                                setTimeout(() => {
+                                setTimeout((): void => {
                                     try {
                                         sent_message.react(emojis[i]).then();
                                     } catch (e) {
@@ -173,14 +173,14 @@ const add_user_as_channel_controller = (channels: Discord.GuildChannelManager, r
     }
 };
 
-const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: ChannelSource) => {
-    message.delete().then((message_deleted: Message) => {
-        message.channel.send(`「<#${sc.text}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message) => {
+const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: ChannelSource): void => {
+    message.delete().then((message_deleted: Message): void => {
+        message.channel.send(`「<#${sc.text}>」に参加したい人は✅でリアクションしてください。\n(30日間有効)`).then((sent_message: Discord.Message): void => {
             create_message_room({
                 message: sent_message.id,
                 text_channel: sc.text,
                 voice_channel: sc.voice
-            }, () => {
+            }, (): void => {
                 try {
                     sent_message.react('✅').then();
                 } catch (e) {
@@ -191,7 +191,7 @@ const suggest_invite = (message: Discord.Message, sc: SummonCache, channel?: Cha
     });
 }
 
-const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {
+const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): void => {
     if (user.bot) {
         return;
     }
@@ -207,7 +207,7 @@ const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User |
         message: reaction.message.id,
         react: reaction.emoji.name || '',
         owner: user.id
-    }).then((sc: SummonCache) => {
+    }).then((sc: SummonCache): void => {
         // @ts-ignore
         const c: Discord.GuildChannel | null = reaction.message.guild!.channels.resolve(sc.text);
         if (!c) {
@@ -216,14 +216,14 @@ const invite_reaction = (reaction: Discord.MessageReaction, user: Discord.User |
         }
         // @ts-ignore
         suggest_invite(reaction.message, sc);
-    }).catch(() => {
+    }).catch((): void => {
         // ☑が押された時
-        fetch_message_room(reaction.message.id, (mr: MessageRoom) => {
+        fetch_message_room(reaction.message.id, (mr: MessageRoom): void => {
             if (mr) {
                 add_user_as_channel_controller(reaction.message.guild!.channels, {
                     text_channel: mr.text_channel,
                     voice_channel: mr.voice_channel
-                }, user.id, (result: boolean) => {
+                }, user.id, (result: boolean): void => {
                     if (result) {
                         reaction.message.channel.send(`<@!${user.id}> に「<#${mr.text_channel}>」への入室権限を付与しました。`);
                     }

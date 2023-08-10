@@ -27,13 +27,13 @@ fs
     .filter((file: string) => {
         return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
     })
-    .forEach((file: string) => {
+    .forEach((file: string): void => {
         // @ts-ignore
         const _model = require(path.join(__dirname, file))
         db[_model.table_name] = sequelize.define(_model.table_name, _model.ModelSource);
     });
 
-Object.keys(db).forEach(modelName => {
+Object.keys(db).forEach((modelName: string): void => {
     if (db[modelName].associate) {
         db[modelName].associate(db);
     }
@@ -41,7 +41,7 @@ Object.keys(db).forEach(modelName => {
 
 
 const create_channel = (source: ChannelSource): Promise<any> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject): void => {
 
         const c = new db.channel!()
         c.owner = source.owner
@@ -66,12 +66,12 @@ const find_channel = (condition: Record<string, any>, limit?: number | null, rev
         order = [['id', 'DESC']]
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject): void => {
         db.channel.findAll({
             where: condition,
             limit,
             order
-        }).then((data: any[]) => {
+        }).then((data: any[]): void => {
             resolve(data)
         })
     })
@@ -82,7 +82,7 @@ const zero_pad_xx = (x: number | string): string => {
 };
 
 const find_channel_expired_on_date = (target_day: string): Promise<ChannelSource[]> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject): void => {
 
         db.channel.findAll({
             where: {
@@ -95,16 +95,16 @@ const find_channel_expired_on_date = (target_day: string): Promise<ChannelSource
                 },
                 prevent_auto_delete: 0
             }
-        }).then((data: ChannelSource[]) => {
+        }).then((data: ChannelSource[]): void => {
             resolve(data);
         });
     });
 }
 
 const find_channel_expired = (): Promise<ChannelSource[]> => {
-    return new Promise((resolve, reject) => {
-        const today = new Date();
-        const today_string = `${today.getFullYear()}${zero_pad_xx(today.getMonth() + 1)}${zero_pad_xx(today.getDate())}`
+    return new Promise((resolve, reject): void => {
+        const today: Date = new Date();
+        const today_string: string = `${today.getFullYear()}${zero_pad_xx(today.getMonth() + 1)}${zero_pad_xx(today.getDate())}`
 
         db.channel.findAll({
             where: {
@@ -117,7 +117,7 @@ const find_channel_expired = (): Promise<ChannelSource[]> => {
                 },
                 prevent_auto_delete: 0
             }
-        }).then((data: ChannelSource[]) => {
+        }).then((data: ChannelSource[]): void => {
             resolve(data);
         });
     });
@@ -154,7 +154,7 @@ declare type FetchSummonTargetOption = {
 }
 
 const fetch_summon_target = (info: FetchSummonTargetOption): Promise<SummonCache> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject): void => {
 
         const _expires: Date = new Date()
         const expires: string = date_to_string(_expires)
@@ -168,14 +168,14 @@ const fetch_summon_target = (info: FetchSummonTargetOption): Promise<SummonCache
                     [Sequelize.Op.gte]: expires
                 }
             },
-        }).then((data: SummonCache) => {
+        }).then((data: SummonCache): void => {
             if (data) {
                 resolve(data)
             } else {
                 reject()
             }
-        })
-    })
+        });
+    });
 }
 
 declare type CreateMessageRoomOption = {
@@ -184,7 +184,7 @@ declare type CreateMessageRoomOption = {
     voice_channel: string
 }
 
-const create_message_room = (source: CreateMessageRoomOption, next: Function) => {
+const create_message_room = (source: CreateMessageRoomOption, next: Function): void => {
     const today: Date = new Date()
     today.setDate(today.getDate() + 30)
     const expires: string = date_to_string(today)
@@ -199,7 +199,7 @@ const create_message_room = (source: CreateMessageRoomOption, next: Function) =>
     next();
 }
 
-const fetch_message_room = (message: string, next: (mr: MessageRoom) => void) => {
+const fetch_message_room = (message: string, next: (mr: MessageRoom) => void): void => {
     const _expires: Date = new Date()
     const expires: string = date_to_string(_expires)
 
@@ -210,7 +210,7 @@ const fetch_message_room = (message: string, next: (mr: MessageRoom) => void) =>
                 [Sequelize.Op.gte]: expires
             }
         },
-    }).then((data: MessageRoom) => {
+    }).then((data: MessageRoom): void => {
         next(data);
     })
 }

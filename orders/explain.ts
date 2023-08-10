@@ -1,8 +1,8 @@
 import {KikimoraClient} from "../types";
 import {DiscordAPIError, Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: Message) => {
-    const info_text = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
+const func = (client: KikimoraClient, msg: Message): void => {
+    const info_text: string = '★忙しすぎるあなたに代わって教室を作成します。\n\n' +
         '** ● 新ルール 日付4文字 ● **\n' +
         '> 各種教室の管理コスト削減のため、放置チャンネルの自動削除機能が導入されます。\n' +
         '> 以下の説明に[日付4文字]という言葉が登場する場合、それは `1月1日 => 0101`, `1231 => 12月31日` のような、月+日の指定を意味します。\n' +
@@ -36,7 +36,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         '> 続いて表示されるメッセージに従ってください。\n\n' +
         '※一つの教室に対する各種操作は、一定時間内に実行可能な回数に制限があります。連続で命令を行うと、最大10分後まで反映されないといったことがありますのでご注意ください。\n' +
         '※教室の名前については、学園のルールに準拠するようにしてください。';
-    msg.author.send(info_text).then().catch((e: Error) => {
+    msg.author.send(info_text).then().catch((e: Error): void => {
         if (e instanceof DiscordAPIError) {
             msg.channel.send(info_text);
         }

@@ -1,48 +1,48 @@
-import {KikimoraClient, ParsedMessage} from "../types";
+import {KikimoraClient, OrderSet, ParsedMessage} from "../types";
 import {get_payload, sanitize_channel_name} from "../functions";
 import {find_channel} from "../models";
 import {ChannelSource} from "../models/channel";
-import {Message} from "discord.js";
+import {AnyChannel, Message} from "discord.js";
 import {get_date_to_delete, parse_datetime, to_channel_name_date} from "../sample_scripts/parse_datetime";
 
-const func = (client: KikimoraClient, msg: Message) => {
-    const message_text = msg.content.trim();
-    const parsed = get_payload(message_text);
+const func = (client: KikimoraClient, msg: Message): void => {
+    const message_text: string = msg.content.trim();
+    const parsed: OrderSet = get_payload(message_text);
 
     const dt_parsed: ParsedMessage = parse_datetime(parsed.payload);
     const _channel_name: string = dt_parsed.message_payload;
     const delete_date: { s: string, n: string } = get_date_to_delete(dt_parsed);
 
-    let channel_name = sanitize_channel_name(_channel_name);
-    const new_title = `${to_channel_name_date(dt_parsed)}${channel_name}`;
+    let channel_name: string = sanitize_channel_name(_channel_name);
+    const new_title: string = `${to_channel_name_date(dt_parsed)}${channel_name}`;
 
     find_channel({
         owner: msg.author.id,
         text_channel: msg.channel.id,
         is_deleted: false
-    }).then((channels: ChannelSource []) => {
+    }).then((channels: ChannelSource []): void => {
         for (let i: number = 0; i < channels.length; i++) {
             const prevent_auto_delete: boolean = channels[i].prevent_auto_delete !== 0;
 
-            client.channels.fetch(channels[i].text_channel).then((tc) => {
+            client.channels.fetch(channels[i].text_channel).then((tc: AnyChannel | null): void => {
                 if (tc) {
                     // @ts-ignore
-                    tc.setName(new_title, `reason: kikimora order from ${msg.author.username}`).then((_tc) => {
+                    tc.setName(new_title, `reason: kikimora order from ${msg.author.username}`).then((_tc): void => {
                         if (channels[i].voice_channel) {
-                            client.channels.fetch(channels[i].voice_channel).then(vc => {
+                            client.channels.fetch(channels[i].voice_channel).then((vc: AnyChannel | null): void => {
                                 if (vc) {
                                     // vcがあるので教室/キャンペーンチャンネル
                                     // @ts-ignore
-                                    vc.setName(new_title).then(() => {
+                                    vc.setName(new_title).then((): void => {
                                         // @ts-ignore
                                         channels[i].update({
                                             channel_name: new_title,
                                             deleted_at: delete_date.n
                                             // @ts-ignore
-                                        }).then().catch((e: error) => {
+                                        }).then().catch((e: error): void => {
                                             console.error(e);
                                         });
-                                        msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
+                                        msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then((): void => {
                                             if (!prevent_auto_delete) {
                                                 if (delete_date.n !== '') {
                                                     // @ts-ignore
@@ -59,7 +59,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                                     });
                                 } else {
                                     // vcのIDは記録されているがサーバーからは見つけられない(手動削除済みなど)
-                                    msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
+                                    msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then((): void => {
                                         if (!prevent_auto_delete) {
                                             if (delete_date.n !== '') {
                                                 // @ts-ignore
@@ -74,7 +74,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                                         }
                                     });
                                 }
-                            }).catch((e: Error) => {
+                            }).catch((e: Error): void => {
                                 console.error(e);
                                 msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>\nボイスチャンネルをみつけることができませんでした。`).then(() => {
                                     if (delete_date.n !== '') {
@@ -84,7 +84,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                                         // @ts-ignore
                                         tc.send(`このチャンネルには自動削除予定が設定されていません。`).then();
                                     }
-                                }).catch((e: Error) => {
+                                }).catch((e: Error): void => {
                                     console.log(e);
                                 });
                             });
@@ -95,11 +95,11 @@ const func = (client: KikimoraClient, msg: Message) => {
                                 channel_name: new_title,
                                 deleted_at: delete_date.n
                                 // @ts-ignore
-                            }).then().catch((e: error) => {
+                            }).then().catch((e: error): void => {
                                 console.error(e);
                             });
 
-                            msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then(() => {
+                            msg.channel.send(`<@!${msg.author.id}> チャンネル名を変更しました。<#${channels[i].text_channel}>`).then((): void => {
                                 if (delete_date.n !== '') {
                                     // @ts-ignore
                                     tc.send(`この募集チャンネルは${delete_date.s}に削除予定です。`).then();
@@ -109,7 +109,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                                 }
                             });
                         }
-                    }).catch((e: Error) => {
+                    }).catch((e: Error): void => {
                         console.error(e);
                         msg.channel.send(`<@!${msg.author.id}> チャンネル名の変更に失敗しました。`);
                     });
@@ -117,12 +117,12 @@ const func = (client: KikimoraClient, msg: Message) => {
                     // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
                     console.log('not found1');
                 }
-            }).catch((e: Error) => {
+            }).catch((e: Error): void => {
                 // DB上にはチャンネルの情報があるがサーバーからは見つからない(手動削除済みなど)
                 console.log('not found2');
             });
         }
-    }).catch((err: Error) => {
+    }).catch((err: Error): void => {
         console.error(err)
     });
 }

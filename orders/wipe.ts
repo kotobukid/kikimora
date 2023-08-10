@@ -3,26 +3,26 @@ import {find_channel} from "../models";
 import {Channel} from "../models/channel";
 import _ from 'lodash';
 import async, {AsyncFunction} from 'async';
-import {Message} from "discord.js";
+import {AnyChannel, Message} from "discord.js";
 
-const func = (client: KikimoraClient, msg: Message) => {
+const func = (client: KikimoraClient, msg: Message): void => {
     msg.channel.send(`<@!${msg.author.id}> メンテナンスモードを開始します。`);
     find_channel({
         is_deleted: false
-    }).then((channels: Channel []) => {
+    }).then((channels: Channel []): void => {
         const funcs: AsyncFunction<unknown, Error>[] = _.map(channels, (ch: Channel) => {
-            return (done: Function) => {
-                client.channels.fetch(ch.text_channel).then(tc => {
+            return (done: Function): void => {
+                client.channels.fetch(ch.text_channel).then((tc: AnyChannel | null): void => {
                     done(null, null);
-                }).catch((e: Error) => {
+                }).catch((e: Error): void => {
                     find_channel({
                         id: ch.id
-                    }).then((channels_to_delete: Channel[]) => {
+                    }).then((channels_to_delete: Channel[]): void => {
                         if (channels_to_delete.length > 0) {
                             // @ts-ignore
-                            channels_to_delete[0].update({is_deleted: true}).then(() => {
+                            channels_to_delete[0].update({is_deleted: true}).then((): void => {
                                 done(null, '#' + channels_to_delete[0].channel_name);
-                            })
+                            });
                         } else {
                             done(e, null);
                         }
@@ -41,7 +41,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                 msg.channel.send(`<@!${msg.author.id}> 処置の必要はありませんでした。メンテナンスモードを終了します。`);
             }
         });
-    }).catch((err: Error) => {
+    }).catch((err: Error): void => {
         console.error(err);
     });
 }

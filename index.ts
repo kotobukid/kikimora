@@ -11,18 +11,30 @@ import close from './orders/close';
 import trigger_delete from "./orders/trigger_delete";
 import summon, {invite_reaction} from './orders/summon';
 import logout from './orders/logout';
-import {parse_datetime, to_channel_name_date, get_date_to_delete, get_tomorrow, get_today_pm} from "./sample_scripts/parse_datetime";
+import {
+    parse_datetime,
+    to_channel_name_date,
+    get_date_to_delete,
+    get_tomorrow,
+    get_today_pm
+} from "./sample_scripts/parse_datetime";
 import {delete_channels_expired, warn_channels_to_delete} from "./orders/trigger_delete";
-import {ParsedMessage} from "./types";
+import {OrderSet, ParsedMessage} from "./types";
 import Timeout = NodeJS.Timeout;
 import fs from 'fs';
 import path from 'path';
 
-const client: Discord.Client = new Discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
+const client: Discord.Client = new Discord.Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+    ]
+});
 
 const generate_today_string = (days_offset?: number): string => {
     let parsed_dt!: ParsedMessage;
-    const today = new Date();
+    const today: Date = new Date();
 
     if (days_offset == undefined) {
         parsed_dt = {
@@ -31,7 +43,7 @@ const generate_today_string = (days_offset?: number): string => {
             message_payload: ''
         };
     } else {
-        const target_day: Date = new Date(`${today.getFullYear()}/${today.getMonth()+1}/${today.getDate() + days_offset}`);
+        const target_day: Date = new Date(`${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate() + days_offset}`);
         parsed_dt = {
             m: `${target_day.getMonth() + 1}`,
             d: `${target_day.getDate()}`,
@@ -41,7 +53,7 @@ const generate_today_string = (days_offset?: number): string => {
     return get_date_to_delete(parsed_dt).n; // (+3 days)
 };
 
-client.once('ready', async () => {
+client.once('ready', async (): Promise<void> => {
     // const data = [{
     //     name: 'recruit',
     //     description: '募集チャンネルを作成します!',
@@ -56,7 +68,7 @@ client.once('ready', async () => {
     // await client.application.commands.set(data, '');
     console.log(`${client.user!.tag} でログイン`);
 
-    const filename = path.join(__dirname, 'last_checked.txt');
+    const filename: string = path.join(__dirname, 'last_checked.txt');
 
     let last_checked: string = '';
     if (fs.existsSync(filename)) {
@@ -65,38 +77,40 @@ client.once('ready', async () => {
 
     const today_pm: ParsedMessage = get_today_pm();
 
-    const today_string = generate_today_string();
+    const today_string: string = generate_today_string();
 
     delete_channels_expired(client);    // 起動直後に自動削除
 
     // const tomorrow_string = generate_today_string(1);
-    const tomorrow_string = get_tomorrow(today_pm);
+    const tomorrow_string: { s: string, n: string } = get_tomorrow(today_pm);
 
     if (last_checked !== today_string) {
         // 本日初めての警告
-        warn_channels_to_delete(client,  tomorrow_string.n);
-        fs.writeFile(filename, today_string, () => {});
+        warn_channels_to_delete(client, tomorrow_string.n);
+        fs.writeFile(filename, today_string, (): void => {
+        });
     }
     console.log({last_checked})
 
-    const outer: Timeout = setInterval(() => {  // 30分毎に日付が変わっていないかを確認
-        const now_string = generate_today_string();
+    const outer: Timeout = setInterval((): void => {  // 30分毎に日付が変わっていないかを確認
+        const now_string: string = generate_today_string();
         console.log({now_string})
         if (now_string !== today_string) {  // 日付の変更が確認できてからは24時間に1回の自動削除を行う
 
             clearInterval(outer);
 
-            const every_day_process = () => {
+            const every_day_process = (): void => {
                 delete_channels_expired(client);
 
                 const today_pm: ParsedMessage = get_today_pm();
-                const today_string_inner = generate_today_string();
+                const today_string_inner: string = generate_today_string();
                 console.log(`every day process ${today_string_inner}`)
 
-                const tomorrow_string = get_tomorrow(today_pm);
+                const tomorrow_string: { s: string, n: string } = get_tomorrow(today_pm);
                 warn_channels_to_delete(client, tomorrow_string.n);
 
-                fs.writeFile(filename, today_string_inner, () => {});
+                fs.writeFile(filename, today_string_inner, (): void => {
+                });
             }
 
             every_day_process();
@@ -124,10 +138,10 @@ client.once('ready', async () => {
 //     // }
 // });
 
-client.on('messageCreate', async (msg: Message) => {
-    const message_text = msg.content.trim();
+client.on('messageCreate', async (msg: Message): Promise<void> => {
+    const message_text: string = msg.content.trim();
 
-    const parsed = get_payload(message_text);
+    const parsed: OrderSet = get_payload(message_text);
     // console.log(msg);
     if (msg.author.bot) {
         return;
@@ -154,19 +168,19 @@ client.on('messageCreate', async (msg: Message) => {
         close(client, msg);
     } else if (parsed.order === '!掃除') {
         wipe(client, msg);
-    // } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
-    //     trigger_delete(client, msg);
+        // } else if (parsed.order === '!自動削除') {  // ほぼデバッグ用
+        //     trigger_delete(client, msg);
     } else if (parsed.order === '!削除') {
         _delete(client, msg);
-    // } else if (parsed.order === '!情報') { // デバッグ用
-    //     information(client, msg);
+        // } else if (parsed.order === '!情報') { // デバッグ用
+        //     information(client, msg);
     }
 });
 
 // @ts-ignore
-client.on('messageReactionAdd', (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser) => {
+client.on('messageReactionAdd', (reaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): void => {
     invite_reaction(reaction, user);
 });
 
-client.login(token).then(() => {
+client.login(token).then((): void => {
 });
