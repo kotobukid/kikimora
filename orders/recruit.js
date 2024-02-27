@@ -43,7 +43,7 @@ var func = function (client, msg) {
         msg.guild.channels.create(channel_name, {
             type: 0 /* GUILD_TEXT */,
             parent: config_1.category.recruit,
-            topic: "\u4F5C\u6210\u8005: ".concat(msg.author.username)
+            // topic: `作成者: ${msg.author.username}`
             // @ts-ignore
         }).then(function (ch) {
             ch.lockPermissions()

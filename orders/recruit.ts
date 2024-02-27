@@ -56,7 +56,7 @@ const func = (client: KikimoraClient, msg: Message & { channel: { name: string }
         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
             type: ChannelTypes.GUILD_TEXT,
             parent: category.recruit,
-            topic: `作成者: ${msg.author.username}`
+            // topic: `作成者: ${msg.author.username}`
 
             // @ts-ignore
         }).then((ch: TextChannel) => {

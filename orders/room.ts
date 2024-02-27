@@ -74,7 +74,7 @@ const func = (client: KikimoraClient, msg: Message) => {
         msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'text' }>{
             type: ChannelTypes.GUILD_TEXT,
             parent: text_category_id,
-            topic: `作成者: ${msg.author.username} ${prevent_auto_delete ? '[永続]' : ''}`
+            // topic: `作成者: ${msg.author.username} ${prevent_auto_delete ? '[永続]' : ''}`
 
             // @ts-ignore
         }).then((text_channel_created: TextChannel) => {
@@ -111,7 +111,7 @@ const func = (client: KikimoraClient, msg: Message) => {
                             msg.guild!.channels.create(channel_name, <GuildChannelCreateOptions & { type: 'voice' }>{
                                 type: ChannelTypes.GUILD_VOICE,
                                 parent: voice_category_id,
-                                topic: `作成者: ${msg.author.username}`
+                                // topic: `作成者: ${msg.author.username}`
 
                                 // @ts-ignore
                             }).then((voice_channel_created: VoiceChannel) => {
